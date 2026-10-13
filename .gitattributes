@@ -2,3 +2,6 @@
 # Sem isto, o core.autocrlf do Windows grava CRLF e o deploy falha
 # com "A valid .cpanel.yml file exists".
 .cpanel.yml text eol=lf
+
+# Scripts que rodam no bash (Git Bash e VPS): CRLF quebra a execucao.
+deploy/** text eol=lf
