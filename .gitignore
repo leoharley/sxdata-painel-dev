@@ -36,3 +36,6 @@ user_guide_src/cilexer/pycilexer.egg-info/*
 
 # Uploads gerados em runtime (fotos e audios dos aplicadores)
 uploads/
+
+# Dumps do banco de producao (dados reais: nunca versionar)
+docs/*dump*.sql
