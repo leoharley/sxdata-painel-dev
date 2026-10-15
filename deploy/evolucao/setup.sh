@@ -49,7 +49,7 @@ pm = ondemand
 pm.max_children = 6
 pm.process_idle_timeout = 30s
 pm.max_requests = 300
-php_admin_value[error_log] = /var/log/php-fpm/sxdata-error.log
+php_admin_value[error_log] = /var/log/sxdata/php-error.log
 php_admin_flag[log_errors] = on
 POOL
 [ -f /etc/php-fpm.d/www.conf ] && mv /etc/php-fpm.d/www.conf /etc/php-fpm.d/www.conf.desativado
@@ -102,7 +102,9 @@ if ! sudo -u postgres psql -lqt | cut -d'|' -f1 | grep -qw sxdata_db; then
 fi
 
 echo "== Diretorios e SELinux"
-mkdir -p /var/www/sxdata-painel /var/www/sxdata-app /var/lib/sxdata/sessions
+mkdir -p /var/www/sxdata-painel /var/www/sxdata-app /var/lib/sxdata/sessions /var/log/sxdata
+# /var/log/php-fpm e do apache: o pool roda como nginx e nao gravaria la
+chown nginx:nginx /var/log/sxdata
 chown nginx:nginx /var/lib/sxdata/sessions && chmod 700 /var/lib/sxdata/sessions
 # Onde o PHP pode escrever
 for p in '/var/www/sxdata-painel(\.novo|\.anterior)?/uploads(/.*)?' \
@@ -112,7 +114,8 @@ for p in '/var/www/sxdata-painel(\.novo|\.anterior)?/uploads(/.*)?' \
         || semanage fcontext -m -t httpd_sys_rw_content_t "$p"
 done
 semanage fcontext -a -t httpd_sys_content_t '/var/www/sxdata-app(\.novo|\.anterior)?(/.*)?' 2>/dev/null || true
-restorecon -R /var/www /var/lib/sxdata
+semanage fcontext -a -t httpd_log_t '/var/log/sxdata(/.*)?' 2>/dev/null || true
+restorecon -R /var/www /var/lib/sxdata /var/log/sxdata
 # PHP -> PostgreSQL local e -> API da OpenAI
 setsebool -P httpd_can_network_connect_db on
 setsebool -P httpd_can_network_connect on
