@@ -1025,6 +1025,9 @@ class Responses extends CI_Controller {
             return;
         }
         
+        // Sem isto $this->cache nao existia e toda consulta ia ao Nominatim
+        $this->load->driver('cache', array('adapter' => 'file'));
+
         try {
             $location_name = $this->get_location_name_api($latitude, $longitude);
             echo $location_name;
