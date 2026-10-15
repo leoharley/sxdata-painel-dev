@@ -120,6 +120,12 @@ class Api_token {
 
     private function is_active_user($user_id) {
         if (!isset($this->active_cache[$user_id])) {
+            // Audios e Photos nao carregam model nenhum: sem isto $this->CI->db
+            // e nulo e todo upload com token valido morre com erro 500
+            if (!isset($this->CI->db)) {
+                $this->CI->load->database();
+            }
+
             $row = $this->CI->db->select('is_active')
                                 ->where('id', $user_id)
                                 ->get('users')
