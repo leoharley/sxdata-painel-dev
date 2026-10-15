@@ -38,6 +38,12 @@ class Responses extends CI_Controller {
         }
 
         $data['responses'] = $this->Response_model->get_filtered($filters);
+        // Para ouvir o áudio direto da listagem, sem abrir cada resposta
+        foreach ($data['responses'] as $response) {
+            $response->audios = !empty($response->audio_path)
+                ? $this->arquivos_de_audio($response->audio_path)
+                : null;
+        }
         $data['questionnaires'] = $this->Questionnaire_model->get_for_analysis();
         $data['users'] = $this->User_model->get_aplicadores();
         $data['filters'] = $filters;

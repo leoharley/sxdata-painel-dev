@@ -432,6 +432,22 @@ function get_location_name_cached($latitude, $longitude)
                                     <i class="fas fa-camera"></i> 2
                                 </button>
                                 <?php endif; ?>
+                                <?php if (!empty($response->audios['arquivos'])): ?>
+                                <button type="button" class="btn btn-sm btn-outline-secondary"
+                                        onclick="showAudio(this)"
+                                        data-response-id="<?= (int) $response->id ?>"
+                                        data-audios="<?= html_escape(json_encode($response->audios['arquivos'])) ?>"
+                                        title="Ouvir Áudio da Entrevista">
+                                    <i class="fas fa-headphones"></i>
+                                </button>
+                                <?php elseif (!empty($response->audios['registrado'])): ?>
+                                <span class="d-inline-block" tabindex="0"
+                                      title="Áudio gravado, mas ainda não chegou ao servidor. Ele é enviado na próxima sincronização do aparelho.">
+                                    <button type="button" class="btn btn-sm btn-outline-secondary" disabled style="pointer-events: none;">
+                                        <i class="fas fa-headphones"></i>
+                                    </button>
+                                </span>
+                                <?php endif; ?>
                             </div>
                         </td>
                     </tr>
@@ -473,6 +489,21 @@ function get_location_name_cached($latitude, $longitude)
             <div class="modal-body text-center">
                 <img id="photoImage" src="" class="img-fluid" alt="Foto capturada" style="max-height: 70vh;">
             </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal para ouvir o áudio da entrevista -->
+<div class="modal fade" id="audioModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">
+                    <i class="fas fa-microphone me-2"></i>Áudio da Entrevista <span id="audioModalId"></span>
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body" id="audioModalBody"></div>
         </div>
     </div>
 </div>
@@ -730,6 +761,62 @@ function showPhoto(photoUrl) {
     document.getElementById('photoImage').src = photoUrl;
     new bootstrap.Modal(document.getElementById('photoModal')).show();
 }
+
+// A versão web do app grava a entrevista em partes (uma por período de tela
+// ativa). Cada parte vira um player e, ao terminar uma, a seguinte começa.
+function showAudio(botao) {
+    const arquivos = JSON.parse(botao.dataset.audios);
+    const corpo = document.getElementById('audioModalBody');
+    document.getElementById('audioModalId').textContent = '#' + botao.dataset.responseId;
+    corpo.innerHTML = '';
+
+    const players = arquivos.map(function (arquivo, i) {
+        const bloco = document.createElement('div');
+        bloco.className = 'mb-3';
+
+        if (arquivos.length > 1) {
+            const rotulo = document.createElement('div');
+            rotulo.className = 'small text-muted mb-1';
+            rotulo.textContent = 'Parte ' + (i + 1) + ' de ' + arquivos.length;
+            bloco.appendChild(rotulo);
+        }
+
+        const player = document.createElement('audio');
+        player.controls = true;
+        player.preload = 'none';
+        player.className = 'w-100';
+        player.src = arquivo.url;
+        bloco.appendChild(player);
+
+        const rodape = document.createElement('div');
+        rodape.className = 'd-flex justify-content-between align-items-center mt-1';
+        rodape.innerHTML = '<small class="text-muted"></small>'
+            + '<a download class="btn btn-outline-secondary btn-sm"><i class="fas fa-download me-1"></i>Baixar</a>';
+        rodape.querySelector('small').textContent =
+            (arquivo.tamanho / 1048576).toLocaleString('pt-BR', { minimumFractionDigits: 1, maximumFractionDigits: 1 }) + ' MB';
+        rodape.querySelector('a').href = arquivo.url;
+        bloco.appendChild(rodape);
+
+        corpo.appendChild(bloco);
+        return player;
+    });
+
+    players.forEach(function (player, i) {
+        if (players[i + 1]) {
+            player.addEventListener('ended', function () { players[i + 1].play(); });
+        }
+    });
+
+    bootstrap.Modal.getOrCreateInstance(document.getElementById('audioModal')).show();
+    // O clique no botão autoriza o navegador a tocar sem outro clique
+    players[0].play().catch(function () { /* navegador bloqueou: fica o player */ });
+}
+
+// Fechar o modal para o áudio, senão ele continua tocando escondido
+document.getElementById('audioModal').addEventListener('hidden.bs.modal', function () {
+    document.querySelectorAll('#audioModalBody audio').forEach(function (player) { player.pause(); });
+    document.getElementById('audioModalBody').innerHTML = '';
+});
 
 // NOVA FUNÇÃO: Validação do formulário de exportação
 function validateExportForm() {
