@@ -279,6 +279,15 @@ class Responder extends CI_Controller {
                 $row['response_text'] = $value;
                 break;
 
+            case 'phone':
+                $phone = $this->format_phone($value);
+                if ($phone === null) {
+                    $error = 'Informe o telefone com DDD na pergunta ' . $label . '.';
+                    return null;
+                }
+                $row['response_text'] = $phone;
+                break;
+
             case 'date':
                 $d = DateTime::createFromFormat('Y-m-d', $value);
                 if (!$d || $d->format('Y-m-d') !== $value) {
@@ -297,7 +306,7 @@ class Responder extends CI_Controller {
                 $row['response_datetime'] = $d->format('Y-m-d H:i:s');
                 break;
 
-            default: // text, textarea, phone, time e tipos não previstos
+            default: // text, textarea, time e tipos não previstos
                 if (mb_strlen($value) > self::MAX_TEXT_LENGTH) {
                     $error = 'A resposta da pergunta ' . $label . ' é longa demais.';
                     return null;
@@ -389,6 +398,21 @@ class Responder extends CI_Controller {
     private function show_unavailable($reason) {
         $this->output->set_status_header(404);
         $this->load->view('publico/indisponivel', ['reason' => $reason]);
+    }
+
+    /**
+     * Telefone com DDD no mesmo formato gravado pelo app:
+     * (DD) XXXX-XXXX (fixo) ou (DD) XXXXX-XXXX (celular). NULL se inválido.
+     */
+    private function format_phone($value) {
+        $d = preg_replace('/\D/', '', (string) $value);
+        $len = strlen($d);
+        if (($len !== 10 && $len !== 11) || $d[0] === '0' || $d[1] === '0') {
+            return null;
+        }
+
+        $meio = $len === 11 ? 5 : 4;
+        return '(' . substr($d, 0, 2) . ') ' . substr($d, 2, $meio) . '-' . substr($d, 2 + $meio);
     }
 
     private function short($text) {

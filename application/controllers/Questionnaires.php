@@ -84,7 +84,7 @@ class Questionnaires extends CI_Controller {
                                 continue;
                             }
                             
-                            $valid_types = ['text', 'textarea', 'number', 'email', 'date', 'datetime', 'radio', 'checkbox', 'select'];
+                            $valid_types = ['text', 'textarea', 'number', 'email', 'phone', 'date', 'datetime', 'radio', 'checkbox', 'select'];
                             if (!in_array($question['type'], $valid_types)) {
                                 log_message('error', "Tipo de pergunta inválido: {$question['type']}");
                                 continue;

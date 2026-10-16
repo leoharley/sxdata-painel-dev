@@ -2484,7 +2484,7 @@ function filterQuestionsByType(type) {
             const text = badge.textContent.toLowerCase();
             if (text === 'radio' || text === 'checkbox' || text === 'text' || 
                 text === 'textarea' || text === 'number' || text === 'date' || 
-                text === 'datetime') {
+                text === 'datetime' || text === 'email' || text === 'phone') {
                 questionType = text;
             }
         });
@@ -2544,7 +2544,9 @@ function getTypeDisplayName(type) {
         'textarea': 'Texto longo',
         'number': 'Numérico',
         'date': 'Data',
-        'datetime': 'Data/Hora'
+        'datetime': 'Data/Hora',
+        'email': 'E-mail',
+        'phone': 'Telefone'
     };
     return typeNames[type] || type;
 }

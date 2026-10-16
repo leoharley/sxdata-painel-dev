@@ -736,7 +736,16 @@ class Questionnaire_model extends CI_Model {
                     $validation['errors'][] = "Pergunta " . $question->order_index . " deve ser um email válido.";
                 }
                 break;
-                
+
+            case 'phone':
+                // DDD + 8 dígitos (fixo) ou DDD + 9 dígitos (celular)
+                $digits = preg_replace('/\D/', '', (string) $response);
+                if (strlen($digits) !== 10 && strlen($digits) !== 11) {
+                    $validation['valid'] = false;
+                    $validation['errors'][] = "Pergunta " . $question->order_index . " deve ser um telefone com DDD.";
+                }
+                break;
+
             case 'date':
                 if (!$this->validate_date_format($response)) {
                     $validation['valid'] = false;

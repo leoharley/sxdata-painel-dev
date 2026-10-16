@@ -542,7 +542,7 @@ $(document).on('click', '.question-ref-link', function(e) {
 function renderQuestion(q) {
     var typeLabels = {
         'text': 'Texto', 'textarea': 'Texto Longo', 'number': 'Número',
-        'email': 'E-mail', 'date': 'Data', 'datetime': 'Data/Hora',
+        'email': 'E-mail', 'phone': 'Telefone', 'date': 'Data', 'datetime': 'Data/Hora',
         'radio': 'Escolha Única', 'checkbox': 'Múltipla Escolha', 'select': 'Seleção'
     };
     var html = '<div class="mb-3">' +

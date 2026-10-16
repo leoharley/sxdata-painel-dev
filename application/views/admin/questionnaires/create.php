@@ -443,6 +443,7 @@ function addQuestion() {
                         <option value="textarea">Texto Longo</option>
                         <option value="number">Número</option>
                         <option value="email">E-mail</option>
+                        <option value="phone">Telefone</option>
                         <option value="date">Data</option>
                         <option value="datetime">Data e Hora</option>
                         <option value="radio">Múltipla Escolha (única)</option>

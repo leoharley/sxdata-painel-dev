@@ -525,6 +525,7 @@ function is_checkbox_checked($value) {
                                             <option value="textarea" <?= $question->question_type == 'textarea' ? 'selected' : '' ?>>Texto Longo</option>
                                             <option value="number" <?= $question->question_type == 'number' ? 'selected' : '' ?>>Número</option>
                                             <option value="email" <?= $question->question_type == 'email' ? 'selected' : '' ?>>E-mail</option>
+                                            <option value="phone" <?= $question->question_type == 'phone' ? 'selected' : '' ?>>Telefone</option>
                                             <option value="date" <?= $question->question_type == 'date' ? 'selected' : '' ?>>Data</option>
                                             <option value="datetime" <?= $question->question_type == 'datetime' ? 'selected' : '' ?>>Data e Hora</option>
                                             <option value="radio" <?= $question->question_type == 'radio' ? 'selected' : '' ?>>Múltipla Escolha (única)</option>
@@ -1548,6 +1549,7 @@ function addQuestion() {
                             <option value="textarea">Texto Longo</option>
                             <option value="number">Número</option>
                             <option value="email">E-mail</option>
+                            <option value="phone">Telefone</option>
                             <option value="date">Data</option>
                             <option value="datetime">Data e Hora</option>
                             <option value="radio">Múltipla Escolha (única)</option>

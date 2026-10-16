@@ -141,10 +141,13 @@ $this->load->view('publico/_topo', ['page_title' => $page_title]);
                     'datetime' => 'datetime-local',
                     'time'     => 'time',
                 ][$type] ?? 'text';
-                $extra = $type === 'number' ? 'inputmode="decimal"' : '';
+                $extra = [
+                    'number' => 'inputmode="decimal" maxlength="5000"',
+                    'phone'  => 'inputmode="tel" maxlength="15" placeholder="(00) 00000-0000" data-mask="telefone"',
+                ][$type] ?? 'maxlength="5000"';
             ?>
                 <input class="form-control" type="<?= $input_type ?>" id="q<?= $qid ?>" name="<?= $name ?>"
-                       value="<?= html_escape((string) $value) ?>" maxlength="5000" <?= $extra ?>>
+                       value="<?= html_escape((string) $value) ?>" <?= $extra ?>>
             <?php endif; ?>
 
             <div class="pq-msg-erro">Esta pergunta é obrigatória.</div>
@@ -242,6 +245,31 @@ $this->load->view('publico/_topo', ['page_title' => $page_title]);
         });
     }
 
+    // Telefone com DDD: (00) 0000-0000 (fixo) ou (00) 00000-0000 (celular)
+    function mascaraTelefone(v) {
+        var d = v.replace(/\D/g, '').slice(0, 11);
+        if (d.length === 0) return '';
+        if (d.length <= 2) return '(' + d;
+        if (d.length <= 6) return '(' + d.slice(0, 2) + ') ' + d.slice(2);
+        var meio = d.length === 11 ? 7 : 6;
+        return '(' + d.slice(0, 2) + ') ' + d.slice(2, meio) + '-' + d.slice(meio);
+    }
+
+    function telefoneValido(v) {
+        var d = v.replace(/\D/g, '');
+        return (d.length === 10 || d.length === 11) && d[0] !== '0' && d[1] !== '0';
+    }
+
+    Array.prototype.slice.call(form.querySelectorAll('[data-mask="telefone"]')).forEach(function (campo) {
+        // Ao apagar, não remascara: senão apagar o "-" ou o ")" não teria efeito
+        campo.addEventListener('input', function (ev) {
+            if (ev.inputType && ev.inputType.indexOf('delete') === 0) return;
+            campo.value = mascaraTelefone(campo.value);
+        });
+        campo.addEventListener('blur', function () { campo.value = mascaraTelefone(campo.value); });
+        if (campo.value) campo.value = mascaraTelefone(campo.value);
+    });
+
     form.addEventListener('input', aplicar);
     form.addEventListener('change', aplicar);
     aplicar();
@@ -253,6 +281,12 @@ $this->load->view('publico/_topo', ['page_title' => $page_title]);
             var v = valor(b.dataset.qid);
             var vazio = Array.isArray(v) ? v.length === 0 : v === '';
             var erro = !b.hidden && b.dataset.obrigatoriaAgora === '1' && vazio;
+            // Telefone preenchido pela metade não passa, mesmo se opcional
+            var telIncompleto = !b.hidden && b.dataset.type === 'phone' && !vazio && !telefoneValido(v);
+            b.querySelector('.pq-msg-erro').textContent = telIncompleto
+                ? 'Informe o telefone com DDD.'
+                : 'Esta pergunta é obrigatória.';
+            erro = erro || telIncompleto;
             b.classList.toggle('pq-erro', erro);
             if (erro && !primeiroErro) primeiroErro = b;
         });
