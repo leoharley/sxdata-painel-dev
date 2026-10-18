@@ -180,6 +180,12 @@ class Api_token {
         $content = "<?php defined('BASEPATH') OR exit('No direct script access allowed');\n"
                  . "return '" . $generated . "';\n";
 
+        // application/cache/ nao vinha no deploy pelo git: sem a pasta, a
+        // gravacao falhava e todo login da API respondia 500
+        if (!is_dir(dirname($file))) {
+            @mkdir(dirname($file), 0755, TRUE);
+        }
+
         if (@file_put_contents($file, $content, LOCK_EX) === FALSE) {
             log_message('error', 'Api_token: nao foi possivel gravar ' . $file
                 . '. Defina API_TOKEN_SECRET no .env (64 caracteres aleatorios).');
