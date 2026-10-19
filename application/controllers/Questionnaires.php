@@ -26,7 +26,13 @@ class Questionnaires extends CI_Controller {
 
     public function create() {
         $preselected_project_id = $this->input->get('project_id');
-        
+
+        if ($this->input->post() && $this->post_truncado()) {
+            // Criaria o questionário sem as perguntas do fim, sem aviso
+            $this->session->set_flashdata('error', $this->mensagem_post_truncado());
+            redirect('questionnaires/create');
+        }
+
         if ($this->input->post()) {
             $this->form_validation->set_rules('title', 'Título', 'required|max_length[200]');
             $this->form_validation->set_rules('description', 'Descrição', 'max_length[1000]');
@@ -394,6 +400,13 @@ class Questionnaires extends CI_Controller {
         $questionnaire->requires_consent = $this->_convert_to_boolean($questionnaire->requires_consent);
         $questionnaire->requires_location = $this->_convert_to_boolean($questionnaire->requires_location);
         $questionnaire->requires_photo = $this->_convert_to_boolean($questionnaire->requires_photo);
+
+        if ($this->input->post() && $this->post_truncado()) {
+            // As perguntas do fim não chegaram, e o salvamento apagaria cada
+            // uma delas (com as respostas de todas as entrevistas, por cascata)
+            $this->session->set_flashdata('error', $this->mensagem_post_truncado());
+            redirect('questionnaires/edit/' . $id);
+        }
 
         if ($this->input->post()) {
             $this->form_validation->set_rules('title', 'Título', 'required|max_length[200]');
@@ -1306,6 +1319,35 @@ class Questionnaires extends CI_Controller {
         }
 
         redirect('questionnaires');
+    }
+
+    /**
+     * O formulário chegou cortado?
+     *
+     * O PHP descarta, SEM erro, todo campo além de max_input_vars (1000 por
+     * padrão). Um questionário grande (157 perguntas e 261 opções passam
+     * muito disso) chegava pela metade: na edição, as perguntas que não
+     * vieram eram tratadas como excluídas e apagadas.
+     */
+    private function post_truncado() {
+        $limite = (int) ini_get('max_input_vars');
+        if ($limite <= 0) {
+            return FALSE;
+        }
+        $campos = 0;
+        array_walk_recursive($_POST, function () use (&$campos) {
+            $campos++;
+        });
+        if ($campos >= $limite) {
+            log_message('error', "Questionnaires: formulario com {$campos} campos atingiu max_input_vars={$limite}; nada foi salvo");
+            return TRUE;
+        }
+        return FALSE;
+    }
+
+    private function mensagem_post_truncado() {
+        return 'O questionário é grande demais para o servidor receber de uma vez (limite max_input_vars = '
+            . (int) ini_get('max_input_vars') . '). Nada foi alterado. Peça ao suporte para aumentar esse limite do PHP.';
     }
 
     public function delete($id) {
