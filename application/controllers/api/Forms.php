@@ -105,7 +105,9 @@ class Forms extends CI_Controller {
                     && (empty($existing->edited_at) || strtotime($edited_at) > strtotime($existing->edited_at));
 
                 if (!$is_newer_edit) {
-                    // Reenvio de algo que ja esta gravado: nada a fazer
+                    // Reenvio de algo que ja esta gravado: nada a fazer, so
+                    // apontar para a midia que tenha chegado depois
+                    $this->repair_media($existing, $json);
                     $this->db->trans_commit();
                     $this->respond_success((int) $existing->id, false, true,
                         'Form already synced');
@@ -416,8 +418,71 @@ class Forms extends CI_Controller {
             'data'             => ['id' => (int) $id],
             'edited'           => (bool) $is_edit,
             'duplicated'       => (bool) $duplicated,
+            // Fotos/audio que a coleta cita e o servidor nao tem. O app
+            // reenvia o que ainda tiver no aparelho e reenvia a coleta.
+            'missing_media'    => $this->missing_media($id),
             'message'          => $message
         ]);
+    }
+
+    /**
+     * Reenvio de coleta ja gravada cuja foto/audio nao esta no servidor: se o
+     * app agora cita um arquivo que EXISTE (a foto foi gravada com outro nome,
+     * ou o registro tinha o caminho do aparelho), o registro passa a cita-lo.
+     * Sem isso o app ouviria "missing_media" e reenviaria a midia para sempre.
+     */
+    private function repair_media($existing, $json) {
+        $folders = ['photo_path' => 'photos', 'photo_path_2' => 'photos', 'audio_path' => 'audios'];
+        $update = [];
+        foreach ($folders as $column => $folder) {
+            if (!property_exists($existing, $column)) {
+                continue;
+            }
+            $atual = trim((string) $existing->$column);
+            $novo = isset($json[$column]) ? trim((string) $json[$column]) : '';
+            if ($novo === '' || $novo === $atual || strpbrk($novo, '/\\') !== FALSE) {
+                continue;
+            }
+            $atual_ok = $atual !== '' && strpbrk($atual, '/\\') === FALSE
+                && is_file(FCPATH . 'uploads/' . $folder . '/' . $atual);
+            if (!$atual_ok && is_file(FCPATH . 'uploads/' . $folder . '/' . $novo)) {
+                $update[$column] = $novo;
+            }
+        }
+        if ($update) {
+            $this->db->where('id', (int) $existing->id)->update('form_responses', $update);
+            log_message('error', 'forms/submit - coleta ' . (int) $existing->id
+                . ' passou a citar a midia recebida: ' . implode(', ', $update));
+        }
+    }
+
+    /**
+     * Mídias citadas pela coleta gravada que nao existem em uploads/. Um nome
+     * com "/" e caminho do aparelho, nunca um arquivo do servidor: sempre falta.
+     */
+    private function missing_media($id) {
+        $row = $this->db->get_where('form_responses', ['id' => (int) $id])->row();
+        if (!$row) {
+            return [];
+        }
+
+        $missing = [];
+        $folders = ['photo_path' => 'photos', 'photo_path_2' => 'photos', 'audio_path' => 'audios'];
+        foreach ($folders as $column => $folder) {
+            $name = isset($row->$column) ? trim((string) $row->$column) : '';
+            if ($name === '') {
+                continue;
+            }
+            if (strpos($name, '/') !== FALSE || strpos($name, '\\') !== FALSE
+                || !is_file(FCPATH . 'uploads/' . $folder . '/' . $name)) {
+                $missing[] = $name;
+            }
+        }
+
+        if ($missing) {
+            log_message('error', 'forms/submit - coleta ' . (int) $id . ' sem midia no servidor: ' . implode(', ', $missing));
+        }
+        return $missing;
     }
 
     /**

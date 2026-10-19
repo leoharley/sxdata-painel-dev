@@ -43,6 +43,8 @@ class Responses extends CI_Controller {
             $response->audios = !empty($response->audio_path)
                 ? $this->arquivos_de_audio($response->audio_path)
                 : null;
+            $response->photo_ok = $this->foto_no_servidor($response->photo_path);
+            $response->photo2_ok = $this->foto_no_servidor($response->photo_path_2);
         }
         $data['questionnaires'] = $this->Questionnaire_model->get_for_analysis();
         $data['users'] = $this->User_model->get_aplicadores();
@@ -69,10 +71,25 @@ class Responses extends CI_Controller {
         $data['answers'] = $this->Response_model->get_answers($id);
         $data['applied_by'] = $this->User_model->get_by_id($response->applied_by);
         $data['audios'] = $this->arquivos_de_audio(isset($response->audio_path) ? $response->audio_path : null);
+        $response->photo_ok = $this->foto_no_servidor($response->photo_path);
+        $response->photo2_ok = $this->foto_no_servidor($response->photo_path_2);
 
         $this->load->view('admin/header', $data);
         $this->load->view('admin/responses/view', $data);
         $this->load->view('admin/footer');
+    }
+
+    /**
+     * A foto citada pela coleta está em uploads/photos/? Sem isso o painel
+     * mostrava imagem quebrada quando a foto não tinha chegado, e ninguém
+     * percebia que faltava. Um nome com "/" é caminho do aparelho.
+     */
+    private function foto_no_servidor($photo_path) {
+        $nome = trim((string) $photo_path);
+        if ($nome === '' || strpos($nome, '/') !== FALSE || strpos($nome, '\\') !== FALSE) {
+            return FALSE;
+        }
+        return is_file(FCPATH . 'uploads/photos/' . $nome);
     }
 
     /**

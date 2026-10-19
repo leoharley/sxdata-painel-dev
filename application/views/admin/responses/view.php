@@ -308,6 +308,14 @@ function format_location_name($data)
                 </h5>
             </div>
             <div class="card-body text-center">
+                <?php if (empty($response->photo_ok)): ?>
+                <div class="alert alert-warning text-start small mb-0">
+                    <i class="fas fa-exclamation-triangle me-1"></i>
+                    <strong>Foto registrada, mas o arquivo não chegou ao servidor.</strong>
+                    O app reenvia na próxima sincronização se ainda tiver a foto no aparelho.
+                    <div class="text-muted mt-1">Arquivo esperado: <code><?= html_escape($response->photo_path) ?></code></div>
+                </div>
+                <?php else: ?>
                 <img src="<?= base_url('uploads/photos/' . $response->photo_path) ?>"
                      class="img-fluid rounded mb-3 shadow-sm" alt="Foto capturada"
                      style="max-height: 200px; cursor: pointer; border: 2px solid #e9ecef;"
@@ -325,6 +333,7 @@ function format_location_name($data)
                         Baixar Foto
                     </a>
                 </div>
+                <?php endif; ?>
             </div>
         </div>
         <?php endif; ?>
@@ -339,6 +348,14 @@ function format_location_name($data)
                 </h5>
             </div>
             <div class="card-body text-center">
+                <?php if (empty($response->photo2_ok)): ?>
+                <div class="alert alert-warning text-start small mb-0">
+                    <i class="fas fa-exclamation-triangle me-1"></i>
+                    <strong>Foto registrada, mas o arquivo não chegou ao servidor.</strong>
+                    O app reenvia na próxima sincronização se ainda tiver a foto no aparelho.
+                    <div class="text-muted mt-1">Arquivo esperado: <code><?= html_escape($response->photo_path_2) ?></code></div>
+                </div>
+                <?php else: ?>
                 <img src="<?= base_url('uploads/photos/' . $response->photo_path_2) ?>"
                      class="img-fluid rounded mb-3 shadow-sm" alt="Foto capturada 2"
                      style="max-height: 200px; cursor: pointer; border: 2px solid #e9ecef;"
@@ -356,6 +373,7 @@ function format_location_name($data)
                         Baixar Foto
                     </a>
                 </div>
+                <?php endif; ?>
             </div>
         </div>
         <?php endif; ?>

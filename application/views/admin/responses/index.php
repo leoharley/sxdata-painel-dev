@@ -416,20 +416,24 @@ function get_location_name_cached($latitude, $longitude)
                                     <i class="fas fa-map-marker-alt"></i>
                                 </a>
                                 <?php endif; ?>
-                                <?php if ($response->photo_path): ?>
+                                <?php foreach ([1 => ['photo_path', 'photo_ok'], 2 => ['photo_path_2', 'photo2_ok']] as $n => $campos):
+                                    $foto = $response->{$campos[0]};
+                                    if (!$foto) continue; ?>
+                                    <?php if (!empty($response->{$campos[1]})): ?>
                                 <button type="button" class="btn btn-sm btn-outline-info"
-                                        onclick="showPhoto('<?= base_url('uploads/photos/' . $response->photo_path) ?>')"
-                                        title="Ver Foto 1">
-                                    <i class="fas fa-camera"></i>
+                                        onclick="showPhoto('<?= base_url('uploads/photos/' . rawurlencode($foto)) ?>')"
+                                        title="Ver Foto <?= $n ?>">
+                                    <i class="fas fa-camera"></i><?= $n === 2 ? ' 2' : '' ?>
                                 </button>
-                                <?php endif; ?>
-                                <?php if ($response->photo_path_2): ?>
-                                <button type="button" class="btn btn-sm btn-outline-info"
-                                        onclick="showPhoto('<?= base_url('uploads/photos/' . $response->photo_path_2) ?>')"
-                                        title="Ver Foto 2">
-                                    <i class="fas fa-camera"></i> 2
-                                </button>
-                                <?php endif; ?>
+                                    <?php else: ?>
+                                <span class="d-inline-block" tabindex="0"
+                                      title="Foto <?= $n ?> registrada, mas o arquivo não chegou ao servidor. O app reenvia na próxima sincronização se ainda tiver a foto.">
+                                    <button type="button" class="btn btn-sm btn-outline-warning" disabled style="pointer-events: none;">
+                                        <i class="fas fa-camera"></i><?= $n === 2 ? ' 2' : '' ?> <i class="fas fa-exclamation"></i>
+                                    </button>
+                                </span>
+                                    <?php endif; ?>
+                                <?php endforeach; ?>
                                 <?php if (!empty($response->audios['arquivos'])): ?>
                                 <button type="button" class="btn btn-sm btn-outline-secondary"
                                         onclick="showAudio(this)"
