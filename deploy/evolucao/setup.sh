@@ -36,6 +36,9 @@ memory_limit = 256M
 max_execution_time = 300
 date.timezone = America/Sao_Paulo
 expose_php = Off
+; Editor de questionario grande: 157 perguntas e 261 opcoes passam de 1000
+; campos, e o PHP descarta o excedente SEM erro
+max_input_vars = 10000
 INI
 # Pool proprio, enxuto para 1 GB de RAM
 cat > /etc/php-fpm.d/sxdata.conf <<'POOL'
