@@ -89,7 +89,13 @@ class Photos extends CI_Controller {
         }
 
         $safe_name = preg_replace('/[^a-zA-Z0-9_\.\-]/', '_', basename($file['name']));
-        if ($safe_name === '' || $safe_name[0] === '.') {
+        // Um ponto só, o da extensão: "foto.php.jpg" vira "foto_php.jpg". Com
+        // várias extensões, conforme a configuração, o Apache pode tratar o
+        // arquivo pela do meio. Os nomes que o app gera (photo_<ms>.jpg) não
+        // mudam; se mudar, o nome novo volta em "filename".
+        $base = pathinfo($safe_name, PATHINFO_FILENAME);
+        $safe_name = str_replace('.', '_', $base) . '.' . $ext;
+        if ($base === '' || $safe_name[0] === '_' && trim($base, '._') === '') {
             $safe_name = 'photo_' . time() . '.' . $ext;
         }
 
