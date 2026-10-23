@@ -119,6 +119,14 @@
     </a>
 </div>
 
+<?php
+    $summary_v2 = json_decode($analysis->summary_text ?? '', true);
+    // Formato novo: texto da IA + números do banco (Ai::_montar_analise)
+    $analise_v2 = is_array($summary_v2) && (int) ($summary_v2['versao'] ?? 0) === 2;
+?>
+<?php if ($analise_v2): ?>
+    <?php $this->load->view('ai/_analise_v2', array('v2' => $summary_v2, 'secao' => 'topo')); ?>
+<?php else: ?>
 <!-- Resumo -->
 <div class="summary-card mb-4">
     <h5 style="color: var(--secondary-color); font-weight: 600;">
@@ -249,6 +257,7 @@
     </div>
     <?php endif; ?>
 </div>
+<?php endif; /* análise antiga */ ?>
 
 <!-- Gráficos Sugeridos -->
 <?php if (!empty($chart_suggestions)): ?>
@@ -258,7 +267,7 @@
             <div class="section-icon" style="background: linear-gradient(135deg, #8fae5d, #6d8a45);">
                 <i class="fas fa-chart-pie"></i>
             </div>
-            <h5>Gráficos Sugeridos</h5>
+            <h5><?= $analise_v2 ? 'Resultados por pergunta' : 'Gráficos Sugeridos' ?></h5>
         </div>
     </div>
     <div class="card-body p-3">
@@ -272,12 +281,21 @@
                     <div class="chart-container">
                         <canvas id="chart-<?= $index ?>"></canvas>
                     </div>
+                    <?php if (!empty($chart['descricao'])): ?>
+                        <p class="mb-0 mt-2 small" style="color: #444; line-height: 1.55;">
+                            <i class="fas fa-robot me-1" style="color: var(--primary-color);"></i><?= html_escape($chart['descricao']) ?>
+                        </p>
+                    <?php endif; ?>
                 </div>
             </div>
             <?php endforeach; ?>
         </div>
     </div>
 </div>
+<?php endif; ?>
+
+<?php if ($analise_v2): ?>
+    <?php $this->load->view('ai/_analise_v2', array('v2' => $summary_v2, 'secao' => 'outras')); ?>
 <?php endif; ?>
 
 <script>

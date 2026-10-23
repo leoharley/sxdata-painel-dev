@@ -1199,18 +1199,19 @@ class Ai extends CI_Controller {
             'date_to'   => $this->input->post('date_to'),
         );
 
-        $context         = $this->ai_prompt_service->prepare_statistical_data($questionnaire_id, $filters);
-        $messages_result = $this->ai_prompt_service->build_messages('statistical_analysis', $context);
+        $context = $this->ai_prompt_service->prepare_statistical_data($questionnaire_id, $filters);
 
-        if (!$messages_result['success']) {
+        if ((int) $context['total_responses'] === 0) {
             ob_end_clean();
             header('Content-Type: application/json');
-            echo json_encode($messages_result);
+            echo json_encode(array('success' => false, 'error' => 'Não há entrevistas concluídas neste questionário (ou no período escolhido) para analisar.'));
             return;
         }
 
-        $result = $this->ai_service->chat_completion_json('statistical_analysis', $messages_result['messages'], array(
-            'prompt_id'     => $messages_result['prompt_id'],
+        // Formato da resposta definido no código (ver build_statistical_messages)
+        $messages = $this->ai_prompt_service->build_statistical_messages($context);
+
+        $result = $this->ai_service->chat_completion_json('statistical_analysis', $messages, array(
             'resource_type' => 'questionnaire',
             'resource_id'   => $questionnaire_id,
         ));
@@ -1218,23 +1219,20 @@ class Ai extends CI_Controller {
         $analysis_id = null;
 
         if ($result['success'] && $result['parsed']) {
-            $parsed = $result['parsed'];
-
-            $summary = $parsed['summary'] ?? '';
-            if (is_array($summary)) {
-                $summary = json_encode($summary, JSON_UNESCAPED_UNICODE);
-            }
+            $analise = $this->_montar_analise($result['parsed'], $context);
 
             $analysis_id = $this->Ai_model->create_statistical_analysis(array(
                 'questionnaire_id'  => $questionnaire_id,
                 'analysis_type'     => 'general',
                 'filters_applied'   => json_encode($filters),
-                'summary_text'      => (string) $summary,
-                'patterns'          => json_encode(is_array($parsed['patterns']          ?? null) ? $parsed['patterns']          : array()),
-                'outliers'          => json_encode(is_array($parsed['outliers']          ?? null) ? $parsed['outliers']          : array()),
-                'trends'            => json_encode(is_array($parsed['trends']            ?? null) ? $parsed['trends']            : array()),
-                'insights'          => json_encode(is_array($parsed['insights']          ?? null) ? $parsed['insights']          : array()),
-                'chart_suggestions' => json_encode(is_array($parsed['chart_suggestions'] ?? null) ? $parsed['chart_suggestions'] : array()),
+                // versao 2: as telas mostram resumo, destaques, pontos de
+                // atenção e recomendações; as análises antigas seguem iguais
+                'summary_text'      => json_encode($analise['resumo'], JSON_UNESCAPED_UNICODE),
+                'patterns'          => json_encode(array()),
+                'outliers'          => json_encode($analise['resumo']['pontos_de_atencao'], JSON_UNESCAPED_UNICODE),
+                'trends'            => json_encode($analise['resumo']['recomendacoes'], JSON_UNESCAPED_UNICODE),
+                'insights'          => json_encode($analise['resumo']['destaques'], JSON_UNESCAPED_UNICODE),
+                'chart_suggestions' => json_encode($analise['graficos'], JSON_UNESCAPED_UNICODE),
                 'generated_by'      => $this->session->userdata('admin_id'),
                 'execution_log_id'  => $result['log_id'],
             ));
@@ -1245,6 +1243,109 @@ class Ai extends CI_Controller {
         ob_end_clean();
         header('Content-Type: application/json');
         echo json_encode($result);
+    }
+
+    /**
+     * Junta o texto da IA aos números do banco.
+     *
+     * Os gráficos são montados aqui com a contagem real (antes eram
+     * "sugestões" da IA, muitas vezes sem dados: "Dados insuficientes"). A
+     * análise de cada pergunta escrita pela IA vira a descrição do gráfico
+     * dela, guardada junto, sem nova chamada à OpenAI a cada visualização.
+     */
+    private function _montar_analise($parsed, $context) {
+        $lista = function ($v) {
+            if (!is_array($v)) {
+                return array();
+            }
+            $out = array();
+            foreach ($v as $item) {
+                if (is_string($item) && trim($item) !== '') {
+                    $out[] = trim($item);
+                } elseif (is_array($item)) {
+                    $partes = array_filter(array_map(function ($x) { return is_scalar($x) ? trim((string) $x) : ''; }, $item));
+                    if ($partes) {
+                        $out[] = implode(' — ', $partes);
+                    }
+                }
+            }
+            return $out;
+        };
+
+        // Análise por pergunta, indexada pelo número (P1, P2...)
+        $por_pergunta = array();
+        foreach ((is_array($parsed['perguntas'] ?? null) ? $parsed['perguntas'] : array()) as $item) {
+            if (is_array($item) && isset($item['numero']) && !empty($item['analise'])) {
+                $num = (int) preg_replace('/\D/', '', (string) $item['numero']);
+                $por_pergunta[$num] = trim((string) $item['analise']);
+            }
+        }
+
+        $graficos = array();
+        $sem_grafico = array();
+
+        // Evolução da coleta, quando há mais de um dia
+        $por_dia = $context['por_dia'] ?? array();
+        if (count($por_dia) > 1) {
+            $maior = array_reduce($por_dia, function ($a, $d) { return ($a === null || $d['total'] > $a['total']) ? $d : $a; });
+            $graficos[] = array(
+                'chart_type' => 'line',
+                'title'      => 'Entrevistas por dia',
+                'labels'     => array_map(function ($d) { return date('d/m', strtotime($d['dia'])); }, $por_dia),
+                'data'       => array_map(function ($d) { return (int) $d['total']; }, $por_dia),
+                'descricao'  => 'Coleta de ' . date('d/m', strtotime($por_dia[0]['dia'])) . ' a '
+                    . date('d/m', strtotime(end($por_dia)['dia'])) . '. O dia com mais entrevistas foi '
+                    . date('d/m', strtotime($maior['dia'])) . ', com ' . $maior['total'] . '.',
+            );
+        }
+
+        foreach (($context['perguntas'] ?? array()) as $num => $p) {
+            $dados = $p['dados'];
+            $texto_ia = $por_pergunta[$num] ?? '';
+
+            if ($p['tipo'] === 'fechada' && !empty($dados['linhas'])) {
+                $tipo = $dados['question_type'] === 'checkbox' || count($dados['linhas']) > 6 ? 'bar' : 'doughnut';
+                $graficos[] = array(
+                    'chart_type' => $tipo,
+                    'title'      => $dados['question_text'],
+                    'labels'     => array_map(function ($l) { return (string) $l['rotulo']; }, $dados['linhas']),
+                    'data'       => array_map(function ($l) { return (int) $l['total']; }, $dados['linhas']),
+                    'total'      => (int) $dados['total'],
+                    'descricao'  => $texto_ia,
+                );
+            } elseif ($texto_ia !== '') {
+                $detalhe = '';
+                if ($p['tipo'] === 'fechada' && !empty($dados['resumo'])) {
+                    $detalhe = 'Média ' . number_format($dados['resumo']['media'], 2, ',', '')
+                        . ' (mín. ' . $dados['resumo']['minimo'] . ', máx. ' . $dados['resumo']['maximo'] . ')';
+                }
+                $sem_grafico[] = array(
+                    'pergunta' => $dados['question_text'],
+                    'detalhe'  => $detalhe,
+                    'analise'  => $texto_ia,
+                );
+            }
+        }
+
+        $visao = $context['visao_geral'] ?? array();
+
+        return array(
+            'resumo' => array(
+                'versao'            => 2,
+                'periodo'           => $context['date_range'] ?? '',
+                'visao_geral'       => array(
+                    'entrevistas' => (int) ($visao['total_responses'] ?? 0),
+                    'aplicadores' => (int) ($visao['total_applicators'] ?? 0),
+                    'locais'      => (int) ($visao['total_locations'] ?? 0),
+                ),
+                'resumo'            => is_string($parsed['resumo'] ?? null) ? trim($parsed['resumo']) : '',
+                'destaques'         => $lista($parsed['destaques'] ?? null),
+                'pontos_de_atencao' => $lista($parsed['pontos_de_atencao'] ?? null),
+                'recomendacoes'     => $lista($parsed['recomendacoes'] ?? null),
+                'outras_perguntas'  => $sem_grafico,
+            ),
+            'graficos' => $graficos,
+        );
     }
 
     public function delete_analysis() {

@@ -310,46 +310,132 @@ class Ai_prompt_service {
     /**
      * Prepara dados para análise estatística
      */
+    /**
+     * Dados da análise estatística, calculados de TODAS as respostas.
+     *
+     * Antes ia para a IA uma amostra de até 50 entrevistas cruas, com a
+     * pergunta como "q_774" e a resposta como o valor interno da opção
+     * ("muito_satisfeitoa"): a análise devolvia esses códigos ao cliente e
+     * os números saíam da amostra. Agora vai um relatório legível, com o
+     * texto das perguntas e das opções, e os números vêm do banco.
+     */
     public function prepare_statistical_data($questionnaire_id, $filters = array()) {
         $this->CI->load->model('Questionnaire_model');
-        $this->CI->load->model('Response_model');
+        $this->CI->load->model('Client_analytics_model');
 
         $questionnaire = $this->CI->Questionnaire_model->get_by_id($questionnaire_id);
-        $filters['questionnaire_id'] = $questionnaire_id;
-
-        $total_responses = $this->CI->Response_model->count_by_filters($filters);
-
-        // Obter dados agregados
-        $responses = $this->CI->Response_model->get_filtered($filters);
-
-        $date_from = isset($filters['date_from']) ? $filters['date_from'] : 'início';
-        $date_to = isset($filters['date_to']) ? $filters['date_to'] : 'atual';
-
-        // Montar resumo dos dados
-        $data_summary = array(
-            'total' => $total_responses,
-            'responses_sample' => array(),
+        $periodo = array(
+            'date_from' => !empty($filters['date_from']) ? $filters['date_from'] : null,
+            'date_to'   => !empty($filters['date_to']) ? $filters['date_to'] : null,
         );
 
-        $count = 0;
-        foreach ($responses as $r) {
-            if ($count >= 50) break;
-            $answers = $this->CI->Response_model->get_answers($r->id);
-            $row = array('response_id' => $r->id);
-            foreach ($answers as $a) {
-                $row['q_' . $a->question_id] = $this->extract_answer_value($a);
+        $visao    = $this->CI->Client_analytics_model->get_overview($questionnaire_id, $periodo);
+        $fechadas = $this->CI->Client_analytics_model->get_question_breakdown($questionnaire_id, $periodo);
+        $abertas  = $this->CI->Client_analytics_model->get_open_answers($questionnaire_id, 120, $periodo);
+        $por_dia  = $this->CI->Client_analytics_model->get_responses_by_day($questionnaire_id, 90);
+
+        $fmt_data = function ($d) { return $d ? date('d/m/Y', strtotime($d)) : null; };
+        $periodo_txt = ($periodo['date_from'] || $periodo['date_to'])
+            ? ($fmt_data($periodo['date_from']) ?: 'início') . ' a ' . ($fmt_data($periodo['date_to']) ?: 'hoje')
+            : 'toda a coleta';
+
+        // Cada pergunta ganha um número (P1, P2...) para a resposta da IA
+        // poder citá-la sem depender do texto exato
+        $perguntas = array();
+        $n = 0;
+        $linhas = array();
+        $linhas[] = 'Questionário: ' . ($questionnaire ? $questionnaire->title : 'Questionário');
+        $linhas[] = 'Período analisado: ' . $periodo_txt;
+        $linhas[] = 'Entrevistas concluídas: ' . $visao['total_responses'];
+        $linhas[] = 'Aplicadores envolvidos: ' . $visao['total_applicators'];
+        $linhas[] = 'Locais distintos: ' . $visao['total_locations'];
+        if ($visao['first_response']) {
+            $linhas[] = 'Primeira e última entrevista: ' . $fmt_data($visao['first_response']) . ' e ' . $fmt_data($visao['last_response']);
+        }
+
+        if (!empty($fechadas)) {
+            $linhas[] = '';
+            $linhas[] = 'PERGUNTAS DE ESCOLHA E NUMÉRICAS (contagem sobre todas as respostas):';
+            foreach ($fechadas as $p) {
+                $n++;
+                $perguntas[$n] = array('tipo' => 'fechada', 'dados' => $p);
+                $tipo = array('radio' => 'escolha única', 'select' => 'escolha única', 'checkbox' => 'múltipla escolha', 'number' => 'numérica');
+                $linhas[] = "P{$n}. \"{$p['question_text']}\" (" . ($tipo[$p['question_type']] ?? $p['question_type']) . "; {$p['total']} responderam)";
+                foreach ($p['linhas'] as $l) {
+                    $linhas[] = "   - {$l['rotulo']}: {$l['total']} (" . number_format($l['percentual'], 1, ',', '') . '%)';
+                }
+                if (!empty($p['resumo'])) {
+                    $r = $p['resumo'];
+                    $linhas[] = '   - média ' . number_format($r['media'], 2, ',', '') . '; mínimo ' . $r['minimo'] . '; máximo ' . $r['maximo'];
+                }
             }
-            $data_summary['responses_sample'][] = $row;
-            $count++;
+        }
+
+        if (!empty($abertas)) {
+            $linhas[] = '';
+            $linhas[] = 'PERGUNTAS ABERTAS (respostas mais recentes, até 15 por pergunta):';
+            foreach ($abertas as $p) {
+                $n++;
+                $perguntas[$n] = array('tipo' => 'aberta', 'dados' => $p);
+                $linhas[] = "P{$n}. \"{$p['question_text']}\"";
+                foreach (array_slice($p['respostas'], 0, 15) as $resp) {
+                    $texto = preg_replace('/\s+/', ' ', trim($resp['texto']));
+                    if (mb_strlen($texto, 'UTF-8') > 300) {
+                        $texto = mb_substr($texto, 0, 300, 'UTF-8') . '…';
+                    }
+                    $linhas[] = "   - \"{$texto}\"";
+                }
+            }
         }
 
         return array(
             'questionnaire_title' => $questionnaire ? $questionnaire->title : 'Questionário',
-            'total_responses' => $total_responses,
-            'date_range' => "{$date_from} a {$date_to}",
-            'data_summary' => json_encode($data_summary, JSON_UNESCAPED_UNICODE | JSON_PRETTY_PRINT),
-            'questionnaire_id' => $questionnaire_id,
-            'filters' => $filters,
+            'total_responses'     => $visao['total_responses'],
+            'date_range'          => $periodo_txt,
+            'data_summary'        => implode("\n", $linhas),
+            // usado pelo prompt do relatório narrativo, que nunca recebia dados
+            'aggregated_data'     => implode("\n", $linhas),
+            'questionnaire_id'    => $questionnaire_id,
+            'filters'             => $filters,
+            'visao_geral'         => $visao,
+            'perguntas'           => $perguntas,
+            'por_dia'             => $por_dia,
+        );
+    }
+
+    /**
+     * Mensagens da análise estatística, com o formato da resposta fixo.
+     *
+     * O prompt cadastrado pedia um JSON vago ({summary, patterns...}) e a IA
+     * inventava chaves em inglês. Aqui o formato é definido no código; as
+     * diretrizes do administrador para esta função continuam valendo.
+     */
+    public function build_statistical_messages($context) {
+        $system = 'Você é um analista de pesquisas de campo que escreve para o cliente final, em português do Brasil. '
+            . 'Baseie-se SOMENTE nos dados fornecidos: não invente números, causas ou perguntas. '
+            . 'Cite as perguntas pelo assunto, em linguagem natural, nunca por códigos (P1, q_123), IDs ou valores internos. '
+            . 'Use percentuais com vírgula decimal. Se houver poucas entrevistas, diga que os resultados são preliminares. '
+            . 'Responda SOMENTE com um JSON válido.';
+
+        $directives = $this->build_directives_block('statistical_analysis');
+        if ($directives) {
+            $system .= "\n\n" . $directives;
+        }
+
+        $user = "Dados da pesquisa:\n\n" . $context['data_summary'] . "\n\n"
+            . "Escreva a análise neste formato JSON, com todos os campos em português:\n"
+            . "{\n"
+            . "  \"resumo\": \"resumo executivo em 2 a 4 parágrafos curtos, separados por \\n\\n\",\n"
+            . "  \"destaques\": [\"3 a 6 achados principais, cada um em uma frase com o número que o sustenta\"],\n"
+            . "  \"perguntas\": [{\"numero\": <número da pergunta, ex.: 3 para P3>, \"analise\": \"1 a 3 frases sobre o resultado dessa pergunta\"}],\n"
+            . "  \"pontos_de_atencao\": [\"resultados que merecem cuidado: avaliações negativas, respostas concentradas, amostra pequena\"],\n"
+            . "  \"recomendacoes\": [\"2 a 5 recomendações práticas a partir dos resultados\"]\n"
+            . "}\n"
+            . "Inclua em \"perguntas\" uma entrada para cada pergunta listada nos dados.";
+
+        return array(
+            array('role' => 'system', 'content' => $system),
+            array('role' => 'user', 'content' => $user),
         );
     }
 

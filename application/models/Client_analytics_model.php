@@ -54,7 +54,7 @@ class Client_analytics_model extends CI_Model {
     /**
      * Numeros gerais da coleta de um questionario.
      */
-    public function get_overview($questionnaire_id) {
+    public function get_overview($questionnaire_id, $filtros = array()) {
         $this->db->select('
             COUNT(fr.id) as total_responses,
             COUNT(DISTINCT fr.applied_by) as total_applicators,
@@ -65,6 +65,7 @@ class Client_analytics_model extends CI_Model {
         $this->db->from('form_responses fr');
         $this->db->where('fr.questionnaire_id', (int) $questionnaire_id);
         $this->db->where('fr.completed_at IS NOT NULL', NULL, FALSE);
+        $this->_aplicar_periodo($filtros);
 
         $row = $this->db->get()->row();
 
@@ -143,7 +144,7 @@ class Client_analytics_model extends CI_Model {
      * Distribuicao das respostas de cada pergunta fechada
      * (radio, checkbox, select) e resumo das numericas.
      */
-    public function get_question_breakdown($questionnaire_id) {
+    public function get_question_breakdown($questionnaire_id, $filtros = array()) {
         $this->db->select('id, question_text, question_type, order_index');
         $this->db->from('questions');
         $this->db->where('questionnaire_id', (int) $questionnaire_id);
@@ -157,9 +158,9 @@ class Client_analytics_model extends CI_Model {
             $tipo = $question->question_type;
 
             if (in_array($tipo, array('radio', 'select', 'checkbox'))) {
-                $dados = $this->_options_distribution($question->id);
+                $dados = $this->_options_distribution($question->id, $filtros);
             } elseif ($tipo === 'number') {
-                $dados = $this->_number_summary($question->id);
+                $dados = $this->_number_summary($question->id, $filtros);
             } else {
                 continue; // texto/data entram no bloco de respostas abertas
             }
@@ -184,7 +185,7 @@ class Client_analytics_model extends CI_Model {
     /**
      * Respostas abertas (texto), das mais recentes para as mais antigas.
      */
-    public function get_open_answers($questionnaire_id, $limit = 50) {
+    public function get_open_answers($questionnaire_id, $limit = 50, $filtros = array()) {
         $this->db->select('q.id as question_id, q.question_text, qr.response_text, fr.completed_at');
         $this->db->from('question_responses qr');
         $this->db->join('questions q', 'qr.question_id = q.id', 'inner');
@@ -193,6 +194,7 @@ class Client_analytics_model extends CI_Model {
         $this->db->where_in('q.question_type', array('text', 'textarea'));
         $this->db->where('fr.completed_at IS NOT NULL', NULL, FALSE);
         $this->db->where('TRIM(COALESCE(qr.response_text, \'\')) <> \'\'', NULL, FALSE);
+        $this->_aplicar_periodo($filtros);
         $this->db->order_by('fr.completed_at', 'DESC');
         $this->db->limit((int) $limit);
 
@@ -225,16 +227,40 @@ class Client_analytics_model extends CI_Model {
      *
      * selected_options guarda JSON, entao a contagem e feita em PHP.
      */
-    private function _options_distribution($question_id) {
+    private function _options_distribution($question_id, $filtros = array()) {
         $this->db->select('qr.selected_options, qr.response_text');
         $this->db->from('question_responses qr');
         $this->db->join('form_responses fr', 'qr.form_response_id = fr.id', 'inner');
         $this->db->where('qr.question_id', (int) $question_id);
         $this->db->where('fr.completed_at IS NOT NULL', NULL, FALSE);
+        $this->_aplicar_periodo($filtros);
 
         $rows = $this->db->get()->result();
 
+        // O app grava o VALOR da opção ("muito_satisfeito(a)"), e versões
+        // diferentes gravaram a mesma opção de jeitos diferentes
+        // ("muito_satisfeitoa"). A contagem é pelo TEXTO da opção, na ordem
+        // do questionário; o que não casar com nenhuma opção aparece legível.
+        $opcoes = $this->db->select('option_text, option_value')
+                           ->where('question_id', (int) $question_id)
+                           ->order_by('order_index', 'ASC')
+                           ->get('question_options')
+                           ->result();
+
+        $rotulo_de = array();
         $contagem = array();
+        foreach ($opcoes as $o) {
+            $texto = trim((string) $o->option_text);
+            if ($texto === '') {
+                continue;
+            }
+            $contagem[$texto] = 0;
+            $rotulo_de[$this->_normalizar($texto)] = $texto;
+            if ($o->option_value !== NULL && trim((string) $o->option_value) !== '') {
+                $rotulo_de[$this->_normalizar($o->option_value)] = $texto;
+            }
+        }
+
         $total_respondentes = 0;
 
         foreach ($rows as $r) {
@@ -251,14 +277,18 @@ class Client_analytics_model extends CI_Model {
                 if ($v === '') {
                     continue;
                 }
-                if (!isset($contagem[$v])) {
-                    $contagem[$v] = 0;
+                $chave = $this->_normalizar($v);
+                $rotulo = isset($rotulo_de[$chave]) ? $rotulo_de[$chave] : $this->_legivel($v);
+                if (!isset($contagem[$rotulo])) {
+                    $contagem[$rotulo] = 0;
                 }
-                $contagem[$v]++;
+                $contagem[$rotulo]++;
             }
         }
 
-        arsort($contagem);
+        if ($total_respondentes === 0) {
+            return array('total' => 0, 'linhas' => array(), 'resumo' => array());
+        }
 
         $linhas = array();
         foreach ($contagem as $rotulo => $qtd) {
@@ -305,7 +335,7 @@ class Client_analytics_model extends CI_Model {
     /**
      * Resumo estatistico de perguntas numericas.
      */
-    private function _number_summary($question_id) {
+    private function _number_summary($question_id, $filtros = array()) {
         $this->db->select('
             COUNT(qr.response_number) as total,
             AVG(qr.response_number)   as media,
@@ -317,6 +347,7 @@ class Client_analytics_model extends CI_Model {
         $this->db->where('qr.question_id', (int) $question_id);
         $this->db->where('qr.response_number IS NOT NULL', NULL, FALSE);
         $this->db->where('fr.completed_at IS NOT NULL', NULL, FALSE);
+        $this->_aplicar_periodo($filtros);
 
         $row = $this->db->get()->row();
 
@@ -333,6 +364,45 @@ class Client_analytics_model extends CI_Model {
                 'maximo' => (float) $row->maximo,
             ),
         );
+    }
+
+    /**
+     * Período opcional (date_from / date_to, inclusivos) sobre a data de
+     * conclusão da entrevista. Sem filtros, nada muda.
+     */
+    private function _aplicar_periodo($filtros) {
+        if (!empty($filtros['date_from'])) {
+            $this->db->where('fr.completed_at >=', date('Y-m-d', strtotime($filtros['date_from'])));
+        }
+        if (!empty($filtros['date_to'])) {
+            $this->db->where('fr.completed_at <', date('Y-m-d', strtotime($filtros['date_to'] . ' +1 day')));
+        }
+    }
+
+    /**
+     * Chave de comparação: minúsculas, sem acento e só letras e números.
+     * "Muito satisfeito(a)", "muito_satisfeito(a)" e "muito_satisfeitoa"
+     * viram a mesma chave.
+     */
+    private function _normalizar($texto) {
+        $texto = mb_strtolower(trim((string) $texto), 'UTF-8');
+        $texto = strtr($texto, array(
+            'á' => 'a', 'à' => 'a', 'â' => 'a', 'ã' => 'a', 'ä' => 'a',
+            'é' => 'e', 'è' => 'e', 'ê' => 'e', 'ë' => 'e',
+            'í' => 'i', 'ì' => 'i', 'î' => 'i', 'ï' => 'i',
+            'ó' => 'o', 'ò' => 'o', 'ô' => 'o', 'õ' => 'o', 'ö' => 'o',
+            'ú' => 'u', 'ù' => 'u', 'û' => 'u', 'ü' => 'u', 'ç' => 'c', 'ñ' => 'n',
+        ));
+        return preg_replace('/[^a-z0-9]/', '', $texto);
+    }
+
+    /**
+     * Valor que não casou com nenhuma opção, em forma legível:
+     * "nao_sei_responder" vira "Nao sei responder".
+     */
+    private function _legivel($valor) {
+        $texto = trim(str_replace('_', ' ', (string) $valor));
+        return $texto === '' ? $texto : mb_strtoupper(mb_substr($texto, 0, 1, 'UTF-8'), 'UTF-8') . mb_substr($texto, 1, NULL, 'UTF-8');
     }
 
     /**

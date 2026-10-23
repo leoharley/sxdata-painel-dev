@@ -122,6 +122,66 @@
     </div>
 </div>
 
+<?php if (!empty($analyses)):
+    // Acesso em destaque às análises de IA: antes ficavam só no fim da
+    // página, depois de todas as estatísticas automáticas
+    $recentes = array_slice(array_map(function ($a) { return (object) $a; }, $analyses), 0, 3);
+    $qtd_analises = count($analyses);
+?>
+<style>
+    .ia-destaque {
+        background: linear-gradient(135deg, #23345F 0%, #2f4a7a 55%, #8fae5d 140%);
+        color: #fff; border-radius: .9rem; padding: 1.4rem 1.6rem; margin-bottom: 1.5rem;
+        box-shadow: 0 6px 18px rgba(35,52,95,.25);
+    }
+    .ia-destaque .ia-icone {
+        width: 54px; height: 54px; border-radius: 14px; background: rgba(255,255,255,.15);
+        display: inline-flex; align-items: center; justify-content: center; font-size: 1.6rem; flex-shrink: 0;
+    }
+    .ia-destaque h4 { margin: 0; font-weight: 700; }
+    .ia-destaque p { margin: .25rem 0 0; opacity: .9; }
+    .ia-destaque .btn-ia { background: #8fae5d; border: 0; color: #fff; font-weight: 600; padding: .55rem 1.1rem; }
+    .ia-destaque .btn-ia:hover { background: #7a9850; color: #fff; }
+    .ia-destaque .btn-ia-sec { border: 1px solid rgba(255,255,255,.6); color: #fff; padding: .55rem 1.1rem; }
+    .ia-destaque .btn-ia-sec:hover { background: rgba(255,255,255,.12); color: #fff; }
+    .ia-destaque .ia-links a {
+        display: inline-block; color: #fff; background: rgba(255,255,255,.12); border-radius: 2rem;
+        padding: .25rem .8rem; margin: .5rem .4rem 0 0; font-size: .85rem; text-decoration: none;
+    }
+    .ia-destaque .ia-links a:hover { background: rgba(255,255,255,.22); }
+</style>
+<div class="ia-destaque">
+    <div class="d-flex flex-wrap align-items-center gap-3">
+        <div class="ia-icone"><i class="fas fa-robot"></i></div>
+        <div class="flex-grow-1">
+            <h4>Análises aprofundadas por IA</h4>
+            <p>
+                <?= $qtd_analises ?> <?= $qtd_analises === 1 ? 'análise disponível' : 'análises disponíveis' ?>,
+                com resumo executivo, principais achados, pontos de atenção e recomendações.
+            </p>
+        </div>
+        <div class="d-flex flex-wrap gap-2">
+            <a href="<?= base_url('client/view_analysis/' . $recentes[0]->id) ?>" class="btn btn-ia">
+                <i class="fas fa-chart-line me-1"></i>Abrir a mais recente
+            </a>
+            <?php if ($qtd_analises > 1): ?>
+            <a href="#analises-aprofundadas" class="btn btn-ia-sec">Ver todas</a>
+            <?php endif; ?>
+        </div>
+    </div>
+    <?php if ($qtd_analises > 1): ?>
+    <div class="ia-links">
+        <?php foreach ($recentes as $r): ?>
+            <a href="<?= base_url('client/view_analysis/' . $r->id) ?>">
+                <i class="fas fa-file-alt me-1"></i><?= html_escape($r->questionnaire_title ?? 'Análise #' . $r->id) ?>
+                · <?= date('d/m/Y', strtotime($r->created_at)) ?>
+            </a>
+        <?php endforeach; ?>
+    </div>
+    <?php endif; ?>
+</div>
+<?php endif; ?>
+
 <?php if (!empty($relatorios_municipais)): ?>
     <h5 class="mb-3" style="color: var(--secondary-color);">
         <i class="fas fa-globe-americas me-2"></i>Diagnósticos municipais
@@ -308,7 +368,7 @@ $live = isset($live) ? $live : array();
 // ============================================================
 ?>
 <?php if (!empty($analyses)): ?>
-    <h5 class="mb-3 mt-4" style="color: var(--secondary-color);">
+    <h5 id="analises-aprofundadas" class="mb-3 mt-4" style="color: var(--secondary-color); scroll-margin-top: 1rem;">
         <i class="fas fa-robot me-2"></i>Análises aprofundadas
     </h5>
     <div class="row">

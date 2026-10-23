@@ -115,8 +115,13 @@
 <?php
     $summary_raw = $analysis->summary_text ?? '';
     $summary_decoded = json_decode($summary_raw, true);
+    // Formato novo: texto da IA + números do banco (Ai::_montar_analise)
+    $analise_v2 = is_array($summary_decoded) && (int) ($summary_decoded['versao'] ?? 0) === 2;
+    $tipos_pt = array('bar' => 'Barras', 'line' => 'Linha', 'pie' => 'Pizza', 'doughnut' => 'Rosca', 'radar' => 'Radar');
 ?>
-<?php if (!empty($summary_raw)): ?>
+<?php if ($analise_v2): ?>
+    <?php $this->load->view('ai/_analise_v2', array('v2' => $summary_decoded, 'secao' => 'topo')); ?>
+<?php elseif (!empty($summary_raw)): ?>
 <div class="analysis-header-card">
     <h5 style="color: var(--secondary-color); font-weight: 600;">
         <i class="fas fa-file-alt me-2" style="color: var(--primary-color);"></i>Resumo da Análise
@@ -172,7 +177,8 @@
                             <option value="percent">Percentual</option>
                         </select>
                         <select class="client-type-sel" data-idx="<?= $index ?>">
-                            <option value="<?= htmlspecialchars($chart['chart_type'] ?? $chart['type'] ?? 'bar') ?>" selected><?= ucfirst($chart['chart_type'] ?? $chart['type'] ?? 'bar') ?></option>
+                            <?php $tipo_atual = strtolower($chart['chart_type'] ?? $chart['type'] ?? 'bar'); ?>
+                            <option value="<?= htmlspecialchars($tipo_atual) ?>" selected><?= htmlspecialchars($tipos_pt[$tipo_atual] ?? ucfirst($tipo_atual)) ?></option>
                             <option value="bar">Barras</option>
                             <option value="line">Linha</option>
                             <option value="pie">Pizza</option>
@@ -197,6 +203,10 @@
     </div>
 <?php endif; ?>
 
+<?php if ($analise_v2): ?>
+    <?php $this->load->view('ai/_analise_v2', array('v2' => $summary_decoded, 'secao' => 'outras')); ?>
+<?php endif; ?>
+
 <!-- Modal: Detalhes da Pergunta -->
 <div class="modal fade" id="questionDetailModal" tabindex="-1">
     <div class="modal-dialog">
@@ -219,6 +229,7 @@ document.addEventListener('DOMContentLoaded', function() {
     var BASE = '<?= base_url() ?>';
     var questionnaireId = '<?= $analysis->questionnaire_id ?? '' ?>';
     var chartSuggestions = <?= json_encode($chart_suggestions ?: array()) ?>;
+    var ANALISE_V2 = <?= $analise_v2 ? 'true' : 'false' ?>;
 
     // Mapa de perguntas pré-carregado do PHP
     var questionsMap = <?= json_encode(array_map(function($q) {
@@ -310,8 +321,17 @@ document.addEventListener('DOMContentLoaded', function() {
             });
         }
 
-        // Generate AI description
-        generateDescription(index, chart, labels, rawData || (datasets[0] ? datasets[0].data : []));
+        // Análise nova: a descrição já veio da análise (sem chamar a IA de
+        // novo a cada visualização). Antigas: gerada na hora, como antes.
+        if (chart.descricao) {
+            document.getElementById('desc-' + index).innerHTML =
+                '<p class="desc-text mb-0"><i class="fas fa-robot me-2" style="color: var(--primary-color);"></i>' +
+                escapeHtml(chart.descricao) + '</p>';
+        } else if (ANALISE_V2) {
+            showFallbackDescription(index, chart, labels, rawData || (datasets[0] ? datasets[0].data : []));
+        } else {
+            generateDescription(index, chart, labels, rawData || (datasets[0] ? datasets[0].data : []));
+        }
     });
 
     function buildClientChart(index, type, labels, datasets, asPercent) {
@@ -346,8 +366,13 @@ document.addEventListener('DOMContentLoaded', function() {
             maintainAspectRatio: false,
             plugins: { legend: { position: 'bottom' } }
         };
+        // Eixo a partir do zero: começando no menor valor, uma diferença
+        // pequena entre os dias parecia enorme
+        if (['bar', 'line'].indexOf(type) >= 0) {
+            options.scales = { y: { beginAtZero: true, ticks: { precision: 0 } } };
+        }
         if (asPercent && ['bar', 'line', 'radar'].indexOf(type) >= 0) {
-            options.scales = { y: { ticks: { callback: function(v) { return v + '%'; } } } };
+            options.scales = { y: { beginAtZero: true, ticks: { callback: function(v) { return v + '%'; } } } };
         }
         if (asPercent && ['pie', 'doughnut'].indexOf(type) >= 0) {
             options.plugins.tooltip = {
