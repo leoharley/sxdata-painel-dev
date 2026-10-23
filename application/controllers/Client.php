@@ -174,6 +174,39 @@ class Client extends CI_Controller {
         }
     }
 
+    /**
+     * Detalhe de uma pergunta citada na análise (modal da tela de análise).
+     *
+     * A tela chamava ai/get_question_detail, mas o controller Ai é só da
+     * equipe: para o cliente a chamada era redirecionada e o modal mostrava
+     * "Erro ao buscar pergunta". Aqui o cliente só vê perguntas dos
+     * questionários dos projetos dele.
+     */
+    public function get_question_detail() {
+        header('Content-Type: application/json');
+
+        $question = $this->Question_model->get_by_id((int) $this->input->get('id'));
+        if (!$question || !$this->_client_can_view_analysis((object) array('questionnaire_id' => $question->questionnaire_id))) {
+            echo json_encode(array('success' => false, 'message' => 'Pergunta não encontrada.'));
+            return;
+        }
+
+        $result = array(
+            'id'            => $question->id,
+            'question_text' => $question->question_text,
+            'question_type' => $question->question_type ?? 'text',
+        );
+
+        if (in_array($question->question_type, array('radio', 'checkbox', 'select'))) {
+            $result['options'] = array();
+            foreach ($this->Question_model->get_options($question->id) as $opt) {
+                $result['options'][] = array('option_text' => $opt->option_text);
+            }
+        }
+
+        echo json_encode(array('success' => true, 'question' => $result));
+    }
+
     private function _get_client_project_ids($user_id) {
         $rows = $this->db->select('project_id')
                          ->where('user_id', $user_id)

@@ -453,7 +453,7 @@ document.addEventListener('DOMContentLoaded', function() {
         } else {
             $('#questionModalBody').html('<div class="text-center py-3"><div class="spinner-border text-primary"></div></div>');
             $.ajax({
-                url: BASE + 'ai/get_question_detail',
+                url: BASE + 'client/get_question_detail',
                 type: 'GET',
                 data: { id: qId },
                 dataType: 'json',
