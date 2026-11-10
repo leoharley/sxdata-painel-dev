@@ -177,7 +177,9 @@ $em_processamento = $r->status === 'processing';
     }
 
     botao.addEventListener('click', consultar);
-    <?php if (empty($fontes)): ?>consultar(); // primeira vez: consulta ao abrir<?php endif; ?>
+    // primeira vez: consulta ao abrir (o comentário fica fora do bloco PHP: o ?>
+    // engole a quebra de linha e comentaria a linha seguinte)
+    <?php if (empty($fontes)): ?>consultar();<?php endif; ?>
 })();
 </script>
 <?php endif; ?>

@@ -23,6 +23,8 @@ class Relatorio_municipal_model extends CI_Model {
 
     public function __construct() {
         parent::__construct();
+        // Rotas como a busca de municípios não carregam outro model que abra o banco
+        $this->load->database();
     }
 
     // ------------------------------------------------------------
