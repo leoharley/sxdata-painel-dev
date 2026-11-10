@@ -24,9 +24,21 @@ defined('BASEPATH') OR exit('No direct script access allowed');
 */
 
 // Caminhos relativos a assets/js/relatorios/conectores/, na ordem de execução.
-// Ex.: ['ibge_populacao.js', 'ibge_economia.js']
-$config['relatorio_conectores_js'] = [];
+// ibge_comum.js não é conector: traz as funções usadas pelos demais (SXIBGE).
+$config['relatorio_conectores_js'] = [
+    'ibge_comum.js',
+    'ibge_caracterizacao.js',
+    'ibge_populacao.js',
+    'ibge_economia.js',
+    'ibge_educacao.js',
+    'ibge_meio_ambiente.js',
+    'ibge_saude.js',
+];
 
 // Nomes das classes (arquivo application/libraries/conectores/<Classe>.php).
-// Ex.: ['Conector_esus_aps']
-$config['relatorio_conectores_php'] = [];
+// Conector_esus_base não entra aqui: é só a classe base dos dois do e-SUS.
+$config['relatorio_conectores_php'] = [
+    'Conector_cnes',      // CNES (dados abertos do Ministério da Saúde; sem CORS)
+    'Conector_esus_aps',  // depende das credenciais ESUS_<COD_IBGE>_* no .env
+    'Conector_esus_mac',
+];
