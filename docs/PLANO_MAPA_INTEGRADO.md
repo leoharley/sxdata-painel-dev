@@ -156,4 +156,15 @@ com os pontos do filtro, sem mudar o que já sai hoje.
 | 1. Migração + `Geo_municipio` + testes PHP | Feita. Testes: `php vendor/bin/phpunit -c tests/sxdata/phpunit.xml` |
 | 2. API do app | Feita. Contrato em `docs/API_PONTOS.md` |
 | 3. Tela do painel + KMZ | Feita. Menu "Mapa integrado" (equipe); KMZ do filtro em `mapa-integrado/kmz` com a pasta "Pontos de campo"; o KMZ de Relatórios não mudou |
-| 4. App | — |
+| 4. App | Feita em `sxdata-app-dev` (commit 7f7e2df). **Testes Flutter ainda não rodados** (sem SDK Flutter compatível na máquina do Sérgio): rodar `flutter test` antes de publicar |
+
+### Notas da implementação
+
+- Coleta: o app pergunta "Vincular a um ponto de campo?" antes de começar,
+  só para questionário com projeto que já tem pontos (sem pontos, não
+  interrompe). Pontos novos: card "Pontos de campo" no início do app, ou
+  "Registrar novo ponto" na própria pergunta.
+- Município do ponto: escolhido numa lista do IBGE baixada uma vez e
+  guardada no aparelho (busca offline). A sugestão automática pela
+  coordenada ficou para a fase 2.
+- Edição de coleta não troca o ponto (fase 2).
