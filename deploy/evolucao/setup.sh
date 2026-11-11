@@ -125,7 +125,9 @@ setsebool -P httpd_can_network_connect on
 
 echo "== Nginx"
 cp $D/sxdata.conf /etc/nginx/conf.d/sxdata.conf
-restorecon /etc/nginx/conf.d/sxdata.conf
+# gzip do main.dart.js e tipo application/wasm do CanvasKit (App Web offline)
+cp $D/00-gzip.conf $D/01-wasm.conf /etc/nginx/conf.d/
+restorecon /etc/nginx/conf.d/sxdata.conf /etc/nginx/conf.d/00-gzip.conf /etc/nginx/conf.d/01-wasm.conf
 sed -i 's/^\(\s*\)#\?\s*server_tokens .*/\1server_tokens off;/' /etc/nginx/nginx.conf
 grep -q 'server_tokens off' /etc/nginx/nginx.conf || sed -i 's/^\(\s*\)sendfile\s.*/&\n\1server_tokens off;/' /etc/nginx/nginx.conf
 nginx -t
