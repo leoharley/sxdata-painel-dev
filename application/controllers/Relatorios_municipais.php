@@ -615,6 +615,8 @@ class Relatorios_municipais extends CI_Controller {
             'conteudo'  => $conteudo,
             'publicado' => $publicado,
             'equipe'    => $equipe,
+            // Prévia dentro da Aprovação final: miniaturas, páginas e zoom (F05)
+            'visualizador' => $this->input->get('visualizador') === '1',
         ]);
     }
 

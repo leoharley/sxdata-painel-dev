@@ -24,7 +24,7 @@ $etapas = [
     .rm-etapa .ponto { width: 28px; height: 28px; border-radius: 50%; margin: 0 auto .35rem; display: flex; align-items: center;
                        justify-content: center; background: #fff; border: 2px solid #ced4da; color: #fff; position: relative; }
     .rm-etapa.feita .ponto { background: #8fae5d; border-color: #8fae5d; }
-    .rm-previa { width: 100%; height: 720px; border: 1px solid #eef0f2; border-radius: .5rem; background: #fff; }
+    .rm-previa { width: 100%; height: 760px; border: 1px solid #eef0f2; border-radius: .5rem; background: #e9ecef; display: block; }
     .rm-verif { display: flex; gap: .6rem; padding: .5rem 0; }
 </style>
 
@@ -39,7 +39,8 @@ $etapas = [
 <div class="row g-3">
     <div class="col-lg-8">
         <div class="rm-card p-2">
-            <iframe class="rm-previa" src="<?= base_url('relatorios-automatizados/documento/' . $r->id) ?>" title="Prévia do relatório"></iframe>
+            <iframe class="rm-previa" src="<?= base_url('relatorios-automatizados/documento/' . $r->id) ?>?visualizador=1"
+                    title="Prévia do relatório" allowfullscreen></iframe>
         </div>
     </div>
 

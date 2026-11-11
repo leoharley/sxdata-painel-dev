@@ -16,6 +16,19 @@ $pendentes_secao = $resumo[$atual->id]['pendentes'] ?? 0;
 $checklist = $conteudo['checklist'];
 $secao_incluida = in_array($atual->incluir_no_final, [true, 1, '1', 't', 'true'], true);
 $cores_eixo = ['approved' => '#8fae5d', 'in_review' => '#3b82c4', 'adjustment_requested' => '#dc3545', 'pending' => '#f0ad4e'];
+
+// Filtros de exibição (C03/C04): só aparecem se algum gráfico da seção puder usá-los
+$tem_comparacao = false;
+$tem_serie = false;
+foreach ($conteudo['graficos'] as $g) {
+    if (!empty($g['dados']['vazio'])) {
+        continue;
+    }
+    $tem_serie = $tem_serie || $g['dados']['modo'] === 'serie';
+    foreach ($g['dados']['datasets'] as $ds) {
+        $tem_comparacao = $tem_comparacao || in_array($ds['abrangencia'] ?? '', ['estado', 'brasil'], true);
+    }
+}
 ?>
 <style>
     .rm-secao-item { display: flex; align-items: center; gap: .6rem; padding: .6rem; border-radius: .5rem; border: 1px solid #eef0f2;
@@ -29,6 +42,9 @@ $cores_eixo = ['approved' => '#8fae5d', 'in_review' => '#3b82c4', 'adjustment_re
     .rm-grafico-card.status-rejected { opacity: .65; }
     .rm-grafico-card.status-adjustment_requested { border-left: 4px solid #dc3545; }
     .rm-qualitativo { background: #f8faf6; border-left: 3px solid #8fae5d; padding: .6rem .8rem; border-radius: .3rem; margin-bottom: .6rem; }
+    .rm-filtros { display: flex; flex-wrap: wrap; align-items: center; gap: .5rem; padding: .6rem .8rem; }
+    .rm-filtros .input-group { width: auto; }
+    .rm-filtros .form-select { min-width: 0; }
 </style>
 
 <div class="d-flex justify-content-between align-items-start mb-3 flex-wrap gap-2">
@@ -46,6 +62,34 @@ $cores_eixo = ['approved' => '#8fae5d', 'in_review' => '#3b82c4', 'adjustment_re
         <?php endif; ?>
     </div>
 </div>
+
+<?php if ($tem_comparacao || $tem_serie): ?>
+    <div class="rm-card rm-filtros" id="rm-filtros">
+        <?php if ($tem_serie): ?>
+            <div class="input-group input-group-sm" title="Vale para as séries históricas">
+                <span class="input-group-text"><i class="far fa-calendar-alt me-1"></i>Período</span>
+                <select class="form-select" id="filtro-de" aria-label="Período: ano inicial"></select>
+                <span class="input-group-text">a</span>
+                <select class="form-select" id="filtro-ate" aria-label="Período: ano final"></select>
+            </div>
+        <?php endif; ?>
+        <?php if ($tem_comparacao): ?>
+            <div class="input-group input-group-sm">
+                <span class="input-group-text"><i class="fas fa-globe-americas me-1"></i>Comparar com</span>
+                <select class="form-select" id="filtro-comparar" aria-label="Comparar com">
+                    <option value="estado,brasil">Estado (<?= html_escape($r->uf) ?>) e Brasil</option>
+                    <option value="estado">Estado (<?= html_escape($r->uf) ?>)</option>
+                    <option value="brasil">Brasil</option>
+                    <option value="">Só o município</option>
+                </select>
+            </div>
+        <?php endif; ?>
+        <button type="button" class="btn btn-link btn-sm text-decoration-none d-none" id="filtro-limpar">
+            <i class="fas fa-undo me-1"></i>Mostrar tudo
+        </button>
+        <span class="rm-fonte ms-auto">Muda só a visualização; os dados e o relatório final não são alterados.</span>
+    </div>
+<?php endif; ?>
 
 <div class="row g-3">
     <!-- Seções -->
@@ -140,9 +184,13 @@ $cores_eixo = ['approved' => '#8fae5d', 'in_review' => '#3b82c4', 'adjustment_re
                     <div class="rm-grafico-box">
                         <canvas data-grafico="<?= html_escape(json_encode($d, JSON_UNESCAPED_UNICODE)) ?>"></canvas>
                     </div>
+                    <div class="rm-vazio rm-vazio-filtro d-none">
+                        <i class="fas fa-filter fa-2x mb-2" style="opacity: .4"></i>
+                        <div class="small">Sem dados no período escolhido.</div>
+                    </div>
                     <div class="rm-fonte mt-2">
                         Fonte: <?= html_escape(implode('; ', $d['fontes']) ?: 'não informada') ?>
-                        <?= $d['periodo'] !== '' ? ' · Referência: ' . html_escape($d['periodo']) : '' ?>
+                        <span class="rm-ref" data-original="<?= html_escape($d['periodo']) ?>"><?= $d['periodo'] !== '' ? ' · Referência: ' . html_escape($d['periodo']) : '' ?></span>
                     </div>
                 <?php endif; ?>
 
@@ -230,7 +278,87 @@ $cores_eixo = ['approved' => '#8fae5d', 'in_review' => '#3b82c4', 'adjustment_re
 
 <script src="<?= base_url('assets/js/relatorios/graficos.js') ?>"></script>
 <script>
-SXGraficos.desenharTodos(document);
+// Gráficos com o filtro de período e comparação (C03/C04). O filtro só muda a
+// tela; fica guardado por relatório neste navegador.
+(function () {
+    var canvases = Array.prototype.slice.call(document.querySelectorAll('canvas[data-grafico]'));
+    var graficos = canvases.map(function (c) {
+        try { return JSON.parse(c.dataset.grafico); } catch (e) { return null; }
+    });
+    var selDe = document.getElementById('filtro-de');
+    var selAte = document.getElementById('filtro-ate');
+    var selComparar = document.getElementById('filtro-comparar');
+    var limpar = document.getElementById('filtro-limpar');
+    var chave = 'sx-rm-filtro-<?= (int) $r->id ?>';
+
+    var anos = SXGraficos.anosDasSeries(graficos);
+    if (selDe && selAte) {
+        anos.forEach(function (a) {
+            selDe.add(new Option(a, a));
+            selAte.add(new Option(a, a));
+        });
+        if (anos.length) {
+            selDe.value = anos[0];
+            selAte.value = anos[anos.length - 1];
+        } else {
+            selDe.closest('.input-group').classList.add('d-none');
+        }
+    }
+
+    var guardado = null;
+    try { guardado = JSON.parse(localStorage.getItem(chave) || 'null'); } catch (e) { guardado = null; }
+    if (guardado) {
+        if (selDe && anos.indexOf(guardado.de) !== -1) selDe.value = guardado.de;
+        if (selAte && anos.indexOf(guardado.ate) !== -1) selAte.value = guardado.ate;
+        if (selComparar && guardado.comparar !== undefined) selComparar.value = guardado.comparar;
+    }
+
+    function filtroAtual() {
+        var de = selDe && anos.length ? parseInt(selDe.value, 10) : null;
+        var ate = selAte && anos.length ? parseInt(selAte.value, 10) : null;
+        if (de && ate && de > ate) { var t = de; de = ate; ate = t; }
+        return {
+            de: de, ate: ate,
+            comparar: selComparar ? (selComparar.value ? selComparar.value.split(',') : []) : null
+        };
+    }
+
+    function aplicar() {
+        var f = filtroAtual();
+        var tudo = (!anos.length || (f.de === anos[0] && f.ate === anos[anos.length - 1]))
+                   && (!selComparar || selComparar.value === 'estado,brasil');
+        if (limpar) limpar.classList.toggle('d-none', tudo);
+        try {
+            if (tudo) localStorage.removeItem(chave);
+            else localStorage.setItem(chave, JSON.stringify({ de: f.de, ate: f.ate, comparar: selComparar ? selComparar.value : undefined }));
+        } catch (e) { /* sem armazenamento: o filtro vale só nesta visita */ }
+
+        canvases.forEach(function (canvas, i) {
+            if (!graficos[i]) return;
+            var g = SXGraficos.filtrar(graficos[i], f);
+            var card = canvas.closest('.rm-grafico-card');
+            var box = canvas.closest('.rm-grafico-box');
+            var aviso = card && card.querySelector('.rm-vazio-filtro');
+            var ref = card && card.querySelector('.rm-ref');
+            if (box) box.classList.toggle('d-none', g.vazio);
+            if (aviso) aviso.classList.toggle('d-none', !g.vazio);
+            if (ref) ref.textContent = g.periodo ? ' · Referência: ' + g.periodo : '';
+            if (g.vazio) {
+                if (canvas._sxChart) { canvas._sxChart.destroy(); canvas._sxChart = null; }
+            } else {
+                SXGraficos.desenhar(canvas, g);
+            }
+        });
+    }
+
+    [selDe, selAte, selComparar].forEach(function (s) { if (s) s.addEventListener('change', aplicar); });
+    if (limpar) limpar.addEventListener('click', function () {
+        if (anos.length) { selDe.value = anos[0]; selAte.value = anos[anos.length - 1]; }
+        if (selComparar) selComparar.value = 'estado,brasil';
+        aplicar();
+    });
+    aplicar();
+})();
 
 // Aprovar seção exige os três itens do checklist (o servidor confere de novo)
 (function () {

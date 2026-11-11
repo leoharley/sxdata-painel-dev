@@ -179,6 +179,60 @@
         return canvas._sxChart;
     }
 
+    /** Ano de um rótulo de período ("2022", "2017/2018") ou null. */
+    function ano(rotulo) {
+        var m = String(rotulo).match(/\d{4}/);
+        return m ? parseInt(m[0], 10) : null;
+    }
+
+    /**
+     * Cópia do gráfico com o filtro de exibição aplicado. Não altera o que
+     * foi gravado: serve só para a tela.
+     *   comparar  abrangências mostradas junto do município (['estado', 'brasil'])
+     *   de, ate   anos do período (só nas séries históricas, eixo X = períodos)
+     */
+    function filtrar(g, filtro) {
+        filtro = filtro || {};
+        var r = JSON.parse(JSON.stringify(g));
+        if (r.vazio) return r;
+
+        if (filtro.comparar) {
+            var temMunicipio = r.datasets.some(function (d) { return d.abrangencia === 'municipio'; });
+            if (temMunicipio) {
+                r.datasets = r.datasets.filter(function (d) {
+                    return (d.abrangencia !== 'estado' && d.abrangencia !== 'brasil') || filtro.comparar.indexOf(d.abrangencia) !== -1;
+                });
+            }
+        }
+
+        if (r.modo === 'serie' && (filtro.de || filtro.ate)) {
+            var manter = [];
+            r.labels.forEach(function (l, i) {
+                var a = ano(l);
+                if (a === null || ((!filtro.de || a >= filtro.de) && (!filtro.ate || a <= filtro.ate))) manter.push(i);
+            });
+            r.labels = manter.map(function (i) { return r.labels[i]; });
+            r.datasets.forEach(function (d) { d.valores = manter.map(function (i) { return d.valores[i]; }); });
+            // Série sem nenhum valor no período sai do gráfico
+            r.datasets = r.datasets.filter(function (d) { return d.valores.some(function (v) { return v !== null; }); });
+            r.periodo = r.labels.length > 1 ? r.labels[0] + ' a ' + r.labels[r.labels.length - 1] : (r.labels[0] || '');
+        }
+
+        r.vazio = !r.labels.length || !r.datasets.length;
+        return r;
+    }
+
+    /** Anos das séries históricas de uma lista de gráficos, em ordem. */
+    function anosDasSeries(graficos) {
+        var anos = {};
+        graficos.forEach(function (g) {
+            if (g && !g.vazio && g.modo === 'serie') {
+                g.labels.forEach(function (l) { var a = ano(l); if (a !== null) anos[a] = true; });
+            }
+        });
+        return Object.keys(anos).map(Number).sort(function (a, b) { return a - b; });
+    }
+
     /** Desenha todos os <canvas data-grafico='{json}'> da página. */
     function desenharTodos(raiz, opcoes) {
         (raiz || document).querySelectorAll('canvas[data-grafico]').forEach(function (canvas) {
@@ -190,5 +244,6 @@
         });
     }
 
-    global.SXGraficos = { desenhar: desenhar, desenharTodos: desenharTodos, formatar: formatar };
+    global.SXGraficos = { desenhar: desenhar, desenharTodos: desenharTodos, formatar: formatar,
+                          filtrar: filtrar, anosDasSeries: anosDasSeries };
 })(window);
