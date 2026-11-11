@@ -50,7 +50,9 @@ publicar_app() {
             "$sdk/bin/cache/flutter.version.json")
     fi
     # --no-tree-shake-icons: o font-subset.exe do SDK atual esta corrompido.
-    "$FLUTTER" build web --release --no-tree-shake-icons --dart-define=API_BASE_URL=$API_URL
+    # --no-web-resources-cdn: CanvasKit e fontes locais, para o app abrir
+    # offline (o patch do service worker recusa o build sem isso).
+    "$FLUTTER" build web --release --no-tree-shake-icons --no-web-resources-cdn --dart-define=API_BASE_URL=$API_URL
     "$sdk/bin/dart" run tool/patch_service_worker.dart build/web/flutter_service_worker.js
     grep -q "$API_URL" build/web/main.dart.js || { echo "Build sem a URL $API_URL"; exit 1; }
     (cd build/web && tar -czf "$TMP/app-web.tgz" .)
