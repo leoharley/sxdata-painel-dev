@@ -263,6 +263,12 @@
                     Relatórios Automatizados
                 </a>
             </li>
+            <li class="nav-item">
+                <a class="nav-link <?= $this->uri->segment(1) == 'mapa-integrado' ? 'active' : '' ?>" href="<?= base_url('mapa-integrado') ?>">
+                    <i class="fas fa-map-marked-alt"></i>
+                    Mapa integrado
+                </a>
+            </li>
             <?php endif; ?>
             <li class="nav-item">
                 <a class="nav-link <?= $this->uri->segment(1) == 'ai' ? 'active' : '' ?>" href="<?= base_url('ai') ?>">

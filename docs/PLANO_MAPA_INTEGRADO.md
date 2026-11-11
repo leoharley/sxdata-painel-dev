@@ -155,5 +155,5 @@ com os pontos do filtro, sem mudar o que já sai hoje.
 |---|---|
 | 1. Migração + `Geo_municipio` + testes PHP | Feita. Testes: `php vendor/bin/phpunit -c tests/sxdata/phpunit.xml` |
 | 2. API do app | Feita. Contrato em `docs/API_PONTOS.md` |
-| 3. Tela do painel + KMZ | — |
+| 3. Tela do painel + KMZ | Feita. Menu "Mapa integrado" (equipe); KMZ do filtro em `mapa-integrado/kmz` com a pasta "Pontos de campo"; o KMZ de Relatórios não mudou |
 | 4. App | — |

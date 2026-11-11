@@ -150,3 +150,7 @@ $route['responder/([a-f0-9]{32})'] = 'responder/index/$1';
 // Relatórios municipais automatizados
 $route['relatorios-automatizados'] = 'relatorios_municipais/index';
 $route['relatorios-automatizados/(.+)'] = 'relatorios_municipais/$1';
+
+// Mapa integrado (docs/PLANO_MAPA_INTEGRADO.md)
+$route['mapa-integrado'] = 'mapa_integrado/index';
+$route['mapa-integrado/(.+)'] = 'mapa_integrado/$1';

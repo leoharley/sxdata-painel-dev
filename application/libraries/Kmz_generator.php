@@ -11,12 +11,15 @@ class KMZ_Generator {
                 'include_respondent' => true,
                 'include_applicator' => true,
                 'include_timestamps' => true,
-                'include_questionnaire_info' => true
+                'include_questionnaire_info' => true,
+                // Pontos de campo do mapa integrado (Field_point_model::listar).
+                // Vazio = arquivo igual ao de antes.
+                'points' => []
             ];
             
             $options = array_merge($default_options, $options);
 
-            if (empty($responses)) {
+            if (empty($responses) && empty($options['points'])) {
                 throw new Exception('Nenhuma localização encontrada para gerar o arquivo KMZ.');
             }
 
@@ -120,7 +123,11 @@ class KMZ_Generator {
             
             $kml .= '    </Folder>' . "\n";
         }
-        
+
+        if (!empty($options['points'])) {
+            $kml .= $this->create_points_folder($options['points']);
+        }
+
         $kml .= '  </Document>' . "\n";
         $kml .= '</kml>' . "\n";
         
@@ -162,6 +169,75 @@ class KMZ_Generator {
     ';
     }
     
+    /**
+     * Pasta "Pontos de campo" (mapa integrado). Pontos sem coordenada ficam de fora.
+     */
+    private function create_points_folder($points) {
+        $com_coordenada = array_filter($points, function ($p) {
+            return $p->latitude !== null && $p->longitude !== null;
+        });
+        if (empty($com_coordenada)) {
+            return '';
+        }
+
+        // O estilo fica dentro da pasta: no Document ele teria de vir antes das outras pastas
+        $kml = '    <Folder>' . "
+";
+        $kml .= '      <name>Pontos de campo (' . count($com_coordenada) . ')</name>' . "
+";
+        $kml .= '      <Style id="sxdata_field_point">'
+              . '<IconStyle><color>ff2f8fff</color><scale>1.3</scale>'
+              . '<Icon><href>http://maps.google.com/mapfiles/kml/shapes/flag.png</href></Icon></IconStyle>'
+              . '</Style>' . "
+";
+
+        foreach ($com_coordenada as $p) {
+            $linhas = [
+                'Tipo' => ucfirst((string) $p->tipo),
+                'Município' => trim(($p->municipio_nome ?? '') . ' - ' . ($p->uf ?? ''), ' -'),
+                'Coletas vinculadas' => (string) (int) ($p->coletas ?? 0),
+                'Registrado por' => (string) ($p->criado_por_nome ?? ''),
+                'Coordenadas' => number_format((float) $p->latitude, 6) . ', ' . number_format((float) $p->longitude, 6)
+                    . ($p->origem_coord === 'mapa' ? ' (marcado no mapa)' : ''),
+            ];
+            if ($p->dentro_municipio === false) {
+                $linhas['Aviso'] = 'Coordenada fora do município informado';
+            }
+            $html = '<table style="font-family: Arial, sans-serif;">';
+            foreach ($linhas as $rotulo => $valor) {
+                if ($valor !== '') {
+                    $html .= '<tr><td style="padding: 3px; font-weight: bold;">' . htmlspecialchars($rotulo) . ':</td><td style="padding: 3px;">' . htmlspecialchars($valor) . '</td></tr>';
+                }
+            }
+            $html .= '</table>';
+
+            $kml .= '      <Placemark>' . "
+";
+            $kml .= '        <name>' . htmlspecialchars($p->nome) . '</name>' . "
+";
+            $kml .= '        <description><![CDATA[' . $html . ']]></description>' . "
+";
+            $kml .= '        <styleUrl>#sxdata_field_point</styleUrl>' . "
+";
+            $kml .= '        <Point><coordinates>' . (float) $p->longitude . ',' . (float) $p->latitude . ',0</coordinates></Point>' . "
+";
+            $kml .= '        <ExtendedData>' . "
+";
+            $kml .= '          <Data name="field_point_id"><value>' . (int) $p->id . '</value></Data>' . "
+";
+            $kml .= '          <Data name="tipo"><value>' . htmlspecialchars($p->tipo) . '</value></Data>' . "
+";
+            $kml .= '        </ExtendedData>' . "
+";
+            $kml .= '      </Placemark>' . "
+";
+        }
+
+        $kml .= '    </Folder>' . "
+";
+        return $kml;
+    }
+
     /**
      * Agrupar respostas por questionário
      */
