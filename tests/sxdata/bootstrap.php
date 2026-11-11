@@ -5,3 +5,4 @@ define('BASEPATH', __DIR__ . '/../../system/');
 define('APPPATH', __DIR__ . '/../../application/');
 
 require_once APPPATH . 'libraries/Geo_municipio.php';
+require_once APPPATH . 'libraries/Ponto_campo.php';

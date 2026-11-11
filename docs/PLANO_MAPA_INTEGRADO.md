@@ -154,6 +154,6 @@ com os pontos do filtro, sem mudar o que já sai hoje.
 | Etapa | Situação |
 |---|---|
 | 1. Migração + `Geo_municipio` + testes PHP | Feita. Testes: `php vendor/bin/phpunit -c tests/sxdata/phpunit.xml` |
-| 2. API do app | — |
+| 2. API do app | Feita. Contrato em `docs/API_PONTOS.md` |
 | 3. Tela do painel + KMZ | — |
 | 4. App | — |

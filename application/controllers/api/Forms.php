@@ -275,6 +275,8 @@ class Forms extends CI_Controller {
             $data['edited_at'] = $edited_at;
         }
 
+        $data = array_merge($data, $this->point_link($json, $existing));
+
         // Registro antigo ganha a chave da coleta, para os proximos envios
         if ($client_id !== null && $this->has_column('client_id') && empty($existing->client_id)) {
             $data['client_id'] = $client_id;
@@ -327,6 +329,7 @@ class Forms extends CI_Controller {
         if ($this->has_column('audio_path')) {
             $form_data['audio_path'] = $json['audio_path'] ?? null;
         }
+        $form_data = array_merge($form_data, $this->point_link($json, null));
 
         // Violacao do UNIQUE de client_id (dois envios simultaneos da mesma
         // coleta) e esperada: tratar, nao abortar com pagina de erro
@@ -386,6 +389,37 @@ class Forms extends CI_Controller {
         $ts = strtotime($value);
 
         return $ts === false ? null : date('Y-m-d H:i:s', $ts);
+    }
+
+    /**
+     * Vinculo com o ponto de campo (mapa integrado). O app manda o client_id
+     * do ponto em `point_client_id`. Se o ponto ja chegou, grava tambem o
+     * field_point_id; se nao, so o client_id, e api/points/submit completa o
+     * vinculo quando o ponto chegar.
+     *
+     * Edicao sem `point_client_id` mantem o vinculo que ja existe; para
+     * desvincular, o app manda `point_client_id` vazio ("").
+     */
+    private function point_link($json, $existing) {
+        if (!array_key_exists('point_client_id', $json) || !$this->has_column('field_point_client_id')) {
+            return [];
+        }
+
+        $point_client_id = $this->clean_client_id($json['point_client_id']);
+        if ($point_client_id === null) {
+            return ['field_point_client_id' => null, 'field_point_id' => null];
+        }
+        if ($existing && isset($existing->field_point_client_id)
+            && $existing->field_point_client_id === $point_client_id && !empty($existing->field_point_id)) {
+            return []; // mesmo ponto, ja vinculado
+        }
+
+        $point = $this->db->select('id')->get_where('field_points', ['client_id' => $point_client_id])->row();
+
+        return [
+            'field_point_client_id' => $point_client_id,
+            'field_point_id'        => $point ? (int) $point->id : null,
+        ];
     }
 
     private function keep_or_replace($incoming, $current) {

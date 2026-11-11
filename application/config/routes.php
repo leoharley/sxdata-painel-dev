@@ -77,6 +77,10 @@ $route['api/forms/submit'] = 'api/forms/submit';
 $route['api/photos/upload'] = 'api/photos/upload';
 $route['api/audios/upload'] = 'api/audios/upload';
 
+// Pontos de campo do mapa integrado (docs/PLANO_MAPA_INTEGRADO.md)
+$route['api/points'] = 'api/points/index';
+$route['api/points/submit'] = 'api/points/submit';
+
 // Rotas para API de Estatísticas
 $route['api/stats/user/(:num)'] = 'api/stats/user/$1';
 $route['api/stats/user'] = 'api/stats/user';
