@@ -39,3 +39,6 @@ uploads/
 
 # Dumps do banco de producao (dados reais: nunca versionar)
 docs/*dump*.sql
+
+# PHPUnit
+.phpunit.result.cache
