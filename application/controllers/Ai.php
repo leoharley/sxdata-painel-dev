@@ -55,6 +55,19 @@ class Ai extends CI_Controller {
             'timeout_seconds' => (int) $this->input->post('timeout_seconds'),
             'retry_attempts' => (int) $this->input->post('retry_attempts'),
         );
+        // Frente K: provedor (sai do modelo) e modelo de alternativa
+        if ($this->db->field_exists('fallback_model', 'ai_settings')) {
+            require_once APPPATH . 'libraries/Ia_provedores.php';
+            $data['provider'] = Ia_provedores::provedor_do_modelo($data['model']);
+            $alt = trim((string) $this->input->post('fallback_model'));
+            $data['fallback_model'] = ($alt !== '' && $alt !== $data['model']) ? $alt : NULL;
+            $data['fallback_provider'] = $data['fallback_model'] ? Ia_provedores::provedor_do_modelo($alt) : NULL;
+        }
+        $antes = $this->db->get_where('ai_settings', array('id' => (int) $id))->row_array();
+        list($a, $d) = auditoria_diferenca($antes ?: array(), $data);
+        if ($d) {
+            auditar('config', 'ia_funcao', $antes['feature_key'] ?? $id, 'Configuração de IA alterada: ' . ($antes['feature_name'] ?? $id), $a, $d);
+        }
 
         $this->Ai_model->update_setting($id, $data);
         $this->session->set_flashdata('success', 'Configuração atualizada com sucesso!');
@@ -72,10 +85,157 @@ class Ai extends CI_Controller {
     }
 
     public function test_connection() {
-        $result = $this->ai_service->test_connection();
+        $p = $this->input->get('provedor');
+        $result = $this->ai_service->test_connection(in_array($p, array('openai', 'anthropic'), TRUE) ? $p : NULL);
 
         header('Content-Type: application/json');
         echo json_encode($result);
+    }
+
+    // ============================================================
+    // FRENTE K: PROVEDORES, CUSTOS E COMPARAÇÃO
+    // ============================================================
+
+    /** Chaves, preços, limite mensal e IA por projeto (só administrador altera). */
+    public function provedores() {
+        $this->load->model('Ia_model');
+        $data['title'] = 'Provedores e custos de IA - SXData';
+        $data['pronto'] = $this->Ia_model->disponivel();
+        $data['chaves'] = $this->Ia_model->situacao_chaves();
+        $data['modelos'] = $this->Ia_model->modelos();
+        $data['cfg'] = $data['pronto'] ? $this->Ia_model->config() : array('limite' => 0, 'alerta' => 80, 'anonimizar' => TRUE);
+        $data['gasto'] = $this->Ia_model->gasto_do_mes();
+        $data['por_modelo'] = $this->Ia_model->gasto_por_modelo_no_mes();
+        $data['projetos'] = $this->Ia_model->projetos();
+        $data['funcoes'] = $this->Ai_model->get_all_settings();
+        $data['admin'] = $this->session->userdata('admin_role') === 'administrador';
+
+        $this->load->view('admin/header', $data);
+        $this->load->view('admin/ai/provedores', $data);
+        $this->load->view('admin/footer');
+    }
+
+    public function salvar_chave() {
+        $this->so_admin_post();
+        $this->load->model('Ia_model');
+        $p = $this->input->post('provedor');
+        if (!in_array($p, array('openai', 'anthropic'), TRUE)) {
+            show_error('Provedor inválido', 400);
+        }
+        if ($this->input->post('remover')) {
+            $this->Ia_model->remover_chave($p);
+            auditar('config', 'ia_chave', $p, 'Chave de API removida: ' . $p);
+            $this->session->set_flashdata('success', 'Chave removida. Se houver chave no .env do servidor, ela volta a valer.');
+            redirect('ai/provedores');
+        }
+        $chave = trim((string) $this->input->post('chave', FALSE));
+        if (strlen($chave) < 20 || preg_match('/\s/', $chave)) {
+            $this->session->set_flashdata('error', 'Chave inválida.');
+            redirect('ai/provedores');
+        }
+        try {
+            $this->Ia_model->salvar_chave($p, $chave, $this->session->userdata('admin_id'));
+        } catch (Exception $e) {
+            $this->session->set_flashdata('error', html_escape($e->getMessage()));
+            redirect('ai/provedores');
+        }
+        auditar('config', 'ia_chave', $p, 'Chave de API cadastrada (final ' . substr($chave, -4) . ')');
+        $teste = $this->ai_service->test_connection($p);
+        $this->session->set_flashdata($teste['success'] ? 'success' : 'error', 'Chave guardada cifrada. Teste: ' . html_escape($teste['message']));
+        redirect('ai/provedores');
+    }
+
+    public function salvar_precos() {
+        $this->so_admin_post();
+        $this->load->model('Ia_model');
+        $ent = (array) $this->input->post('entrada');
+        $sai = (array) $this->input->post('saida');
+        $ativo = (array) $this->input->post('ativo');
+        foreach ($ent as $id => $v) {
+            $this->Ia_model->salvar_preco($id, str_replace(',', '.', $v), str_replace(',', '.', $sai[$id] ?? 0), !empty($ativo[$id]));
+        }
+        auditar('config', 'ia_precos', NULL, 'Tabela de preços de IA atualizada', NULL, array('entrada' => $ent, 'saida' => $sai));
+        $this->session->set_flashdata('success', 'Preços atualizados.');
+        redirect('ai/provedores');
+    }
+
+    public function salvar_limite() {
+        $this->so_admin_post();
+        $this->load->model('Settings_model');
+        $limite = max(0, (float) str_replace(',', '.', (string) $this->input->post('limite')));
+        $alerta = min(100, max(0, (int) $this->input->post('alerta')));
+        $anon = $this->input->post('anonimizar') ? '1' : '0';
+        $this->Settings_model->update_setting('ia_limite_mensal_usd', (string) $limite);
+        $this->Settings_model->update_setting('ia_alerta_pct', (string) $alerta);
+        $this->Settings_model->update_setting('ia_anonimizar', $anon);
+        auditar('config', 'ia_limite', NULL, 'Limite mensal de IA: US$ ' . $limite . ', alerta em ' . $alerta . '%, anonimização ' . ($anon === '1' ? 'ligada' : 'DESLIGADA'));
+        $this->session->set_flashdata('success', 'Limite e alerta salvos.');
+        redirect('ai/provedores');
+    }
+
+    public function ia_projeto() {
+        $this->so_admin_post();
+        $this->load->model('Ia_model');
+        $pid = (int) $this->input->post('project_id');
+        $desligar = (bool) $this->input->post('desligar');
+        $this->Ia_model->definir_ia_projeto($pid, $desligar);
+        auditar('config', 'projeto', $pid, $desligar ? 'IA desligada no projeto' : 'IA ligada no projeto');
+        $this->session->set_flashdata('success', $desligar ? 'IA desligada para o projeto.' : 'IA ligada para o projeto.');
+        redirect('ai/provedores');
+    }
+
+    /** Dois modelos lado a lado com o mesmo pedido. */
+    public function comparar() {
+        $this->load->model('Ia_model');
+        require_once APPPATH . 'libraries/Ia_provedores.php';
+        $data['title'] = 'Comparar modelos de IA - SXData';
+        $data['modelos'] = Ia_provedores::modelos();
+        $data['chaves'] = $this->Ia_model->situacao_chaves();
+        $data['prompts'] = $this->Ai_model->get_prompts();
+
+        $this->load->view('admin/header', $data);
+        $this->load->view('admin/ai/comparar', $data);
+        $this->load->view('admin/footer');
+    }
+
+    public function comparar_executar() {
+        header('Content-Type: application/json');
+        if ($this->input->method() !== 'post') {
+            echo json_encode(array('success' => false, 'error' => 'Use o botão da tela.'));
+            return;
+        }
+        require_once APPPATH . 'libraries/Ia_provedores.php';
+        $modelo = (string) $this->input->post('modelo');
+        $todos = array_merge(...array_values(Ia_provedores::modelos()));
+        if (!in_array($modelo, $todos, TRUE)) {
+            echo json_encode(array('success' => false, 'error' => 'Modelo inválido.'));
+            return;
+        }
+        $sistema = trim((string) $this->input->post('sistema'));
+        $texto = trim((string) $this->input->post('texto'));
+        if ($texto === '' || mb_strlen($texto) > 30000 || mb_strlen($sistema) > 10000) {
+            echo json_encode(array('success' => false, 'error' => 'Escreva o pedido (até 30 mil caracteres).'));
+            return;
+        }
+        $msgs = array();
+        if ($sistema !== '') {
+            $msgs[] = array('role' => 'system', 'content' => $sistema);
+        }
+        $msgs[] = array('role' => 'user', 'content' => $texto);
+        $esf = $this->input->post('esforco');
+        $r = $this->ai_service->executar_modelo($modelo, $msgs, array(
+            'max_tokens' => min(8000, max(200, (int) $this->input->post('max_tokens'))),
+            'esforco' => in_array($esf, array('low', 'medium', 'high'), TRUE) ? $esf : NULL,
+            'resource_type' => 'comparacao',
+        ));
+        echo json_encode($r, JSON_UNESCAPED_UNICODE);
+    }
+
+    private function so_admin_post() {
+        if ($this->input->method() !== 'post' || $this->session->userdata('admin_role') !== 'administrador') {
+            $this->session->set_flashdata('error', 'Somente administradores alteram provedores, chaves e limites.');
+            redirect('ai/provedores');
+        }
     }
 
     // ============================================================

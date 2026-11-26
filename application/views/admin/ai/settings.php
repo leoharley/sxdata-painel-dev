@@ -178,8 +178,25 @@ $category_colors = [
     'questionario' => 'linear-gradient(135deg, #5bc0de, #46b8da)',
     'analise'      => 'linear-gradient(135deg, #23345F, #1a2847)',
 ];
-$available_models = ['gpt-4o', 'gpt-4o-mini', 'gpt-4-turbo', 'gpt-3.5-turbo', 'whisper-1'];
+require_once APPPATH . 'libraries/Ia_provedores.php';
+$modelos_por_provedor = Ia_provedores::modelos();
+$available_models = array_merge($modelos_por_provedor['openai'], $modelos_por_provedor['anthropic'], ['whisper-1']);
+$opcoes_modelo = function ($com_whisper) use ($modelos_por_provedor) {
+    $h = '';
+    foreach ($modelos_por_provedor as $p => $lista) {
+        $h .= '<optgroup label="' . html_escape(Ia_provedores::nome($p)) . '">';
+        foreach ($lista as $m) { $h .= '<option value="' . html_escape($m) . '">' . html_escape($m) . '</option>'; }
+        $h .= '</optgroup>';
+    }
+    return $h . ($com_whisper ? '<optgroup label="Transcrição"><option value="whisper-1">whisper-1</option></optgroup>' : '');
+};
 ?>
+<div class="alert alert-light border small">
+    <i class="fas fa-random me-1"></i> Cada função pode usar <strong>OpenAI</strong> ou <strong>Anthropic (Claude)</strong>, com um modelo de <strong>alternativa</strong> se o principal falhar.
+    Chaves, preços, limite mensal e IA por projeto ficam em <a href="<?= base_url('ai/provedores') ?>">Provedores e custos</a>;
+    para comparar dois modelos lado a lado, use <a href="<?= base_url('ai/comparar') ?>">Comparar modelos</a>.
+    Antes de qualquer envio, CPF, telefone, e-mail e nomes conhecidos são retirados do texto.
+</div>
 
 <?php foreach ($category_labels as $cat_key => $cat_label): ?>
     <?php if (empty($settings[$cat_key])) continue; ?>
@@ -302,10 +319,20 @@ $available_models = ['gpt-4o', 'gpt-4o-mini', 'gpt-4-turbo', 'gpt-3.5-turbo', 'w
                         <div class="mb-3">
                             <label for="edit_model" class="form-label">Modelo</label>
                             <select class="form-select" name="model" id="edit_model">
-                                <?php foreach ($available_models as $model): ?>
-                                    <option value="<?= $model ?>"><?= $model ?></option>
-                                <?php endforeach; ?>
+                                <?= $opcoes_modelo(TRUE) ?>
                             </select>
+                        </div>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col-md-6 offset-md-6">
+                        <div class="mb-3">
+                            <label for="edit_fallback_model" class="form-label">Alternativa se o modelo falhar</label>
+                            <select class="form-select" name="fallback_model" id="edit_fallback_model">
+                                <option value="">Nenhuma</option>
+                                <?= $opcoes_modelo(FALSE) ?>
+                            </select>
+                            <div class="form-text">Usada quando o provedor principal está fora do ar, sem chave ou sem crédito.</div>
                         </div>
                     </div>
                 </div>
@@ -522,11 +549,13 @@ function openEditModal(setting) {
     document.getElementById('edit_setting_id').value = setting.id;
     document.getElementById('edit_feature_name').value = setting.feature_name || '';
     document.getElementById('edit_model').value = setting.model || 'gpt-4o-mini';
+    document.getElementById('edit_fallback_model').value = setting.fallback_model || '';
     document.getElementById('edit_temperature').value = setting.temperature ?? 0.7;
     document.getElementById('edit_max_tokens').value = setting.max_tokens ?? 2000;
     document.getElementById('edit_timeout').value = setting.timeout_seconds ?? 30;
     document.getElementById('edit_retry').value = setting.retry_attempts ?? 3;
-    document.getElementById('edit_is_enabled').checked = !!parseInt(setting.is_enabled);
+    // O PostgreSQL devolve 't'/'f': parseInt('t') dava falso e o modal abria desligado
+    document.getElementById('edit_is_enabled').checked = [true, 1, '1', 't', 'true'].includes(setting.is_enabled);
 
     // Advanced
     document.getElementById('edit_top_p').value = setting.top_p ?? 1;

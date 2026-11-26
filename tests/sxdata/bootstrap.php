@@ -14,3 +14,6 @@ require_once APPPATH . 'libraries/Estrutura_envio.php';
 require_once APPPATH . 'libraries/Totp.php';
 require_once APPPATH . 'libraries/Politica_senha.php';
 require_once APPPATH . 'libraries/Validacao_simples.php';
+require_once APPPATH . 'libraries/Anonimizador.php';
+require_once APPPATH . 'libraries/Ia_provedores.php';
+require_once APPPATH . 'libraries/Cripto_chaves.php';

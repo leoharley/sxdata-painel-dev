@@ -37,6 +37,8 @@
         <?php endif; ?>
         <a href="<?= base_url('ai/security') ?>" class="btn btn-outline-dark ms-2"><i class="fas fa-lock me-1"></i>Segurança</a>
         <a href="<?= base_url('ai/directives') ?>" class="btn btn-outline-primary ms-2"><i class="fas fa-shield-alt me-1"></i>Diretrizes</a>
+        <a href="<?= base_url('ai/provedores') ?>" class="btn btn-outline-success ms-2"><i class="fas fa-random me-1"></i>Provedores e custos</a>
+        <a href="<?= base_url('ai/comparar') ?>" class="btn btn-outline-success ms-2"><i class="fas fa-columns me-1"></i>Comparar modelos</a>
         <a href="<?= base_url('ai/settings') ?>" class="btn btn-primary ms-2"><i class="fas fa-cog me-1"></i>Configurações</a>
     </div>
 </div>

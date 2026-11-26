@@ -243,6 +243,9 @@
                             </td>
                             <td>
                                 <small class="text-muted"><?= htmlspecialchars($log->model_used ?? '-') ?></small>
+                                <?php if (!empty($log->provider)): ?><br><span class="badge bg-light text-dark border"><?= $log->provider === 'anthropic' ? 'Anthropic' : 'OpenAI' ?></span><?php endif; ?>
+                                <?php if (!empty($log->fallback_de)): ?><br><span class="badge bg-warning text-dark" title="<?= htmlspecialchars($log->fallback_de) ?>">alternativa</span><?php endif; ?>
+                                <?php if (!empty($log->anonimizado) && in_array($log->anonimizado, [true, 't', 1, '1'], true)): ?><br><span class="badge bg-success" title="Dados pessoais retirados antes do envio">anonimizado</span><?php endif; ?>
                             </td>
                             <td class="text-center">
                                 <span class="text-success fw-semibold"><?= number_format((int)($log->tokens_input ?? 0)) ?></span>
