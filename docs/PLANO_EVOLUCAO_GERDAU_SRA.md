@@ -188,3 +188,39 @@ O prompt do agente do app é gerado ao final, completo. Proponho entregar já na
 3. **As perguntas de trabalho e renda valem a partir de 14 anos.** É o corte do IBGE, PNAD Contínua. Fica como lógica do conjunto, editável.
 4. **Campos obrigatórios do morador:** nome, parentesco, idade e sexo. Quem é o respondente é marcado na lista de moradores.
 5. **Prompt do app:** a parte A sai já na etapa 1. O prompt completo sai no final.
+
+## 7. Situação da entrega (27/11/2026)
+
+Todas as etapas estão publicadas na evolução e no repositório.
+
+| Etapa | Situação | Onde está |
+|---|---|---|
+| 1 e 2 | Formulários estruturados e frente L | `docs/FORMULARIOS_ESTRUTURADOS.md` |
+| 3 | Frente I | Controle e segurança (`sql/robustez_migration.sql`) |
+| 4 | Frente K | Inteligência Artificial > Provedores e custos / Comparar modelos (`sql/ia_provedores_migration.sql`) |
+| 5 | Frente J | Cruzamento de variáveis (`sql/cruzamento_migration.sql`) |
+| 6 e 7 | Parte I e frente H | PEA Gerdau (`sql/pea_migration.sql`, `docs/MODULO_PEA.md`) |
+
+Prompt do app: `docs/PROMPT_APP_ESTRUTURADOS.md`, partes A a D. Roteiro de
+regressão: `docs/CHECKLIST_REGRESSAO.md`.
+
+**Decisões tomadas na implementação** (revisáveis):
+
+- **Frente I.**
+  - A exclusão lógica foi feita com uma lixeira que guarda a cópia completa e restaura com os mesmos ids. Usuários usam `deleted_at`. Assim as consultas atuais não precisaram mudar.
+  - A conferência do formato simples só aponta o que é certamente um problema. Por exemplo, "NI" no campo de e-mail não é erro.
+  - O 2FA é opcional por usuário. A obrigatoriedade para a equipe fica na caixa "Autenticação em Duas Etapas" de Configurações, hoje desligada.
+- **Frente I, exportações em segundo plano.** Não foram feitas.
+  - O teste de carga com 200 mil entrevistas mostrou que a exportação completa leva 0,4 s, mas usa cerca de 330 MB de memória.
+  - O mapa devolve todos os pontos (cerca de 180 MB).
+  - Fica como próximo passo, se o volume real chegar a isso.
+- **Frente I, permissões por projeto para o supervisor.** Não foram feitas. O cliente já é restrito aos projetos dele.
+- **Frente K.**
+  - A Anthropic é chamada pela API Messages via cURL, versão `2026-10-21`.
+  - Nos modelos Opus e Sonnet 5.5 vai o parâmetro `fallbacks: "default"`: se a Anthropic recusar por política, ela mesma refaz no modelo recomendado.
+  - `max_tokens` tem mínimo de 16 mil, porque o raciocínio conta no limite.
+  - O tempo limite é de 95 s, abaixo dos 100 s do Cloudflare.
+- **Frente J.** O cliente não usa a interpretação por IA, para não gerar custo. Ele vê a interpretação revisada das análises liberadas.
+- **Parte I, IS.** Uma ação sem nenhuma avaliação recebida fica com IS vazio ("não aplicado"), fora da média, e não 0.
+- **Parte I, relatórios.** Os relatórios têm fluxo próprio, no mesmo padrão dos municipais. `municipal_reports` não foi alterado.
+- **Parte I, cronograma.** Cada trimestre marcado no PEA conta como 1 ação prevista. Ver `docs/MODULO_PEA.md`.

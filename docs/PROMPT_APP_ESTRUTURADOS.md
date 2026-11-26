@@ -221,5 +221,72 @@ trata tudo isto. Os testes de referência estão em
 
 ## Parte C: robustez (depois da Parte B)
 
-Será detalhada ao fim da frente I do painel (envio confirmado item a item
-também no fluxo antigo, registro de erros do app, identificador único).
+A frente I do painel está publicada na evolução. Os endpoints abaixo já
+existem; os campos novos não quebram as versões atuais do app.
+
+1. **Confirmação por parte no fluxo antigo (`POST api/forms/submit`).**
+   - A resposta agora traz `partes: {respostas, recebidas, revisao, midias_pendentes}`.
+   - Só tire a coleta da fila quando `success` e `id` vierem **e**
+     `partes.respostas` for igual ao número de itens com `question_id`
+     enviados. Se divergir, mantenha pendente e reenvie (mesmo `client_id`;
+     o servidor não duplica).
+   - Versões antigas do servidor não mandam `partes`: nesse caso, mantenha a
+     regra de hoje (sucesso + id).
+   - `partes.revisao = "pendente"` não é erro: o servidor gravou e mandou para
+     a fila de revisão do painel. Não mostre como falha ao entrevistador.
+2. **Identificador único em toda coleta.** Toda coleta (simples ou
+   estruturada) nasce com `client_id` UUID v4, guardado no rascunho e estável
+   em reenvios e edições. Confira que nenhuma tela ou migração de storage
+   gera um `client_id` novo para uma coleta que já tinha um.
+3. **Situação do aparelho: `POST api/system/dispositivo`** (com o token do aplicador).
+   - Corpo: `{device_id, app_versao, plataforma, pendentes, pendentes_midias, rascunhos, ultimo_envio_em}`.
+   - `device_id`: UUID gerado na primeira execução e guardado (não use IMEI nem dado pessoal).
+   - Envie ao abrir o app, ao fim de cada sincronização (com ou sem sucesso) e,
+     com o app aberto, no máximo a cada 15 minutos.
+   - Falha nessa chamada nunca bloqueia nada: só tente de novo na próxima.
+   - O painel mostra em Controle e segurança > Aparelhos quem tem fila parada.
+4. **Erros do app: `POST api/system/erro`** (com token).
+   - Corpo: `{mensagem, nivel: "erro"|"aviso"|"fatal", tela, app_versao, plataforma, device_id, detalhes, pilha}`.
+   - Mande nos erros não tratados (`FlutterError.onError`,
+     `PlatformDispatcher.instance.onError`), em falhas de envio com status
+     inesperado e em falhas de leitura do storage.
+   - **Nunca** mande respostas da entrevista, nomes, CPF, telefone ou token
+     no corpo.
+   - Limite: no máximo 20 erros por execução; sem rede, guarde os 20 últimos
+     e mande depois.
+   - O servidor agrupa erros iguais (Controle > Erros do sistema).
+5. **Tela de envios pendentes.** Mostre, por coleta: situação (pendente, erro,
+   aguardando mídia), número de tentativas, último erro e o botão
+   "Tentar agora". Dê também a opção "Exportar pendências" (arquivo JSON
+   cifrado ou compartilhável) para o suporte recuperar uma coleta presa.
+6. **Testes da Parte C:**
+   - `partes.respostas` divergente mantém pendente;
+   - resposta sem `partes` (servidor antigo) segue a regra antiga;
+   - heartbeat enviado após sincronizar e falha dele não bloqueia;
+   - erro não tratado vai para a fila de erros sem dados pessoais.
+
+## Parte D: PEA Gerdau (formulário de avaliação no modo assistido)
+
+O módulo PEA do painel usa um **questionário simples** já publicado na
+evolução: "PEA Gerdau — Avaliação da atividade" (10 perguntas). Ele chega ao
+app pelo `GET api/questionnaires` de sempre. Nada muda no fluxo antigo;
+apenas:
+
+1. **Opções por público.** As opções da pergunta 1 têm `option_value` com
+   prefixo do público: `int_` (interno), `ext_` (comunidades), `esc_`
+   (escolar).
+   - Ao abrir esse questionário (reconheça pelo título), pergunte primeiro
+     "Público da atividade" (Interno, Comunidade, Escolar) e mostre só as
+     opções do prefixo escolhido.
+   - Esse campo não é enviado como resposta.
+   - Na pergunta 4, troque `{apoio}` no texto por: " (no seu trabalho e em
+     casa)", " (na sua comunidade)" ou " (na escola, em casa e na
+     comunidade)".
+2. **Anônimo.** Não peça nome, CPF nem consentimento identificado nesse
+   questionário.
+3. **Ligação com a ação.** As respostas do app chegam sem ação; a equipe as
+   liga à ação na ficha (o painel mostra as feitas no dia da ação). Mande
+   sempre `completed_at` com a hora real do aparelho.
+4. **Modo de leitura assistida.** No público externo e no escolar, ofereça
+   fonte grande (1,3×) e botões maiores nesse questionário.
+
