@@ -242,3 +242,81 @@ Envia a entrevista inteira de uma vez:
 - `form_responses`: o cabeçalho da entrevista, com as colunas novas `estrutura_versao_id`, `calculados`, `alertas`, `revisao_status` e `revisao_erros`.
 - `moradores`: uma linha por morador, com o `client_id` do aparelho.
 - `respostas_estruturadas`: uma linha por questão respondida, do domicílio ou de um morador (`morador_id`). Os campos calculados ficam com `calculado = true` e `incompleto`.
+
+## 7. Biblioteca: conjuntos, temas, entrevistados e repetições (frente L)
+
+A biblioteca fica no painel, em Formulários estruturados → **Conjuntos e
+temas** e **Entrevistados**.
+
+### Conjuntos de perguntas
+
+Um conjunto é um texto com **uma única etapa** (`@domicilio`, `@morador` ou
+`@repetir`), publicado em versões.
+
+**Para usar num formulário:**
+
+```
+@usar composicao_domicilio            [título opcional]
+  se: q12 == "Sim"                    abre por resposta
+  tema: Reassentamento                abre pelo tema escolhido
+  categoria: Chefe de família         abre pela categoria do entrevistado
+  entrevistado: E001, E002            abre para estes entrevistados
+```
+
+**Versões:**
+- Ao **publicar o formulário**, o compilador pega a última versão publicada de cada conjunto e grava `conjunto: {id, codigo, versao, nome}` na etapa.
+- Uma versão nova do conjunto só chega ao formulário quando ele é publicado de novo.
+- As entrevistas já feitas ficam na versão em que foram coletadas.
+
+Esses mesmos atributos de etapa (`se`, `tema`, `categoria` e `entrevistado`)
+valem em qualquer `@domicilio`, `@morador` ou `@repetir`, escritos antes da
+primeira questão. Juntos, eles viram a **condição da etapa** (`"se"` no
+JSON): quando ela é falsa, todas as questões da etapa ficam ocultas.
+
+### Temas
+
+`# temas: Reassentamento, Saúde` no cabeçalho cria a questão `temas`
+(múltipla escolha, obrigatória) no início do formulário. O entrevistador
+marca os temas daquela entrevista, e as etapas com `tema: X` só abrem se X
+for marcado. O catálogo de temas do painel registra quais conjuntos
+pertencem a cada tema.
+
+### Entrevistados pré-cadastrados
+
+- **Cadastro:** por projeto, individual ou por planilha (CSV ou XLSX).
+  - Colunas: `codigo`, `nome`, `categoria`, `localidade`, `latitude` e `longitude`.
+  - As outras colunas viram campos extras.
+- **No formulário:**
+  - `# entrevistado: opcional` (ou `obrigatorio`) faz o app oferecer a escolha do entrevistado no início.
+  - Nas expressões, os dados aparecem como `ent_codigo`, `ent_nome`, `ent_categoria` (em código: "Chefe de família" vira `chefe_de_familia`), `ent_localidade` e `ent_<campo extra>` (ex.: `ent_telefone`).
+  - `preencher: ent_nome` numa questão do domicílio sugere a resposta a partir do cadastro.
+- **No envio:** vai o `entrevistado_id`, e o servidor confere com o cadastro.
+
+### Repetições (`@repetir`)
+
+```
+@repetir bens Benfeitorias e bens
+  por: q30          quantidade informada na questão 30 (inteiro do domicílio); opcional
+  max: 20           e/ou min: 1
+  rotulo: Bem {n}
+31. Tipo de bem [texto]
+32. Valor [moeda nsnr]
+```
+
+- Fora do grupo, use `soma_grupo("bens", q32)`, `contar_grupo("bens", filtro)`, `existe_grupo(...)` e `todos_grupo(...)`.
+- Dentro do grupo, as questões enxergam o domicílio.
+- Com `por:`, a quantidade preenchida precisa bater com a informada; quando não bate, a entrevista não finaliza.
+
+### JSON e API
+
+- **Definição:**
+  - `"temas": [...]` e `"entrevistado": {"modo": "opcional|obrigatorio"}` no topo;
+  - etapas com `"se"`, `"conjunto"`, e `"nivel": "grupo"` com `"grupo"` e `"repetir": {"por", "max", "min", "rotulo"}`;
+  - questões com `"preencher"`.
+- **Entrevistados:** `GET api/estruturado/entrevistados?project_id=&desde=AAAA-MM-DD HH:MM:SS` devolve `data: [{id, project_id, codigo, nome, categoria, localidade, latitude, longitude, campos, contexto, ativo, atualizado_em}]` e `servidor_em`.
+  - **Sincronização incremental:** sem `desde`, vêm só os ativos. Com `desde`, vêm os alterados depois dessa data, inclusive os removidos (`ativo: false`).
+  - **`contexto`:** já traz os valores como a linguagem enxerga (`ent_*`).
+- **Envio:** o corpo aceita também
+  `"entrevistado_id": 15, "grupos": {"bens": [{"client_id": "uuid", "indice": 1, "respostas": [...]}]}`.
+  A resposta ganha `partes.repeticoes`.
+- **Banco:** `conjuntos`, `conjunto_versoes`, `temas`, `tema_conjuntos`, `entrevistados`, `repeticoes`, `form_responses.entrevistado_id` e `respostas_estruturadas.repeticao_id` (`sql/conjuntos_migration.sql`).

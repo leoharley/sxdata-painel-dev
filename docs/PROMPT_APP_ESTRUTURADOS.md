@@ -174,11 +174,52 @@ Implemente em Dart **a mesma linguagem e o mesmo motor** do painel:
   fila de revisão. Uma entrevista "a revisar" indica divergência entre os
   motores ou regra quebrada.
 
-## Partes seguintes
+## Parte B: conjuntos, temas, entrevistados e repetições (depois da Parte A)
 
-Serão acrescentadas a este documento conforme o painel avançar. Use-as
-**somente depois da Parte A estabilizada**:
+Leia a seção 7 de `docs/FORMULARIOS_ESTRUTURADOS.md`. O motor do painel já
+trata tudo isto. Os testes de referência estão em
+`tests/sxdata/Estrutura_conjuntos_test.php`; reproduza-os em Dart.
 
-- **B:** conjuntos, temas e entrevistados.
-- **C:** robustez (identificadores, confirmação por parte também no fluxo
-  antigo, registro de erros do app).
+1. **Condição de etapa:** etapa com `"se"` falso tem todas as questões
+   ocultas. Aplique ao calcular a visibilidade, antes da condição da
+   questão. Na lista de etapas, uma etapa fechada não aparece.
+2. **Temas:**
+   - a questão `temas` é uma múltipla escolha comum, já incluída na definição;
+   - nenhum tratamento especial é necessário, além de mostrá-la no início com o texto de ajuda.
+3. **Entrevistados:**
+   - **Download:** baixe `GET api/estruturado/entrevistados` dos projetos do
+     aplicador e guarde offline no mesmo armazenamento do rascunho (não em
+     SharedPreferences). Atualize de forma incremental com
+     `desde = servidor_em` do último download e remova os que vierem com
+     `ativo: false`.
+   - **Escolha:** se a definição tem `"entrevistado"`, mostre antes da
+     primeira etapa uma busca por nome ou código entre os entrevistados do
+     projeto do formulário. No modo `obrigatorio`, a entrevista não começa
+     sem a escolha; no `opcional`, há o botão "Sem cadastro".
+   - **Contexto:** o `contexto` do entrevistado escolhido alimenta as
+     referências `ent_*` do motor. As questões com `preencher` recebem o
+     valor como sugestão, e o entrevistador pode alterar.
+   - **Envio:** mande `entrevistado_id`.
+4. **Repetições (`nivel: grupo`):**
+   - **Tela:** igual à lista de moradores: itens com rótulo
+     (`repetir.rotulo` com `{n}`), status de cada item e os botões
+     adicionar e remover (com confirmação).
+   - **Quantidade:** com `repetir.por`, mostre "X de N informados" e
+     impeça finalizar se não bater; respeite `max` e `min`.
+   - **Motor:** cada item é um escopo que enxerga o domicílio. As funções
+     `soma_grupo`, `contar_grupo`, `existe_grupo` e `todos_grupo` agregam
+     os itens. Os casos estão em `tests/fixtures/expressoes.json` e no
+     teste PHP citado acima.
+   - **Envio:** `grupos: {codigo: [{client_id, indice, respostas}]}`, com
+     o UUID de cada item estável. A entrevista só sai da fila quando
+     `partes.repeticoes` conferir.
+5. **Testes da Parte B:**
+   - etapa aberta e fechada por resposta, por tema e por categoria;
+   - entrevistado obrigatório e opcional, com preenchimento;
+   - grupo com `por`, `max` e soma com NS/NR marcando incompleto;
+   - download incremental de entrevistados (novo, alterado e removido).
+
+## Parte C: robustez (depois da Parte B)
+
+Será detalhada ao fim da frente I do painel (envio confirmado item a item
+também no fluxo antigo, registro de erros do app, identificador único).
