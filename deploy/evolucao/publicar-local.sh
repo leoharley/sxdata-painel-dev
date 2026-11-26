@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Publica no ambiente de evolucao (VPS Oracle, sxdata.online) a partir desta
+# Publica no ambiente de evolucao (VPS Hostinger, sxdata.online) a partir desta
 # maquina. NAO toca na producao (painel.sxdata.com.br).
 #
 # Uso (Git Bash, na raiz do sxdata-painel-dev):
@@ -7,12 +7,13 @@
 #   bash deploy/evolucao/publicar-local.sh app      # build web do sxdata-app-dev
 #   bash deploy/evolucao/publicar-local.sh tudo
 #
-# Variaveis opcionais: SXDATA_KEY (chave SSH), SXDATA_APP_DIR, FLUTTER.
+# Variaveis opcionais: SXDATA_HOST, SXDATA_KEY (chave SSH), SXDATA_APP_DIR, FLUTTER.
+# A VPS Oracle antiga (163.176.165.227) deixou de ser usada em nov/2026.
 set -euo pipefail
 
-HOST=opc@163.176.165.227
+HOST=${SXDATA_HOST:-sxadmin@189.24.17.46}
 API_URL=https://painel.sxdata.online/api
-KEY=${SXDATA_KEY:-$HOME/.ssh/sxdata_vps.pem}
+KEY=${SXDATA_KEY:-$HOME/.ssh/sxdata_hostinger}
 RAIZ=$(cd "$(dirname "$0")/../.." && pwd)
 APP_DIR=${SXDATA_APP_DIR:-$RAIZ/../sxdata-app-dev}
 FLUTTER=${FLUTTER:-flutter}
@@ -21,7 +22,7 @@ trap 'rm -rf "$TMP"' EXIT
 
 enviar() {  # enviar <alvo> <pacote>
     scp -q -i "$KEY" "$2" "$HOST:/tmp/sxdata-$1.tgz"
-    ssh -i "$KEY" "$HOST" "sudo /usr/local/bin/sxdata-publicar $1 /tmp/sxdata-$1.tgz && rm -f /tmp/sxdata-$1.tgz"
+    ssh -i "$KEY" "$HOST" "sudo /usr/local/bin/sxdata-publicar evolucao $1 /tmp/sxdata-$1.tgz && rm -f /tmp/sxdata-$1.tgz"
 }
 
 publicar_painel() {
