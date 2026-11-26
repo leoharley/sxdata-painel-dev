@@ -12,6 +12,11 @@ class Estruturado_model extends CI_Model {
 
     private static $disponivel = NULL;
 
+    public function __construct() {
+        parent::__construct();
+        $this->load->database();
+    }
+
     /** A migração foi aplicada? */
     public function disponivel() {
         if (self::$disponivel === NULL) {
