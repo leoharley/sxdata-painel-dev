@@ -219,6 +219,12 @@
                     Painel de Análises
                 </a>
             </li>
+            <li class="nav-item">
+                <a class="nav-link <?= $this->uri->segment(1) == 'cruzamentos' ? 'active' : '' ?>" href="<?= base_url('cruzamentos') ?>">
+                    <i class="fas fa-th"></i>
+                    Cruzamento de variáveis
+                </a>
+            </li>
             <?php else: ?>
             <li class="nav-item">
                 <a class="nav-link <?= $this->uri->segment(1) == 'dashboard' ? 'active' : '' ?>" href="<?= base_url('dashboard') ?>">
@@ -262,6 +268,12 @@
                 <a class="nav-link <?= $this->uri->segment(1) == 'reports' ? 'active' : '' ?>" href="<?= base_url('reports') ?>">
                     <i class="fas fa-file-alt"></i>
                     Relatórios e Análises
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link <?= $this->uri->segment(1) == 'cruzamentos' ? 'active' : '' ?>" href="<?= base_url('cruzamentos') ?>">
+                    <i class="fas fa-th"></i>
+                    Cruzamento de variáveis
                 </a>
             </li>
             <?php if (in_array($user_role, ['administrador', 'supervisor'], true)): ?>

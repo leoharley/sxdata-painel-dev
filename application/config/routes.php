@@ -167,3 +167,6 @@ $route['controle'] = 'seguranca/index';
 $route['controle/(.+)'] = 'seguranca/$1';
 $route['api/system/erro'] = 'api/system/erro';
 $route['api/system/dispositivo'] = 'api/system/dispositivo';
+
+// Frente J: cruzamento de variáveis
+$route['cruzamentos'] = 'cruzamentos/index';
