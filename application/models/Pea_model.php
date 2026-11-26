@@ -117,14 +117,19 @@ class Pea_model extends CI_Model {
                 }
                 $n_crono++;
             }
-            // Árvore EIEAP: índices e valores informados no PEA (pesos iguais até a Gerdau enviar o método)
+            // Árvore EIEAP: índices e valores informados no PEA (pesos iguais até a Gerdau enviar o método).
+            // A hierarquia vem de eieap_arvore (conferida pelas médias da Tabela 03); a raiz é sempre "iea".
+            $pais = [];
+            foreach ($s['eieap_arvore'] ?? [] as $a) {
+                $pais[$this->eieap_codigo($a['indice'])] = $a['pai'] !== NULL ? $this->eieap_codigo($a['pai']) : NULL;
+            }
             $nos = [['iea', 'Indicador de Educação Ambiental', NULL]];
             $vistos = ['iea' => TRUE];
             foreach ($s['eieap'] ?? [] as $e) {
-                $cod = $this->slug($e['indice']);
+                $cod = $this->eieap_codigo($e['indice']);
                 if (!isset($vistos[$cod])) {
                     $vistos[$cod] = TRUE;
-                    $nos[] = [$cod, $e['indice'], 'iea'];
+                    $nos[] = [$cod, $e['indice'], $pais[$cod] ?? 'iea'];
                 }
                 foreach (['base' => ['linha_base_2021', 2021], 'atual' => ['valor_2025', 2025], 'meta' => ['meta_2026', 2026]] as $tipo => $k) {
                     if (isset($e[$k[0]]) && is_numeric($e[$k[0]])) {
@@ -615,6 +620,12 @@ class Pea_model extends CI_Model {
 
     public function evento($rid, $evento, $por, $comentario = NULL) {
         $this->db->insert('pea_relatorio_eventos', ['relatorio_id' => (int) $rid, 'user_id' => $por ?: NULL, 'evento' => $evento, 'comentario' => $comentario ?: NULL]);
+    }
+
+    /** Código do nó EIEAP; o Indicador de Educação Ambiental é a raiz "iea". */
+    private function eieap_codigo($indice) {
+        $c = $this->slug($indice);
+        return $c === 'indicador_de_educacao_ambiental' ? 'iea' : $c;
     }
 
     private function slug($s) {

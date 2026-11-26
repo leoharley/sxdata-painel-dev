@@ -106,7 +106,7 @@ $q = function ($extra) use ($f) { return '?' . http_build_query(array_filter(arr
                     <table class="table table-sm mb-0 small">
                         <thead class="table-light"><tr><th>Índice</th><th>Unidade</th><th class="text-end">Base 2021</th><th class="text-end">Atual</th><th class="text-end">Meta</th><th class="text-end">Falta</th></tr></thead>
                         <tbody>
-                        <?php $tem = FALSE; foreach ($eieap['nos'] as $no): if ($no['codigo'] === 'iea' && count($eieap['nos']) > 1) { continue; } foreach ($eieap['unidades'] as $un => $v):
+                        <?php $tem = FALSE; foreach ($eieap['nos'] as $no): foreach ($eieap['unidades'] as $un => $v):
                             $b = $v['base'][$no['codigo']]['valor'] ?? NULL; $at = $v['atual'][$no['codigo']]['valor'] ?? ($v['calculado'][$no['codigo']] ?? NULL); $mt = $v['meta'][$no['codigo']]['valor'] ?? NULL;
                             if ($b === NULL && $at === NULL && $mt === NULL) { continue; } $tem = TRUE; ?>
                             <tr><td><?= html_escape($no['nome']) ?></td><td><?= html_escape($un) ?></td><td class="text-end"><?= pea_num($b) ?></td>

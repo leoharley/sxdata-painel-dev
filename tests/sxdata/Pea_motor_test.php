@@ -115,6 +115,39 @@ class Pea_motor_test extends TestCase {
         $this->assertNull(Pea_motor::arvore($nos, [])['iea']);
     }
 
+    /**
+     * A árvore carregada do PEA (eieap_arvore), partindo só das folhas da
+     * Tabela 03, tem de reproduzir os índices agregados da própria tabela.
+     * A Percepção Interna (e a Percepção que depende dela) diverge até 0,4
+     * com pesos iguais: o método EIEAP pondera de outro jeito (ponto 7).
+     */
+    public function test_arvore_eieap_reproduz_tabela_03() {
+        $pea = json_decode(file_get_contents(__DIR__ . '/../../application/config/pea_2026_2031.json'), TRUE);
+        $this->assertCount(20, $pea['eieap_arvore']);
+        $nos = [];
+        $tem_filho = [];
+        foreach ($pea['eieap_arvore'] as $a) {
+            $nos[] = ['codigo' => $a['indice'], 'pai' => $a['pai'], 'peso' => $a['peso']];
+            if ($a['pai'] !== NULL) {
+                $tem_filho[$a['pai']] = TRUE;
+            }
+        }
+        $tolerancia = ['Indicador de Percepção Ambiental Interna' => 0.5, 'Indicador de Percepção Ambiental' => 0.3];
+        foreach (['UOB', 'MVL', 'MMB', 'Gerdau'] as $u) {
+            $tabela = [];
+            foreach ($pea['eieap'] as $e) {
+                if ($e['unidade'] === $u) {
+                    $tabela[$e['indice']] = $e['valor_2025'];
+                }
+            }
+            $folhas = array_diff_key($tabela, $tem_filho);
+            $calc = Pea_motor::arvore($nos, $folhas);
+            foreach (array_keys($tem_filho) as $no) {
+                $this->assertEqualsWithDelta($tabela[$no], $calc[$no], $tolerancia[$no] ?? 0.15, "$u: $no");
+            }
+        }
+    }
+
     public function test_regras_salvas_e_validacao() {
         $r = Pea_motor::regras(['is' => ['denominador' => 'respondentes'], 'ie' => ['pesos' => ['icc' => 2, 'ip' => 1, 'is' => 1, 'iia' => 1]]]);
         $this->assertSame('respondentes', $r['is']['denominador']);

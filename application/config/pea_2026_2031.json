@@ -3332,6 +3332,28 @@
    "meta_2026": null
   }
  ],
+ "eieap_arvore": [
+  {"indice":"Indicador de Educação Ambiental","pai":null,"peso":1},
+  {"indice":"Indicador de Percepção Ambiental","pai":"Indicador de Educação Ambiental","peso":1},
+  {"indice":"Indicador de Percepção Ambiental Geral","pai":"Indicador de Percepção Ambiental","peso":1},
+  {"indice":"Conhecimento Ambiental Geral","pai":"Indicador de Percepção Ambiental Geral","peso":1},
+  {"indice":"Conhecimento do meio ambiente","pai":"Conhecimento Ambiental Geral","peso":1},
+  {"indice":"Expressões","pai":"Conhecimento Ambiental Geral","peso":1},
+  {"indice":"Problemas ambientais","pai":"Conhecimento Ambiental Geral","peso":1},
+  {"indice":"Soluções para os problemas ambientais","pai":"Conhecimento Ambiental Geral","peso":1},
+  {"indice":"Interesse e Motivação Geral","pai":"Indicador de Percepção Ambiental Geral","peso":1},
+  {"indice":"Atitude Geral","pai":"Indicador de Percepção Ambiental Geral","peso":1},
+  {"indice":"Indicador de Percepção Ambiental Interna","pai":"Indicador de Percepção Ambiental","peso":1},
+  {"indice":"Conhecimento Ambiental Interno","pai":"Indicador de Percepção Ambiental Interna","peso":1},
+  {"indice":"Interesse e Motivação Interno","pai":"Indicador de Percepção Ambiental Interna","peso":1},
+  {"indice":"Atitude Interno","pai":"Indicador de Percepção Ambiental Interna","peso":1},
+  {"indice":"Indicador de Comportamento Ambiental Geral","pai":"Indicador de Educação Ambiental","peso":1},
+  {"indice":"Comportamento Consumidor Geral","pai":"Indicador de Comportamento Ambiental Geral","peso":1},
+  {"indice":"Comportamento Político Geral","pai":"Indicador de Comportamento Ambiental Geral","peso":1},
+  {"indice":"Indicador de Comportamento Ambiental Interno","pai":"Indicador de Educação Ambiental","peso":1},
+  {"indice":"Comportamento Consumidor Interno","pai":"Indicador de Comportamento Ambiental Interno","peso":1},
+  {"indice":"Comportamento Político Interno","pai":"Indicador de Comportamento Ambiental Interno","peso":1}
+ ],
  "colaboradores": [
   {
    "unidade": "UOB",
@@ -3386,7 +3408,8 @@
   "EIEAP, Tabela 03 página 2: no -layout os rótulos ficam deslocados uma linha em relação aos números; a leitura correta (confirmada pelo -table e pelo texto: comportamento ambiental geral 33,0, interno 71,0, educação ambiental 57,0) é: Indicador de Comportamento Ambiental Geral 33,5/32,9/32,6/33,0; Comportamento Consumidor Interno 70,7/72,7/75,1/72,8; Comportamento Político Interno 66,1/70,7/71,1/69,3; Indicador de Comportamento Ambiental Interno 68,4/71,7/73,1/71,0; Indicador de Educação Ambiental 55,6/56,6/58,7/57,0. Da mesma forma, na Tabela 04 as linhas \"Percepção Ambiental Interna\" e \"Percepção Ambiental\" estão com o rótulo uma linha abaixo no -layout.",
   "EIEAP: comportamento ambiental (geral e interno) não tem meta, segundo o próprio texto (\"Ambos são indicadores que não possuem metas a serem cumpridas, logo não foram contemplados na Tabela 04\"). A linha de base 2021 do Indicador de Educação Ambiental (Gerdau = 50,4) vem do texto da p. 22, não de tabela; o EIEAP 2021 por unidade desse indicador não aparece no documento.",
   "Colaboradores (Tabela 09, dezembro/2025): a linha \"Total\" soma as três unidades (6.611 próprios + 5.719 parceiros = 12.330). O documento diz que o número está superestimado por projetos de expansão e tende a cair no ciclo 2026-2031.",
-  "Datas do ciclo: o ciclo anterior (2021-2026) começou em agosto de 2021 e termina em agosto de 2026; o novo ciclo 2026-2031 começa no 3° trimestre de 2026 (provavelmente agosto)."
+  "Datas do ciclo: o ciclo anterior (2021-2026) começou em agosto de 2021 e termina em agosto de 2026; o novo ciclo 2026-2031 começa no 3° trimestre de 2026 (provavelmente agosto).",
+  "EIEAP, árvore (eieap_arvore): hierarquia deduzida da Tabela 03 e conferida pelas médias simples dos filhos. Educação Ambiental = Percepção Ambiental + Comportamento Geral + Comportamento Interno; Percepção = Geral + Interna; Percepção Geral = Conhecimento Geral + Interesse Geral + Atitude Geral; Conhecimento Geral = os 4 primeiros índices; Percepção Interna = Conhecimento Interno + Interesse Interno + Atitude Interno; Comportamento = Consumidor + Político. Com pesos iguais todos reproduzem a tabela com diferença de até 0,1, exceto a Percepção Interna (até 0,4: UOB dá 65,4 contra 65,0), sinal de pesos diferentes no método EIEAP (ponto 7)."
  ],
  "lacunas_da_extracao": [
   "Workshop de Planejamento (público escolar, Quadro 16): não tem linha no cronograma (Tabela 27, pea.txt ~3687-3720 e PDF p. 97) nem faixa de IP (Tabela 23, pea.txt ~3465-3550); cronograma ausente e ip_faixas = null.",
