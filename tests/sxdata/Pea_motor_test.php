@@ -16,6 +16,7 @@ class Pea_motor_test extends TestCase {
         $r['is']['denominador'] = 'respondentes';
         $this->assertSame(90.0, Pea_motor::is($p6, 25, $r), '18 de 20 respondentes');
         $this->assertNull(Pea_motor::is([], 0, $this->r()));
+        $this->assertNull(Pea_motor::is([], 25, $this->r()), 'sem nenhuma avaliação: não aplicada (fora da média), não zero');
         $this->assertSame(100.0, Pea_motor::is(['satisfeito' => 30], 20, $this->r()), 'teto 100 se a lista de presença vier menor');
     }
 

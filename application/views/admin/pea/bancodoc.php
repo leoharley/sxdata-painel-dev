@@ -1,4 +1,5 @@
 <?php defined('BASEPATH') OR exit('No direct script access allowed');
+require_once APPPATH . 'libraries/Bancodoc.php';
 $admin = $this->session->userdata('admin_role') === 'administrador'; ?>
 <div class="container-fluid">
     <div class="alert alert-light border small">

@@ -182,6 +182,8 @@ $SSL
         include /etc/nginx/snippets/sxdata-seguranca.conf;
         add_header Access-Control-Allow-Origin "*" always;
         location ~ \.php\$ { deny all; return 404; }
+        # Evidências do PEA (lista de presença tem CPF): só pelo painel, com login
+        location ^~ /uploads/pea/ { deny all; return 404; }
         try_files \$uri =404;
     }
 

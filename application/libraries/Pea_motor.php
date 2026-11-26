@@ -59,7 +59,12 @@ class Pea_motor {
             $satisf += (int) ($p6[$o] ?? 0);
         }
         $respondentes = array_sum(array_map('intval', $p6));
-        $den = ($r['is']['denominador'] ?? 'participantes') === 'respondentes' ? $respondentes : (int) $participantes;
+        if ($respondentes === 0) {
+            // Nenhuma avaliação recebida: formulário não aplicado, não "todos
+            // insatisfeitos". Fica fora da média (como o IIA) e a ficha mostra a adesão.
+            return NULL;
+        }
+        $den =($r['is']['denominador'] ?? 'participantes') === 'respondentes' ? $respondentes : (int) $participantes;
         if ($den <= 0) {
             return $respondentes > 0 ? round($satisf / $respondentes * 100, 1) : NULL;
         }
