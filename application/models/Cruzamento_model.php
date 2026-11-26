@@ -32,14 +32,14 @@ class Cruzamento_model extends CI_Model {
 
     /** Questionários com respostas, dos projetos informados (NULL = todos). */
     public function questionarios($projetos = NULL) {
+        if ($projetos !== NULL && !$projetos) {
+            return []; // antes de montar a consulta: senão ela vaza para a próxima
+        }
         $this->db->select("q.id, q.title, COALESCE(q.formato, 'simples') AS formato, p.name AS projeto, COUNT(fr.id) AS n", FALSE)
             ->from('questionnaires q')->join('projects p', 'p.id = q.project_id', 'left')
             ->join('form_responses fr', 'fr.questionnaire_id = q.id')
             ->group_by('q.id, q.title, q.formato, p.name')->order_by('p.name')->order_by('q.title');
         if ($projetos !== NULL) {
-            if (!$projetos) {
-                return [];
-            }
             $this->db->where_in('q.project_id', $projetos);
         }
         return $this->db->get()->result();
@@ -363,6 +363,9 @@ class Cruzamento_model extends CI_Model {
     // ------------------------------------------------------------
 
     public function salvas($qid = NULL, $so_liberadas = FALSE, $projetos = NULL) {
+        if ($projetos !== NULL && !$projetos) {
+            return [];
+        }
         $this->db->select('c.*, q.title AS questionario, u.full_name AS autor')->from('cruzamentos_salvos c')
             ->join('questionnaires q', 'q.id = c.questionnaire_id')->join('users u', 'u.id = c.criado_por', 'left');
         if ($qid) {
@@ -372,7 +375,6 @@ class Cruzamento_model extends CI_Model {
             $this->db->where('c.liberado_cliente', TRUE);
         }
         if ($projetos !== NULL) {
-            if (!$projetos) { return []; }
             $this->db->where_in('q.project_id', $projetos);
         }
         return $this->db->order_by('c.atualizado_em', 'DESC')->get()->result();
