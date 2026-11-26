@@ -34,7 +34,13 @@ class Settings_model extends CI_Model {
         
         $this->db->where('setting_key', $key);
         $updated = $this->db->update('system_settings', $data);
-        
+
+        // update() devolve TRUE mesmo sem linha afetada: a configuração nova
+        // nunca era criada e a tela de Configurações não gravava nada
+        if ($updated && $this->db->affected_rows() === 0) {
+            $updated = FALSE;
+        }
+
         if (!$updated) {
             // Se não atualizou, inserir novo
             $data['setting_key'] = $key;
