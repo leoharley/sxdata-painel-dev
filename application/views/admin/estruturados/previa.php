@@ -37,6 +37,9 @@
     const URL = <?= json_encode(base_url('formularios-estruturados/avaliar/' . $q->id)) ?>;
     const dom = {};             // respostas do domicílio: codigo -> {valor, nsnr, complementos, complemento}
     let moradores = [];         // [{client_id, nome, resp: {}}]
+    const grupos = {};          // grupo -> [{client_id, resp: {}}]
+    const ENTREVISTADOS = <?= json_encode($entrevistados ?? [], JSON_UNESCAPED_UNICODE) ?>;
+    let entrevistado = null;    // {id, contexto}
     let ultimo = null, timer = null, seq = 0;
     const form = document.getElementById('form');
     const hoje = new Date();
@@ -46,8 +49,22 @@
     const esc = s => { const d = document.createElement('div'); d.textContent = s == null ? '' : String(s); return d.innerHTML; };
     const uuid = () => (crypto.randomUUID ? crypto.randomUUID() : 'm' + Date.now() + Math.random());
 
-    function store(escopo) { return escopo === 'd' ? dom : (moradores.find(m => m.client_id === escopo) || {}).resp; }
-    function nomeDe(escopo) { const m = moradores.find(x => x.client_id === escopo); return m && m.nome ? m.nome : 'o(a) morador(a)'; }
+    function instancia(escopo) {
+        for (const g in grupos) { const i = grupos[g].find(x => x.client_id === escopo); if (i) return i; }
+        return null;
+    }
+    function grupoDe(escopo) { for (const g in grupos) if (grupos[g].some(x => x.client_id === escopo)) return g; return null; }
+    function store(escopo) {
+        if (escopo === 'd') return dom;
+        const m = moradores.find(x => x.client_id === escopo);
+        return m ? m.resp : (instancia(escopo) || {}).resp;
+    }
+    function nomeDe(escopo) {
+        const m = moradores.find(x => x.client_id === escopo);
+        if (m) return m.nome || 'o(a) morador(a)';
+        const g = grupoDe(escopo);
+        return g ? (grupos[g].findIndex(x => x.client_id === escopo) + 1) + 'º item' : '';
+    }
 
     // ---------------------------------------------------------- render
     function campo(p, escopo) {
@@ -148,6 +165,23 @@
                 return;
             }
             h += '<div class="card mb-3"><div class="card-header fw-semibold">' + esc(e.titulo || (e.nivel === 'morador' ? 'Por morador' : 'Domicílio')) + '</div><div class="card-body">';
+            if (e.nivel === 'grupo') {
+                const lista = grupos[e.grupo] = grupos[e.grupo] || [];
+                const rot = (e.repetir && e.repetir.rotulo) || ((e.titulo || 'Item') + ' {n}');
+                h += '<ul class="nav nav-pills mb-2">';
+                lista.forEach((it, k) => {
+                    h += '<li class="nav-item"><a class="nav-link ' + (k === 0 ? 'active' : '') + '" data-bs-toggle="pill" href="#gr' + i + '_' + k + '">' + esc(rot.replace('{n}', k + 1)) + '</a></li>';
+                });
+                h += '</ul><div class="tab-content">';
+                lista.forEach((it, k) => {
+                    h += '<div class="tab-pane fade ' + (k === 0 ? 'show active' : '') + '" id="gr' + i + '_' + k + '">' + perguntas(e.perguntas, it.client_id)
+                       + '<button class="btn btn-sm btn-outline-danger" type="button" data-grupo-del="' + e.grupo + '" data-cid="' + it.client_id + '">Remover este item</button></div>';
+                });
+                h += '</div><button class="btn btn-sm btn-outline-primary mt-2" type="button" data-grupo-add="' + e.grupo + '"><i class="fas fa-plus me-1"></i> Adicionar item</button>'
+                   + (e.repetir && e.repetir.por ? ' <span class="small text-muted ms-2">Quantidade informada na questão ' + esc(e.repetir.por) + '</span>' : '')
+                   + '</div></div>';
+                return;
+            }
             if (e.nivel === 'morador') {
                 if (!moradores.length) { h += '<p class="text-muted mb-0">Cadastre os moradores para preencher esta etapa.</p></div></div>'; return; }
                 h += '<ul class="nav nav-pills mb-2">';
@@ -183,6 +217,8 @@
     form.addEventListener('change', ev => tratar(ev, true));
     form.addEventListener('click', ev => {
         const t = ev.target;
+        if (t.dataset.grupoAdd) { grupos[t.dataset.grupoAdd].push({ client_id: uuid(), resp: {} }); render(); agendar(); }
+        if (t.dataset.grupoDel) { grupos[t.dataset.grupoDel] = grupos[t.dataset.grupoDel].filter(x => x.client_id !== t.dataset.cid); render(); agendar(); }
         if (t.id === 'mor-add') { moradores.push({ client_id: uuid(), nome: '', resp: {} }); render(); agendar(); }
         if (t.id === 'mor-resp') {
             const e = DEF.etapas.find(x => x.tipo === 'moradores');
@@ -257,7 +293,10 @@
 
     async function avaliar() {
         const meu = ++seq;
-        const corpo = { respostas: dom, moradores: moradores.map(m => ({ client_id: m.client_id, nome: m.nome, respostas: m.resp })) };
+        const g = {};
+        Object.keys(grupos).forEach(k => { g[k] = grupos[k].map((it, i) => ({ client_id: it.client_id, indice: i + 1, respostas: it.resp })); });
+        const corpo = { respostas: dom, moradores: moradores.map(m => ({ client_id: m.client_id, nome: m.nome, respostas: m.resp })),
+                        grupos: g, entrevistado_id: entrevistado ? entrevistado.id : null };
         try {
             const r = await (await fetch(URL, { method: 'POST', credentials: 'same-origin', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(corpo) })).json();
             if (meu !== seq || !r.ok) return;
@@ -270,9 +309,11 @@
         const visDom = r.visiveis.domicilio || {};
         form.querySelectorAll('.pq').forEach(pq => {
             const cod = pq.dataset.cod, esc_ = pq.dataset.escopo;
-            const vis = esc_ === 'd' ? visDom[cod] : ((r.visiveis.moradores || {})[esc_] || {})[cod];
+            const gr = esc_ === 'd' ? null : grupoDe(esc_);
+            const fonte = (tipo) => gr ? (((r[tipo].grupos || {})[gr] || {})[esc_] || {}) : (((r[tipo].moradores || {})[esc_]) || {});
+            const vis = esc_ === 'd' ? visDom[cod] : fonte('visiveis')[cod];
             pq.style.display = vis === false ? 'none' : '';
-            const calc = esc_ === 'd' ? (r.calculados.domicilio || {})[cod] : ((r.calculados.moradores || {})[esc_] || {})[cod];
+            const calc = esc_ === 'd' ? (r.calculados.domicilio || {})[cod] : fonte('calculados')[cod];
             if (calc) {
                 const p = pergunta(cod);
                 let t = calc.valor === null ? '—' : calc.valor;
@@ -280,7 +321,7 @@
                 if (calc.valor !== null && p.formato === 'duracao') t = Math.floor(calc.valor / 60) + ' h ' + (calc.valor % 60) + ' min';
                 pq.querySelector('.valor').innerHTML = esc(t) + (calc.incompleto ? ' <span class="badge bg-warning text-dark">incompleta (há NS/NR)</span>' : '');
             }
-            const opc = esc_ === 'd' ? (r.opcoes.domicilio || {})[cod] : ((r.opcoes.moradores || {})[esc_] || {})[cod];
+            const opc = esc_ === 'd' ? (r.opcoes.domicilio || {})[cod] : fonte('opcoes')[cod];
             if (opc) {
                 const ok = opc.map(o => o.valor);
                 pq.querySelectorAll('.opc').forEach(div => { div.style.display = ok.includes(div.dataset.valor) ? '' : 'none'; });
@@ -311,6 +352,27 @@
     }
 
     // Preenchimento automático (data e hora de início)
+    // Entrevistado pré-cadastrado: escolha no topo e preenchimento (preencher: ent_*)
+    if (DEF.entrevistado) {
+        const box = document.createElement('div');
+        box.className = 'card mb-3';
+        box.innerHTML = '<div class="card-body"><label class="form-label fw-semibold">Entrevistado pré-cadastrado ' + (DEF.entrevistado.modo === 'obrigatorio' ? '(obrigatório)' : '(opcional)')
+            + '</label><select class="form-select" id="sel-ent"><option value="">— nenhum —</option>'
+            + ENTREVISTADOS.map(e => '<option value="' + e.id + '">' + esc(e.codigo + ' - ' + e.nome + (e.categoria ? ' (' + e.categoria + ')' : '')) + '</option>').join('')
+            + '</select>' + (ENTREVISTADOS.length ? '' : '<div class="small text-muted mt-1">Nenhum entrevistado cadastrado para o projeto deste formulário.</div>') + '</div>';
+        form.parentNode.insertBefore(box, form);
+        box.querySelector('#sel-ent').addEventListener('change', ev => {
+            const e = ENTREVISTADOS.find(x => String(x.id) === ev.target.value);
+            entrevistado = e ? { id: e.id, contexto: e.contexto } : null;
+            if (e) DEF.etapas.forEach(et => (et.perguntas || []).forEach(p => {
+                if (p.preencher && et.nivel !== 'morador' && et.nivel !== 'grupo') {
+                    const v = e.contexto[p.preencher.substring(4)];
+                    if (v !== undefined && v !== null) dom[p.codigo] = Object.assign({}, dom[p.codigo] || {}, { valor: v });
+                }
+            }));
+            render(); agendar();
+        });
+    }
     DEF.etapas.forEach(e => (e.perguntas || []).forEach(p => {
         if (e.nivel !== 'morador' && p.auto === 'data') dom[p.codigo] = { valor: dataHoje };
         if (e.nivel !== 'morador' && p.auto === 'hora') dom[p.codigo] = { valor: horaAgora() };

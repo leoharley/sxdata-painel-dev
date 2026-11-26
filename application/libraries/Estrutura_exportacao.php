@@ -59,15 +59,37 @@ class Estrutura_exportacao {
             $mor->fromArray($linhas, NULL, 'A1', TRUE);
         }
 
+        // ---- Uma aba por grupo repetido (@repetir)
+        $client = [];
+        foreach ($dados['entrevistas'] as $e) { $client[$e->id] = $e->client_id; }
+        foreach ($motor->grupos() as $g => $etapa) {
+            $aba = $planilha->createSheet();
+            $aba->setTitle(mb_substr(preg_replace('/[\\/\?\*\[\]:]/', ' ', $etapa['titulo'] ?: $g), 0, 31));
+            $cols = $this->colunas($motor, 'grupo:' . $g);
+            $cab = ['ID entrevista', 'client_id da entrevista', 'Item', 'Rótulo'];
+            foreach ($cols as $c) { $cab[] = $c['titulo']; }
+            $linhas = [$cab];
+            foreach ($dados['repeticoes'] ?? [] as $rp) {
+                if ($rp->grupo !== $g) { continue; }
+                $l = [(int) $rp->form_response_id, $client[$rp->form_response_id] ?? '', (int) $rp->indice, $rp->rotulo];
+                $resp = $dados['respostas']['r' . $rp->id] ?? [];
+                foreach ($cols as $c) { $l[] = $this->celula($c, $resp[$c['codigo']] ?? NULL); }
+                $linhas[] = $l;
+            }
+            $aba->fromArray($linhas, NULL, 'A1', TRUE);
+        }
+
         // ---- Dicionário
         $dic = $planilha->createSheet();
         $dic->setTitle('Dicionário');
         $linhas = [['Código', 'Número', 'Nível', 'Bloco', 'Seção', 'Pergunta', 'Tipo', 'Opções (código = texto)', 'Exibir se', 'Fórmula']];
-        foreach (['domicilio', 'morador'] as $nivel) {
+        $niveis = ['domicilio', 'morador'];
+        foreach (array_keys($motor->grupos()) as $g) { $niveis[] = 'grupo:' . $g; }
+        foreach ($niveis as $nivel) {
             foreach ($motor->sequencia($nivel) as $codigo) {
                 $p = $motor->pergunta($codigo);
                 $op = implode("\n", array_map(function ($o) { return $o['valor'] . ' = ' . $o['texto']; }, $p['opcoes'] ?? []));
-                $linhas[] = [$codigo, $p['numero'] ?? '', $nivel === 'morador' ? 'Morador' : 'Domicílio', $p['bloco'] ?? '',
+                $linhas[] = [$codigo, $p['numero'] ?? '', $nivel === 'morador' ? 'Morador' : ($nivel === 'domicilio' ? 'Domicílio' : 'Grupo ' . substr($nivel, 6)), $p['bloco'] ?? '',
                     $p['secao'] ?? '', $p['texto'], $p['tipo'], $op, $p['exibir_se'] ?? '', $p['formula'] ?? ''];
             }
         }

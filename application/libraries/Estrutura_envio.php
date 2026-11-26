@@ -61,9 +61,31 @@ class Estrutura_envio {
             'consent_given' => !empty($json['consent_given']),
             'respostas' => self::respostas($json['respostas'] ?? []),
             'moradores' => $moradores,
+            'grupos' => self::grupos($json['grupos'] ?? [], $client_id),
+            'entrevistado_id' => isset($json['entrevistado_id']) && is_numeric($json['entrevistado_id']) && (int) $json['entrevistado_id'] > 0 ? (int) $json['entrevistado_id'] : NULL,
             'calculados_app' => is_array($json['calculados'] ?? NULL) ? $json['calculados'] : [],
         ];
         return [$erros ? NULL : $dados, $erros];
+    }
+
+    /** grupos: {codigo: [{client_id, indice, respostas}]} (@repetir). */
+    public static function grupos($g, $client_id) {
+        if (!is_array($g)) { return []; }
+        $saida = [];
+        foreach ($g as $codigo => $lista) {
+            if (!is_string($codigo) || !preg_match('/^[a-z_][a-z0-9_]{0,59}$/', $codigo) || !is_array($lista)) { continue; }
+            $vistos = [];
+            foreach (array_values($lista) as $i => $inst) {
+                if (!is_array($inst)) { continue; }
+                $cid = self::texto($inst['client_id'] ?? NULL, 64);
+                if ($cid === NULL || isset($vistos[$cid])) { $cid = ($client_id ?: 'x') . '-' . $codigo . ($i + 1); }
+                $vistos[$cid] = TRUE;
+                $saida[$codigo][] = ['client_id' => $cid,
+                    'indice' => isset($inst['indice']) && is_numeric($inst['indice']) ? (int) $inst['indice'] : $i + 1,
+                    'respostas' => self::respostas($inst['respostas'] ?? [])];
+            }
+        }
+        return $saida;
     }
 
     /** Aceita lista [{codigo, valor, nsnr, complementos, complemento}] ou mapa {codigo: {...}}. */
@@ -93,9 +115,9 @@ class Estrutura_envio {
      * @return array respostas_visiveis (domicilio, moradores[cid]), calculados,
      *               erros, alertas, divergencias, revisao (NULL|'pendente'), foto, coordenadas
      */
-    public static function conferir(array $definicao, array $dados) {
+    public static function conferir(array $definicao, array $dados, array $contexto = []) {
         $motor = new Estrutura_motor($definicao);
-        $r = $motor->avaliar($dados['respostas'], $dados['moradores']);
+        $r = $motor->avaliar($dados['respostas'], $dados['moradores'], $dados['grupos'] ?? [], $contexto);
 
         $manter = function ($respostas, $visiveis) use ($motor) {
             $out = [];
@@ -111,6 +133,12 @@ class Estrutura_envio {
         $mor = [];
         foreach ($dados['moradores'] as $m) {
             $mor[$m['client_id']] = $manter($m['respostas'], $r['visiveis']['moradores'][$m['client_id']] ?? []);
+        }
+        $gru = [];
+        foreach ($dados['grupos'] ?? [] as $g => $lista) {
+            foreach ($lista as $inst) {
+                $gru[$g][$inst['client_id']] = $manter($inst['respostas'], $r['visiveis']['grupos'][$g][$inst['client_id']] ?? []);
+            }
         }
 
         // Cálculo do app x do servidor: vale o do servidor; diferença vai para revisão
@@ -150,6 +178,7 @@ class Estrutura_envio {
         return [
             'respostas_domicilio' => $dom,
             'respostas_moradores' => $mor,
+            'respostas_grupos' => $gru,
             'calculados' => $r['calculados'],
             'erros' => $erros,
             'alertas' => $alertas,

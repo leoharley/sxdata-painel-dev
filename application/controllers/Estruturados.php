@@ -73,7 +73,7 @@ class Estruturados extends CI_Controller {
 
     public function editar($id) {
         $q = $this->obter_ou_404($id);
-        list($def, $erros, $avisos) = Estrutura_compilador::compilar((string) $q->estrutura_fonte);
+        list($def, $erros, $avisos) = $this->estr->compilar($q->estrutura_fonte);
         $this->exibir('admin/estruturados/editar', [
             'title' => 'Editar: ' . $q->title,
             'q' => $q,
@@ -87,7 +87,7 @@ class Estruturados extends CI_Controller {
 
     /** POST: compila o texto (sem salvar) e devolve erros, avisos e o resumo. */
     public function validar() {
-        list($def, $erros, $avisos) = Estrutura_compilador::compilar((string) $this->input->post('fonte'));
+        list($def, $erros, $avisos) = $this->estr->compilar($this->input->post("fonte"));
         $this->json($this->resumo($def, $erros, $avisos));
     }
 
@@ -96,7 +96,7 @@ class Estruturados extends CI_Controller {
         $q = $this->obter_ou_404($id, TRUE);
         $fonte = (string) $this->input->post('fonte');
         $this->estr->salvar_fonte($q->id, $fonte);
-        list($def, $erros, $avisos) = Estrutura_compilador::compilar($fonte);
+        list($def, $erros, $avisos) = $this->estr->compilar($fonte);
         $this->json(['ok' => TRUE, 'salvo_em' => date('H:i:s')] + $this->resumo($def, $erros, $avisos));
     }
 
@@ -156,18 +156,25 @@ class Estruturados extends CI_Controller {
 
     public function previa($id) {
         $q = $this->obter_ou_404($id);
-        list($def, $erros) = Estrutura_compilador::compilar((string) $q->estrutura_fonte);
+        list($def, $erros) = $this->estr->compilar($q->estrutura_fonte);
         if ($erros) {
             $this->session->set_flashdata('error', 'O rascunho tem erros: corrija no editor para ver a prévia.');
             redirect('formularios-estruturados/editar/' . $q->id);
         }
-        $this->exibir('admin/estruturados/previa', ['title' => 'Prévia: ' . $q->title, 'q' => $q, 'definicao' => $def]);
+        $entrevistados = [];
+        if (!empty($def['entrevistado']) && $q->project_id) {
+            $this->load->model('Biblioteca_model', 'biblioteca');
+            if ($this->biblioteca->disponivel()) {
+                $entrevistados = $this->biblioteca->para_app([(int) $q->project_id]);
+            }
+        }
+        $this->exibir('admin/estruturados/previa', ['title' => 'Prévia: ' . $q->title, 'q' => $q, 'definicao' => $def, 'entrevistados' => $entrevistados]);
     }
 
     /** POST JSON {respostas, moradores}: resultado do motor sobre o rascunho atual. */
     public function avaliar($id) {
         $q = $this->obter_ou_404($id, TRUE);
-        list($def, $erros) = Estrutura_compilador::compilar((string) $q->estrutura_fonte);
+        list($def, $erros) = $this->estr->compilar($q->estrutura_fonte);
         if ($erros) { return $this->json(['ok' => FALSE, 'erros' => $erros], 422); }
         $corpo = json_decode(file_get_contents('php://input'), TRUE) ?: [];
         $moradores = [];
@@ -175,8 +182,194 @@ class Estruturados extends CI_Controller {
             $moradores[] = ['client_id' => (string) ($m['client_id'] ?? 'm' . $i), 'ordem' => $i + 1,
                 'nome' => (string) ($m['nome'] ?? ''), 'respostas' => Estrutura_envio::respostas($m['respostas'] ?? [])];
         }
+        $grupos = Estrutura_envio::grupos($corpo['grupos'] ?? [], 'previa');
+        $contexto = [];
+        if (!empty($corpo['entrevistado_id'])) {
+            $this->load->model('Biblioteca_model', 'biblioteca');
+            $contexto = Biblioteca_model::contexto($this->biblioteca->entrevistado((int) $corpo['entrevistado_id']));
+        }
         $motor = new Estrutura_motor($def);
-        $this->json(['ok' => TRUE] + $motor->avaliar(Estrutura_envio::respostas($corpo['respostas'] ?? []), $moradores));
+        $this->json(['ok' => TRUE] + $motor->avaliar(Estrutura_envio::respostas($corpo['respostas'] ?? []), $moradores, $grupos, $contexto));
+    }
+
+    // ------------------------------------------------------------------
+    // Biblioteca: conjuntos de perguntas
+    // ------------------------------------------------------------------
+
+    private function biblioteca() {
+        $this->load->model('Biblioteca_model', 'biblioteca');
+        if (!$this->biblioteca->disponivel()) {
+            show_error('Biblioteca indisponível: rode sql/conjuntos_migration.sql no servidor.', 503);
+        }
+        return $this->biblioteca;
+    }
+
+    public function conjuntos() {
+        $b = $this->biblioteca();
+        $this->exibir('admin/estruturados/conjuntos', ['title' => 'Conjuntos de perguntas', 'conjuntos' => $b->conjuntos(), 'temas' => $b->temas()]);
+    }
+
+    public function conjunto_novo() {
+        $b = $this->biblioteca();
+        $nome = trim((string) $this->input->post('nome'));
+        $codigo = Estrutura_compilador::slug($this->input->post('codigo') ?: $nome);
+        if ($nome === '' || $codigo === '') {
+            $this->session->set_flashdata('error', 'Informe o nome do conjunto.');
+            redirect('formularios-estruturados/conjuntos');
+        }
+        if ($this->db->get_where('conjuntos', ['codigo' => $codigo])->row()) {
+            $this->session->set_flashdata('error', "Já existe um conjunto com o código \"$codigo\".");
+            redirect('formularios-estruturados/conjuntos');
+        }
+        $nivel = in_array($this->input->post('nivel'), ['domicilio', 'morador', 'repetir'], TRUE) ? $this->input->post('nivel') : 'domicilio';
+        $cab = $nivel === 'repetir' ? "@repetir $codigo $nome\n  rotulo: $nome {n}\n" : "@$nivel $nome\n";
+        $fonte = "// Conjunto \"$nome\": uma única etapa. Use em um formulário com: @usar $codigo\n$cab"
+            . "1. Primeira pergunta do conjunto? [unica]\n  - Sim\n  - Não\n";
+        $id = $b->criar_conjunto($codigo, $nome, trim((string) $this->input->post('descricao')), $fonte, (int) $this->session->userdata('admin_id'));
+        redirect('formularios-estruturados/conjunto/' . $id);
+    }
+
+    public function conjunto($id) {
+        $b = $this->biblioteca();
+        $c = $b->conjunto($id);
+        if (!$c) { show_404(); }
+        $erros = Biblioteca_model::validar_conjunto($c->fonte);
+        $this->exibir('admin/estruturados/conjunto', ['title' => 'Conjunto: ' . $c->nome, 'c' => $c,
+            'versoes' => $b->versoes_conjunto($c->id), 'usos' => $b->usos_conjunto($c->codigo), 'erros' => $erros]);
+    }
+
+    /** POST: salva texto/nome/descrição; com publicar=1, publica nova versão. */
+    public function conjunto_salvar($id) {
+        $b = $this->biblioteca();
+        $c = $b->conjunto($id);
+        if (!$c) { return $this->json(['ok' => FALSE, 'mensagem' => 'Conjunto não encontrado.'], 404); }
+        $dados = ['fonte' => (string) $this->input->post('fonte')];
+        if (trim((string) $this->input->post('nome')) !== '') { $dados['nome'] = trim($this->input->post('nome')); }
+        if ($this->input->post('descricao') !== NULL) { $dados['descricao'] = trim((string) $this->input->post('descricao')) ?: NULL; }
+        $b->salvar_conjunto($c->id, $dados);
+        $erros = Biblioteca_model::validar_conjunto($dados['fonte']);
+        if ($this->input->post('publicar') === '1') {
+            list($v, $erros) = $b->publicar_conjunto($c->id, (int) $this->session->userdata('admin_id'));
+            return $this->json(['ok' => $v !== NULL, 'versao' => $v, 'erros' => $erros,
+                'mensagem' => $v ? "Versão $v publicada. Os formulários que usam o conjunto passam a usá-la ao publicarem uma nova versão." : 'Corrija os erros antes de publicar.']);
+        }
+        $this->json(['ok' => TRUE, 'erros' => $erros, 'salvo_em' => date('H:i:s')]);
+    }
+
+    public function conjunto_excluir($id) {
+        $b = $this->biblioteca();
+        $c = $b->conjunto($id);
+        if ($c) {
+            if ($b->usos_conjunto($c->codigo)) {
+                $this->session->set_flashdata('error', 'O conjunto está em uso em formulários: retire o @usar antes de excluir.');
+            } else {
+                $b->salvar_conjunto($c->id, ['ativo' => 'f']);
+                $this->session->set_flashdata('success', 'Conjunto excluído.');
+            }
+        }
+        redirect('formularios-estruturados/conjuntos');
+    }
+
+    public function tema_salvar() {
+        $b = $this->biblioteca();
+        $nome = trim((string) $this->input->post('nome'));
+        if ($nome !== '') {
+            $b->salvar_tema((int) $this->input->post('id'), $nome, trim((string) $this->input->post('descricao')), (array) $this->input->post('conjuntos'));
+            $this->session->set_flashdata('success', 'Tema salvo.');
+        }
+        redirect('formularios-estruturados/conjuntos#temas');
+    }
+
+    public function tema_excluir($id) {
+        $this->biblioteca()->excluir_tema($id);
+        redirect('formularios-estruturados/conjuntos#temas');
+    }
+
+    // ------------------------------------------------------------------
+    // Biblioteca: entrevistados pré-cadastrados
+    // ------------------------------------------------------------------
+
+    public function entrevistados($project_id = NULL) {
+        $b = $this->biblioteca();
+        $projetos = $this->db->order_by('name')->get('projects')->result();
+        $project_id = (int) ($project_id ?: ($projetos[0]->id ?? 0));
+        $this->exibir('admin/estruturados/entrevistados', ['title' => 'Entrevistados', 'projetos' => $projetos,
+            'project_id' => $project_id, 'busca' => (string) $this->input->get('q'),
+            'lista' => $project_id ? $b->entrevistados($project_id, trim((string) $this->input->get('q'))) : []]);
+    }
+
+    public function entrevistado_salvar($project_id) {
+        $b = $this->biblioteca();
+        $linha = (array) $this->input->post();
+        $extras = [];
+        foreach ((array) $this->input->post('campo_nome') as $i => $k) {
+            $k = trim((string) $k);
+            if ($k !== '') { $extras[$k] = (string) ($this->input->post('campo_valor')[$i] ?? ''); }
+        }
+        list($d, $erro) = Biblioteca_model::normalizar_entrevistado(array_merge($extras, array_intersect_key($linha,
+            array_flip(['codigo', 'nome', 'categoria', 'localidade', 'latitude', 'longitude']))));
+        if ($erro) {
+            $this->session->set_flashdata('error', 'Entrevistado: ' . $erro . '.');
+        } else {
+            $b->gravar_entrevistado((int) $project_id, $d);
+            $this->session->set_flashdata('success', 'Entrevistado salvo.');
+        }
+        redirect('formularios-estruturados/entrevistados/' . (int) $project_id);
+    }
+
+    public function entrevistado_excluir($id) {
+        $b = $this->biblioteca();
+        $e = $b->entrevistado($id);
+        if ($e) { $b->desativar_entrevistado($e->id); }
+        redirect('formularios-estruturados/entrevistados/' . ($e ? (int) $e->project_id : ''));
+    }
+
+    /** POST arquivo CSV (; ou ,) ou XLSX com colunas codigo, nome, categoria, localidade, latitude, longitude e extras. */
+    public function entrevistados_importar($project_id) {
+        $b = $this->biblioteca();
+        $arq = $_FILES['arquivo'] ?? NULL;
+        if (!$arq || $arq['error'] !== UPLOAD_ERR_OK) {
+            $this->session->set_flashdata('error', 'Envie um arquivo CSV ou XLSX.');
+            redirect('formularios-estruturados/entrevistados/' . (int) $project_id);
+        }
+        $linhas = [];
+        try {
+            if (preg_match('/\.xlsx?$/i', $arq['name'])) {
+                require_once FCPATH . 'vendor/autoload.php';
+                $planilha = \PhpOffice\PhpSpreadsheet\IOFactory::load($arq['tmp_name']);
+                $dados = $planilha->getActiveSheet()->toArray(NULL, TRUE, FALSE, FALSE);
+            } else {
+                $conteudo = file_get_contents($arq['tmp_name']);
+                if (!mb_check_encoding($conteudo, 'UTF-8')) { $conteudo = mb_convert_encoding($conteudo, 'UTF-8', 'ISO-8859-1'); }
+                $conteudo = preg_replace('/^\xEF\xBB\xBF/', '', $conteudo);
+                $sep = substr_count(strtok($conteudo, "\n"), ';') >= substr_count(strtok($conteudo, "\n"), ',') ? ';' : ',';
+                $dados = array_map(function ($l) use ($sep) { return str_getcsv($l, $sep); }, preg_split('/\r\n|\r|\n/', trim($conteudo)));
+            }
+            $cab = array_map(function ($c) { return trim((string) $c); }, array_shift($dados) ?: []);
+            foreach ($dados as $l) {
+                if (count(array_filter($l, function ($x) { return trim((string) $x) !== ''; })) === 0) { continue; }
+                $linhas[] = array_combine($cab, array_pad(array_slice($l, 0, count($cab)), count($cab), ''));
+            }
+        } catch (Throwable $e) {
+            $this->session->set_flashdata('error', 'Não foi possível ler o arquivo: ' . $e->getMessage());
+            redirect('formularios-estruturados/entrevistados/' . (int) $project_id);
+        }
+        $novos = 0; $atualizados = 0; $erros = [];
+        foreach ($linhas as $i => $l) {
+            list($d, $erro) = Biblioteca_model::normalizar_entrevistado($l);
+            if ($erro) { $erros[] = 'Linha ' . ($i + 2) . ": $erro"; continue; }
+            list(, $novo) = $b->gravar_entrevistado((int) $project_id, $d);
+            $novo ? $novos++ : $atualizados++;
+        }
+        $msg = "Importação: $novos novo(s), $atualizados atualizado(s)" . ($erros ? ', ' . count($erros) . ' linha(s) com erro: ' . implode('; ', array_slice($erros, 0, 15)) : '') . '.';
+        $this->session->set_flashdata($erros ? 'error' : 'success', $msg);
+        redirect('formularios-estruturados/entrevistados/' . (int) $project_id);
+    }
+
+    public function entrevistados_modelo() {
+        $this->output->set_content_type('text/csv', 'utf-8')
+            ->set_header('Content-Disposition: attachment; filename="modelo_entrevistados.csv"')
+            ->set_output("\xEF\xBB\xBFcodigo;nome;categoria;localidade;latitude;longitude;telefone\nE001;Maria da Silva;Chefe de família;Itapicuru;-11.18;-40.51;(74) 99999-0000\n");
     }
 
     // ------------------------------------------------------------------

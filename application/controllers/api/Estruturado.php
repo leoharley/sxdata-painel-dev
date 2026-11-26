@@ -42,6 +42,34 @@ class Estruturado extends CI_Controller {
         $this->responder(200, ['success' => TRUE, 'data' => $lista, 'total' => count($lista), 'schema' => 1]);
     }
 
+    /** GET api/estruturado/entrevistados?project_id=&desde=AAAA-MM-DD HH:MM:SS (incremental: traz também os removidos, ativo=false) */
+    public function entrevistados() {
+        if ($this->input->method() !== 'get') {
+            return $this->responder(405, ['success' => FALSE, 'message' => 'Method not allowed']);
+        }
+        $user_id = $this->autenticar();
+        if (!$user_id || !$this->migracao_ok()) {
+            return;
+        }
+        $this->load->model('Biblioteca_model', 'biblioteca');
+        $this->load->model('Field_point_model', 'pontos');
+        if (!$this->biblioteca->disponivel()) {
+            return $this->responder(503, ['success' => FALSE, 'message' => 'Rode sql/conjuntos_migration.sql no servidor.']);
+        }
+        $projetos = $this->pontos->projetos_do_usuario($user_id);
+        $pid = (int) $this->input->get('project_id');
+        if ($pid > 0) {
+            if (!in_array($pid, $projetos, TRUE)) {
+                return $this->responder(403, ['success' => FALSE, 'message' => 'Sem acesso a este projeto.']);
+            }
+            $projetos = [$pid];
+        }
+        $desde = $this->input->get('desde');
+        $desde = (is_string($desde) && strtotime($desde) !== FALSE) ? date('Y-m-d H:i:s', strtotime($desde)) : NULL;
+        $lista = $this->biblioteca->para_app($projetos, $desde);
+        $this->responder(200, ['success' => TRUE, 'data' => $lista, 'total' => count($lista), 'servidor_em' => date('Y-m-d H:i:s')]);
+    }
+
     public function enviar() {
         if ($this->input->method() !== 'post') {
             return $this->responder(405, ['success' => FALSE, 'message' => 'Method not allowed']);
@@ -77,7 +105,9 @@ class Estruturado extends CI_Controller {
 
         $conf = $r['conferencia'];
         $fotos = [];
-        foreach (array_merge([$conf['respostas_domicilio']], array_values($conf['respostas_moradores'])) as $resps) {
+        $todas = array_merge([$conf['respostas_domicilio']], array_values($conf['respostas_moradores']));
+        foreach ($conf['respostas_grupos'] ?? [] as $lista) { $todas = array_merge($todas, array_values($lista)); }
+        foreach ($todas as $resps) {
             foreach ($resps as $resp) {
                 $arq = Estrutura_envio::arquivo(is_string($resp['valor'] ?? NULL) ? $resp['valor'] : NULL);
                 if ($arq && preg_match('/\.(jpe?g|png|webp|heic)$/i', $arq)) { $fotos[] = $arq; }
@@ -99,6 +129,7 @@ class Estruturado extends CI_Controller {
             'partes' => [
                 'respostas' => $n_resp,
                 'moradores' => count($dados['moradores']),
+                'repeticoes' => array_sum(array_map('count', $dados['grupos'] ?? [])),
                 'calculados' => $n_calc,
             ],
             'missing_media' => $this->estr->midias_faltando($r['id'], $fotos),

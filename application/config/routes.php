@@ -160,3 +160,4 @@ $route['formularios-estruturados'] = 'estruturados/index';
 $route['formularios-estruturados/(.+)'] = 'estruturados/$1';
 $route['api/estruturado/formularios'] = 'api/estruturado/formularios';
 $route['api/estruturado/enviar'] = 'api/estruturado/enviar';
+$route['api/estruturado/entrevistados'] = 'api/estruturado/entrevistados';

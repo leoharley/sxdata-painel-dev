@@ -7,7 +7,11 @@
             <p class="text-muted mb-0">Questionários com domicílio e moradores, questões repetidas por pessoa, campos calculados e pulos.
                 Os questionários comuns continuam em <a href="<?= base_url('questionnaires') ?>">Questionários</a>.</p>
         </div>
-        <a href="<?= base_url('formularios-estruturados/novo') ?>" class="btn btn-primary"><i class="fas fa-plus me-1"></i> Novo formulário</a>
+        <div class="text-nowrap">
+            <a href="<?= base_url('formularios-estruturados/conjuntos') ?>" class="btn btn-outline-secondary"><i class="fas fa-layer-group me-1"></i> Conjuntos e temas</a>
+            <a href="<?= base_url('formularios-estruturados/entrevistados') ?>" class="btn btn-outline-secondary"><i class="fas fa-id-card me-1"></i> Entrevistados</a>
+            <a href="<?= base_url('formularios-estruturados/novo') ?>" class="btn btn-primary"><i class="fas fa-plus me-1"></i> Novo formulário</a>
+        </div>
     </div>
 
     <?php if ($this->session->flashdata('success')): ?><div class="alert alert-success"><?= html_escape($this->session->flashdata('success')) ?></div><?php endif; ?>

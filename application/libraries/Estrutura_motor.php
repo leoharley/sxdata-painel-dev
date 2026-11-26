@@ -25,12 +25,14 @@ class Estrutura_motor {
     const SEM_RESPOSTA = ['calculado', 'mensagem'];
 
     private $def;
-    /** @var array codigo => ['p' => pergunta, 'nivel' => domicilio|morador, 'pos' => int] */
+    /** @var array codigo => ['p' => pergunta, 'nivel' => domicilio|morador|grupo:x, 'etapa_se' => expr|null] */
     private $idx = [];
     /** @var array nivel => [codigos na ordem] */
     private $seq = ['domicilio' => [], 'morador' => []];
     /** @var array|null etapa de moradores */
     private $etapa_moradores = NULL;
+    /** @var array codigo do grupo => etapa repetida (@repetir) */
+    private $grupos = [];
 
     public function __construct(array $definicao) {
         $this->def = $definicao;
@@ -39,9 +41,16 @@ class Estrutura_motor {
                 $this->etapa_moradores = $etapa;
                 continue;
             }
-            $nivel = ($etapa['nivel'] ?? 'domicilio') === 'morador' ? 'morador' : 'domicilio';
+            $nivel = $etapa['nivel'] ?? 'domicilio';
+            if ($nivel === 'grupo') {
+                $nivel = 'grupo:' . $etapa['grupo'];
+                $this->grupos[$etapa['grupo']] = $etapa;
+            } elseif ($nivel !== 'morador') {
+                $nivel = 'domicilio';
+            }
+            if (!isset($this->seq[$nivel])) { $this->seq[$nivel] = []; }
             foreach ($etapa['perguntas'] ?? [] as $p) {
-                $this->idx[$p['codigo']] = ['p' => $p, 'nivel' => $nivel, 'pos' => count($this->seq[$nivel])];
+                $this->idx[$p['codigo']] = ['p' => $p, 'nivel' => $nivel, 'etapa_se' => $etapa['se'] ?? NULL];
                 $this->seq[$nivel][] = $p['codigo'];
             }
         }
@@ -53,6 +62,10 @@ class Estrutura_motor {
 
     public function nivel($codigo) {
         return $this->idx[$codigo]['nivel'] ?? NULL;
+    }
+
+    public function etapa_se($codigo) {
+        return $this->idx[$codigo]['etapa_se'] ?? NULL;
     }
 
     public function sequencia($nivel) {
@@ -67,13 +80,21 @@ class Estrutura_motor {
         return $this->etapa_moradores;
     }
 
+    /** @return array codigo do grupo => etapa */
+    public function grupos() {
+        return $this->grupos;
+    }
+
     /**
      * Avalia a entrevista inteira.
      *
-     * @return array visiveis, calculados, erros, alertas, descartadas
+     * @param array $grupos   [codigo do grupo => [['client_id', 'indice', 'respostas'], ...]]
+     * @param array $contexto ['entrevistado' => [campo => valor]] (refs ent_*)
+     * @return array visiveis, calculados, opcoes, erros, alertas, descartadas
      */
-    public function avaliar(array $respostas, array $moradores = []) {
+    public function avaliar(array $respostas, array $moradores = [], array $grupos = [], array $contexto = []) {
         $dom = new Estrutura_escopo($this, 'domicilio', $respostas, NULL, NULL);
+        $dom->definir_contexto($contexto);
         $escopos = [];
         usort($moradores, function ($a, $b) { return ((int) ($a['ordem'] ?? 0)) <=> ((int) ($b['ordem'] ?? 0)); });
         foreach ($moradores as $i => $m) {
@@ -81,15 +102,32 @@ class Estrutura_motor {
             $escopos[$cid] = new Estrutura_escopo($this, 'morador', $m['respostas'] ?? [], $m, $dom);
         }
         $dom->definir_moradores($escopos);
+        $esc_grupos = [];
+        foreach ($this->grupos as $g => $etapa) {
+            $lista = $grupos[$g] ?? [];
+            usort($lista, function ($a, $b) { return ((int) ($a['indice'] ?? 0)) <=> ((int) ($b['indice'] ?? 0)); });
+            $esc_grupos[$g] = [];
+            foreach ($lista as $i => $inst) {
+                $cid = (string) ($inst['client_id'] ?? ($g . ($i + 1)));
+                $esc_grupos[$g][$cid] = new Estrutura_escopo($this, 'grupo:' . $g, $inst['respostas'] ?? [], $inst + ['nome' => self::rotulo_instancia($etapa, $i + 1)], $dom);
+            }
+        }
+        $dom->definir_grupos($esc_grupos);
 
-        $r = ['visiveis' => ['domicilio' => [], 'moradores' => []],
-              'calculados' => ['domicilio' => [], 'moradores' => []],
-              'opcoes' => ['domicilio' => [], 'moradores' => []],
+        $r = ['visiveis' => ['domicilio' => [], 'moradores' => [], 'grupos' => []],
+              'calculados' => ['domicilio' => [], 'moradores' => [], 'grupos' => []],
+              'opcoes' => ['domicilio' => [], 'moradores' => [], 'grupos' => []],
               'erros' => [], 'alertas' => [], 'descartadas' => []];
 
-        $this->percorrer($dom, NULL, $r);
+        $this->percorrer($dom, NULL, NULL, $r);
         foreach ($escopos as $cid => $esc) {
-            $this->percorrer($esc, $cid, $r);
+            $this->percorrer($esc, $cid, NULL, $r);
+        }
+        foreach ($esc_grupos as $g => $lista) {
+            foreach ($lista as $cid => $esc) {
+                $this->percorrer($esc, $cid, $g, $r);
+            }
+            $this->checar_grupo($g, count($lista), $dom, $r);
         }
 
         if ($this->etapa_moradores !== NULL) {
@@ -120,9 +158,41 @@ class Estrutura_motor {
         return $r;
     }
 
-    private function percorrer(Estrutura_escopo $esc, $cid, array &$r) {
+    /** Quantidade de repetições: pelo número informado numa questão, e o máximo. */
+    private function checar_grupo($g, $n, Estrutura_escopo $dom, array &$r) {
+        $etapa = $this->grupos[$g];
+        $rep = $etapa['repetir'] ?? [];
+        $ativa = empty($etapa['se']) || $dom->condicao($etapa['se']);
+        $titulo = $etapa['titulo'] ?: $g;
+        if (!$ativa) { return; }
+        if (!empty($rep['por']) && isset($this->idx[$rep['por']])) {
+            $esperado = $dom->valor($rep['por']);
+            if (Expressao::numerico($esperado) && (int) $esperado !== $n) {
+                $r['erros'][] = ['codigo' => NULL, 'morador' => NULL, 'grupo' => $g,
+                    'mensagem' => sprintf('"%s": a questão %s informa %d, mas há %d preenchido(s).', $titulo, $this->numero($rep['por']), (int) $esperado, $n)];
+            }
+        }
+        if (!empty($rep['max']) && $n > (int) $rep['max']) {
+            $r['erros'][] = ['codigo' => NULL, 'morador' => NULL, 'grupo' => $g, 'mensagem' => sprintf('"%s": no máximo %d.', $titulo, (int) $rep['max'])];
+        }
+        if (!empty($rep['min']) && $n < (int) $rep['min']) {
+            $r['erros'][] = ['codigo' => NULL, 'morador' => NULL, 'grupo' => $g, 'mensagem' => sprintf('"%s": preencha ao menos %d.', $titulo, (int) $rep['min'])];
+        }
+    }
+
+    public static function rotulo_instancia(array $etapa, $n) {
+        $r = $etapa['repetir']['rotulo'] ?? (($etapa['titulo'] ?: 'Item') . ' {n}');
+        return str_replace('{n}', (string) $n, $r);
+    }
+
+    private function percorrer(Estrutura_escopo $esc, $cid, $grupo, array &$r) {
         $nivel = $esc->nivel;
         $vis = []; $calc = []; $opc = [];
+        $item = function ($codigo, $msg) use ($cid, $grupo) {
+            $x = ['codigo' => $codigo, 'morador' => $cid, 'mensagem' => $msg];
+            if ($grupo !== NULL) { $x['grupo'] = $grupo; }
+            return $x;
+        };
         foreach ($this->seq[$nivel] as $codigo) {
             $p = $this->idx[$codigo]['p'];
             $visivel = $esc->visivel($codigo);
@@ -130,7 +200,7 @@ class Estrutura_motor {
             $resp = $esc->resposta($codigo);
             if (!$visivel) {
                 if ($resp !== NULL && self::respondida($resp)) {
-                    $r['descartadas'][] = ['codigo' => $codigo, 'morador' => $cid];
+                    $r['descartadas'][] = ['codigo' => $codigo, 'morador' => $cid] + ($grupo !== NULL ? ['grupo' => $grupo] : []);
                 }
                 continue;
             }
@@ -142,19 +212,23 @@ class Estrutura_motor {
                 $opc[$codigo] = $esc->opcoes_permitidas($codigo);
             }
             foreach ($this->validar_resposta($p, $resp, $esc) as $msg) {
-                $r['erros'][] = ['codigo' => $codigo, 'morador' => $cid, 'mensagem' => $msg];
+                $r['erros'][] = $item($codigo, $msg);
             }
             foreach ($p['alertas'] ?? [] as $a) {
                 if ($esc->condicao($a['se'])) {
-                    $r['alertas'][] = ['codigo' => $codigo, 'morador' => $cid, 'mensagem' => $a['mensagem']];
+                    $r['alertas'][] = $item($codigo, $a['mensagem']);
                 }
             }
             if (($p['tipo'] === 'cpf') && $resp !== NULL && empty($resp['nsnr']) && self::tem_texto($resp['valor'] ?? NULL)
                 && !self::cpf_valido((string) $resp['valor'])) {
-                $r['alertas'][] = ['codigo' => $codigo, 'morador' => $cid, 'mensagem' => 'CPF com dígito verificador inválido na questão ' . ($p['numero'] ?? $codigo) . '.'];
+                $r['alertas'][] = $item($codigo, 'CPF com dígito verificador inválido na questão ' . ($p['numero'] ?? $codigo) . '.');
             }
         }
-        if ($cid === NULL) {
+        if ($grupo !== NULL) {
+            $r['visiveis']['grupos'][$grupo][$cid] = $vis;
+            $r['calculados']['grupos'][$grupo][$cid] = $calc;
+            $r['opcoes']['grupos'][$grupo][$cid] = $opc;
+        } elseif ($cid === NULL) {
             $r['visiveis']['domicilio'] = $vis;
             $r['calculados']['domicilio'] = $calc;
             $r['opcoes']['domicilio'] = $opc;
@@ -369,6 +443,10 @@ class Estrutura_escopo {
     private $pai;
     /** @var Estrutura_escopo[] moradores (para o escopo do domicílio) */
     private $moradores = [];
+    /** @var array grupo => Estrutura_escopo[] (repetições, para o domicílio) */
+    private $grupos = [];
+    /** @var array ent_* do entrevistado pré-cadastrado */
+    private $contexto = [];
     private $memo_vis = [];
     private $memo_calc = [];
     private $em_curso = [];
@@ -385,6 +463,18 @@ class Estrutura_escopo {
         $this->moradores = array_values($escopos);
     }
 
+    public function definir_grupos(array $grupos) {
+        foreach ($grupos as $g => $lista) { $this->grupos[$g] = array_values($lista); }
+    }
+
+    public function definir_contexto(array $contexto) {
+        $this->contexto = $contexto;
+    }
+
+    private function raiz() {
+        return $this->pai ?: $this;
+    }
+
     public function resposta($codigo) {
         $r = $this->respostas[$codigo] ?? NULL;
         return is_array($r) ? $r : NULL;
@@ -392,9 +482,9 @@ class Estrutura_escopo {
 
     private function expressao() {
         $self = $this;
-        $moradores = function () use ($self) {
+        $moradores = function ($grupo = NULL) use ($self) {
             $lista = [];
-            foreach ($self->escopos_moradores() as $m) {
+            foreach ($grupo === NULL ? $self->escopos_moradores() : $self->escopos_grupo($grupo) as $m) {
                 $lista[] = function ($nome, $ev) use ($m) { return $m->valor($nome, $ev); };
             }
             return $lista;
@@ -404,6 +494,10 @@ class Estrutura_escopo {
 
     public function escopos_moradores() {
         return $this->nivel === 'domicilio' ? $this->moradores : ($this->pai ? $this->pai->escopos_moradores() : []);
+    }
+
+    public function escopos_grupo($g) {
+        return $this->nivel === 'domicilio' ? ($this->grupos[$g] ?? []) : ($this->pai ? $this->pai->escopos_grupo($g) : []);
     }
 
     public function condicao($texto) {
@@ -421,6 +515,12 @@ class Estrutura_escopo {
     public function valor($codigo, $ev = NULL) {
         $nivel = $this->motor->nivel($codigo);
         if ($nivel === NULL) {
+            // ent_nome, ent_categoria...: dados do entrevistado pré-cadastrado
+            if (strpos($codigo, 'ent_') === 0) {
+                $e = $this->raiz()->contexto['entrevistado'] ?? [];
+                $v = $e[substr($codigo, 4)] ?? NULL;
+                return ($v === '' ) ? NULL : $v;
+            }
             return NULL;
         }
         if ($nivel !== $this->nivel) {
@@ -455,7 +555,9 @@ class Estrutura_escopo {
         }
         $this->em_curso['v' . $codigo] = TRUE;
         $p = $this->motor->pergunta($codigo);
-        $ok = empty($p['exibir_se']) || $this->condicao($p['exibir_se']);
+        $etapa_se = $this->motor->etapa_se($codigo);
+        $ok = (empty($etapa_se) || $this->condicao($etapa_se))
+            && (empty($p['exibir_se']) || $this->condicao($p['exibir_se']));
         if ($ok) {
             // Pulo: uma pergunta anterior visível manda pular para depois desta
             $seq = $this->motor->sequencia($this->nivel);

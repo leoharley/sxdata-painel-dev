@@ -17,6 +17,12 @@ class Estruturado_model extends CI_Model {
         $this->load->database();
     }
 
+    /** Compila com a biblioteca de conjuntos (@usar). @return [definição, erros, avisos] */
+    public function compilar($fonte) {
+        $this->load->model('Biblioteca_model', 'biblioteca');
+        return Estrutura_compilador::compilar((string) $fonte, $this->biblioteca->resolvedor());
+    }
+
     /** A migração foi aplicada? */
     public function disponivel() {
         if (self::$disponivel === NULL) {
@@ -80,7 +86,7 @@ class Estruturado_model extends CI_Model {
     public function publicar($id, $user_id) {
         $q = $this->obter($id);
         if (!$q) { return [NULL, [['linha' => NULL, 'mensagem' => 'Formulário não encontrado.']], []]; }
-        list($def, $erros, $avisos) = Estrutura_compilador::compilar($q->estrutura_fonte);
+        list($def, $erros, $avisos) = $this->compilar($q->estrutura_fonte);
         if ($erros) { return [NULL, $erros, $avisos]; }
 
         $this->db->trans_begin();
@@ -171,7 +177,13 @@ class Estruturado_model extends CI_Model {
         $versao = $this->versao($q->id, $d['versao']) ?: $this->versao($q->id);
         if (!$versao) { throw new InvalidArgumentException('Formulário sem versão publicada.'); }
 
-        $conf = Estrutura_envio::conferir($versao->definicao, $d);
+        $contexto = [];
+        if (!empty($d['entrevistado_id']) && $this->db->table_exists('entrevistados')) {
+            $this->load->model('Biblioteca_model', 'biblioteca');
+            $contexto = Biblioteca_model::contexto($this->biblioteca->entrevistado($d['entrevistado_id']));
+            if (!$contexto) { $d['entrevistado_id'] = NULL; }
+        }
+        $conf = Estrutura_envio::conferir($versao->definicao, $d, $contexto);
 
         $this->db->trans_begin();
         try {
@@ -186,6 +198,7 @@ class Estruturado_model extends CI_Model {
                 $id = (int) $existente->id;
                 $this->db->where('form_response_id', $id)->delete('respostas_estruturadas');
                 $this->db->where('form_response_id', $id)->delete('moradores');
+                if ($this->db->table_exists('repeticoes')) { $this->db->where('form_response_id', $id)->delete('repeticoes'); }
                 $this->db->where('id', $id)->update('form_responses', $this->cabecalho($d, $conf, $versao, $user_id, FALSE));
                 $editado = TRUE;
             } else {
@@ -204,6 +217,17 @@ class Estruturado_model extends CI_Model {
                 $mid = (int) $this->db->insert_id();
                 $this->gravar_respostas($id, $mid, $conf['respostas_moradores'][$m['client_id']] ?? [],
                     $conf['calculados']['moradores'][$m['client_id']] ?? []);
+            }
+            $grupos_def = (new Estrutura_motor($versao->definicao))->grupos();
+            foreach ($d['grupos'] ?? [] as $g => $lista) {
+                if (!isset($grupos_def[$g])) { continue; }
+                foreach ($lista as $i => $inst) {
+                    $this->db->insert('repeticoes', ['form_response_id' => $id, 'grupo' => $g, 'client_id' => $inst['client_id'],
+                        'indice' => $inst['indice'], 'rotulo' => Estrutura_motor::rotulo_instancia($grupos_def[$g], $i + 1)]);
+                    $rid = (int) $this->db->insert_id();
+                    $this->gravar_respostas($id, NULL, $conf['respostas_grupos'][$g][$inst['client_id']] ?? [],
+                        $conf['calculados']['grupos'][$g][$inst['client_id']] ?? [], $rid);
+                }
             }
 
             if ($this->db->trans_status() === FALSE) {
@@ -238,6 +262,7 @@ class Estruturado_model extends CI_Model {
             'calculados' => json_encode($conf['calculados'], JSON_UNESCAPED_UNICODE),
             'alertas' => json_encode($conf['alertas'], JSON_UNESCAPED_UNICODE),
             'revisao_status' => $conf['revisao'],
+            'entrevistado_id' => $d['entrevistado_id'] ?? NULL,
             'revisao_erros' => $conf['erros'] || $conf['divergencias']
                 ? json_encode(['erros' => $conf['erros'], 'divergencias' => $conf['divergencias']], JSON_UNESCAPED_UNICODE) : NULL,
         ];
@@ -245,11 +270,11 @@ class Estruturado_model extends CI_Model {
         return $c;
     }
 
-    private function gravar_respostas($fid, $mid, array $respostas, array $calculados) {
+    private function gravar_respostas($fid, $mid, array $respostas, array $calculados, $rid = NULL) {
         foreach ($respostas as $codigo => $r) {
             $v = $r['valor'] ?? NULL;
             $this->db->insert('respostas_estruturadas', [
-                'form_response_id' => $fid, 'morador_id' => $mid, 'codigo' => $codigo,
+                'form_response_id' => $fid, 'morador_id' => $mid, 'codigo' => $codigo, 'repeticao_id' => $rid,
                 'valor' => empty($r['nsnr']) ? json_encode($v, JSON_UNESCAPED_UNICODE) : NULL,
                 'valor_numero' => (empty($r['nsnr']) && is_numeric($v) && abs((float) $v) < 1e13) ? round((float) $v, 2) : NULL,
                 'nsnr' => !empty($r['nsnr']) ? 't' : 'f',
@@ -260,7 +285,7 @@ class Estruturado_model extends CI_Model {
         foreach ($calculados as $codigo => $c) {
             $v = $c['valor'];
             $this->db->insert('respostas_estruturadas', [
-                'form_response_id' => $fid, 'morador_id' => $mid, 'codigo' => $codigo,
+                'form_response_id' => $fid, 'morador_id' => $mid, 'codigo' => $codigo, 'repeticao_id' => $rid,
                 'valor' => json_encode($v, JSON_UNESCAPED_UNICODE),
                 'valor_numero' => is_numeric($v) && abs((float) $v) < 1e13 ? round((float) $v, 2) : NULL,
                 'calculado' => 't', 'incompleto' => $c['incompleto'] ? 't' : 'f',
@@ -290,13 +315,25 @@ class Estruturado_model extends CI_Model {
         $versao = $fr->estrutura_versao_id ? $this->versao_por_id($fr->estrutura_versao_id) : $this->versao($fr->qid);
         $moradores = $this->db->order_by('ordem')->get_where('moradores', ['form_response_id' => (int) $id])->result();
         $rows = $this->db->get_where('respostas_estruturadas', ['form_response_id' => (int) $id])->result();
-        $dom = []; $por_morador = [];
+        $dom = []; $por_morador = []; $por_rep = [];
         foreach ($rows as $r) {
             $resp = self::linha_para_resposta($r);
-            if ($r->morador_id) { $por_morador[(int) $r->morador_id][$r->codigo] = $resp; } else { $dom[$r->codigo] = $resp; }
+            if (!empty($r->repeticao_id)) { $por_rep[(int) $r->repeticao_id][$r->codigo] = $resp; }
+            elseif ($r->morador_id) { $por_morador[(int) $r->morador_id][$r->codigo] = $resp; }
+            else { $dom[$r->codigo] = $resp; }
         }
         foreach ($moradores as $m) { $m->respostas = $por_morador[(int) $m->id] ?? []; }
-        return ['cabecalho' => $fr, 'versao' => $versao, 'respostas' => $dom, 'moradores' => $moradores];
+        $repeticoes = [];
+        if ($this->db->table_exists('repeticoes')) {
+            foreach ($this->db->order_by('grupo, indice')->get_where('repeticoes', ['form_response_id' => (int) $id])->result() as $rp) {
+                $rp->respostas = $por_rep[(int) $rp->id] ?? [];
+                $repeticoes[$rp->grupo][] = $rp;
+            }
+        }
+        $entrevistado = (!empty($fr->entrevistado_id) && $this->db->table_exists('entrevistados'))
+            ? $this->db->get_where('entrevistados', ['id' => (int) $fr->entrevistado_id])->row() : NULL;
+        return ['cabecalho' => $fr, 'versao' => $versao, 'respostas' => $dom, 'moradores' => $moradores,
+            'repeticoes' => $repeticoes, 'entrevistado' => $entrevistado];
     }
 
     public static function linha_para_resposta($r) {
@@ -327,12 +364,15 @@ class Estruturado_model extends CI_Model {
         $respostas = $this->db->query(
             "SELECT r.* FROM respostas_estruturadas r JOIN form_responses fr ON fr.id = r.form_response_id
               WHERE fr.questionnaire_id = ?", [(int) $qid])->result();
+        $repeticoes = $this->db->table_exists('repeticoes') ? $this->db->query(
+            "SELECT r.* FROM repeticoes r JOIN form_responses fr ON fr.id = r.form_response_id
+              WHERE fr.questionnaire_id = ? ORDER BY r.form_response_id, r.grupo, r.indice", [(int) $qid])->result() : [];
         $idx = [];
         foreach ($respostas as $r) {
-            $chave = $r->morador_id ? 'm' . $r->morador_id : 'f' . $r->form_response_id;
+            $chave = !empty($r->repeticao_id) ? 'r' . $r->repeticao_id : ($r->morador_id ? 'm' . $r->morador_id : 'f' . $r->form_response_id);
             $idx[$chave][$r->codigo] = self::linha_para_resposta($r);
         }
-        return ['entrevistas' => $entrevistas, 'moradores' => $moradores, 'respostas' => $idx];
+        return ['entrevistas' => $entrevistas, 'moradores' => $moradores, 'repeticoes' => $repeticoes, 'respostas' => $idx];
     }
 
     /** Mídias citadas pela entrevista que não estão no servidor. */

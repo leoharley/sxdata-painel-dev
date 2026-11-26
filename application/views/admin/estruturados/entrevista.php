@@ -67,6 +67,10 @@ $linhas = function (array $perguntas, array $resps, $nome) {
     </ul></div>
     <?php endif; ?>
 
+    <?php if (!empty($entrevistado)): ?>
+    <div class="alert alert-light border"><b>Entrevistado pré-cadastrado:</b> <?= html_escape($entrevistado->nome) ?>
+        (código <?= html_escape($entrevistado->codigo) ?><?= $entrevistado->categoria ? ', ' . html_escape($entrevistado->categoria) : '' ?><?= $entrevistado->localidade ? ', ' . html_escape($entrevistado->localidade) : '' ?>)</div>
+    <?php endif; ?>
     <?php foreach ($def['etapas'] as $i => $e): ?>
         <?php if ($e['tipo'] === 'moradores'): ?>
             <div class="card mb-3">
@@ -74,6 +78,21 @@ $linhas = function (array $perguntas, array $resps, $nome) {
                 <ol class="list-group list-group-numbered list-group-flush">
                     <?php foreach ($moradores as $m): ?><li class="list-group-item"><?= html_escape($m->nome) ?><?= (int) $m->ordem === 1 ? ' <span class="badge bg-light text-dark border">respondente</span>' : '' ?></li><?php endforeach; ?>
                 </ol>
+            </div>
+        <?php elseif ($e['nivel'] === 'grupo'): $itens = $repeticoes[$e['grupo']] ?? []; ?>
+            <div class="card mb-3">
+                <div class="card-header fw-semibold"><?= html_escape($e['titulo'] ?: $e['grupo']) ?> (<?= count($itens) ?>)</div>
+                <?php if (!$itens): ?><div class="card-body text-muted small">Nenhum item.</div><?php endif; ?>
+                <div class="accordion accordion-flush">
+                    <?php foreach ($itens as $k => $it): ?>
+                    <div class="accordion-item">
+                        <h2 class="accordion-header"><button class="accordion-button <?= $k ? 'collapsed' : '' ?>" type="button" data-bs-toggle="collapse" data-bs-target="#g<?= $i ?>_<?= $k ?>"><?= html_escape($it->rotulo ?: ('Item ' . $it->indice)) ?></button></h2>
+                        <div id="g<?= $i ?>_<?= $k ?>" class="accordion-collapse collapse <?= $k ? '' : 'show' ?>">
+                            <table class="table table-sm mb-0"><?= $linhas($e['perguntas'], $it->respostas, $it->rotulo) ?></table>
+                        </div>
+                    </div>
+                    <?php endforeach; ?>
+                </div>
             </div>
         <?php elseif ($e['nivel'] === 'morador'): ?>
             <div class="card mb-3">

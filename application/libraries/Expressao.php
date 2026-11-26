@@ -30,11 +30,12 @@ class Expressao {
     const PALAVRAS = ['e', 'ou', 'nao', 'em', 'fora_de', 'contem', 'comeca', 'verdadeiro', 'falso', 'nulo'];
 
     /** Funções que recebem a expressão sem avaliar (avaliam por morador). */
-    const FUNCOES_MORADOR = ['soma_moradores', 'contar_moradores', 'existe_morador', 'todos_moradores'];
+    const FUNCOES_MORADOR = ['soma_moradores', 'contar_moradores', 'existe_morador', 'todos_moradores',
+        'soma_grupo', 'contar_grupo', 'existe_grupo', 'todos_grupo'];
 
     const FUNCOES = ['soma', 'min', 'max', 'arred', 'div', 'abs', 'se', 'preenchido', 'vazio', 'nsnr',
         'tem_valor', 'contar', 'idade', 'duracao', 'soma_moradores', 'contar_moradores',
-        'existe_morador', 'todos_moradores'];
+        'existe_morador', 'todos_moradores', 'soma_grupo', 'contar_grupo', 'existe_grupo', 'todos_grupo'];
 
     private static $cache = [];
 
@@ -212,7 +213,18 @@ class Expressao {
 
     /** soma_moradores(expr[, condição]), contar_moradores([condição]), existe_morador(cond), todos_moradores(cond) */
     private function por_morador($nome, $args) {
-        $lista = $this->moradores ? call_user_func($this->moradores) : [];
+        // soma_grupo("bens", expr, filtro): o mesmo, sobre as repetições de um grupo
+        $grupo = NULL;
+        if (substr($nome, -6) === '_grupo') {
+            $grupo = isset($args[0]) ? (string) $this->ev($args[0]) : '';
+            if ($grupo === '') {
+                throw new InvalidArgumentException("$nome() precisa do código do grupo entre aspas.");
+            }
+            $args = array_slice($args, 1);
+            $nome = ['soma_grupo' => 'soma_moradores', 'contar_grupo' => 'contar_moradores',
+                'existe_grupo' => 'existe_morador', 'todos_grupo' => 'todos_moradores'][$nome];
+        }
+        $lista = $this->moradores ? call_user_func($this->moradores, $grupo) : [];
         $externo = $this->resolver;
         $total = 0; $conta = 0; $existe = FALSE; $todos = TRUE;
         foreach ($lista as $resolver_morador) {

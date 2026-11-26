@@ -116,6 +116,18 @@ $apl = $q->aplicadores === NULL || trim((string) $q->aplicadores) === '' ? NULL 
   regra: condição | mensagem | bloqueia
 @morador Título       perguntas repetidas por morador
   var idade = idade(q21, q5)</code>
+                    <p class="mb-1 mt-2"><b>Biblioteca e abertura de blocos</b> (atributos da etapa, antes da 1ª questão):</p>
+<code># temas: Reassentamento, Saúde      (o entrevistador escolhe)
+# entrevistado: opcional             (ou obrigatorio)
+@usar composicao_domicilio           conjunto da biblioteca
+  se: q12 == "Sim"                   abre por resposta
+  tema: Reassentamento               abre pelo tema
+  categoria: Comerciante             abre pela categoria
+  entrevistado: E001, E002           abre para estes
+@repetir bens Benfeitorias e bens    bloco repetível
+  por: q30   max: 20   rotulo: Bem {n}
+  (fora dele: soma_grupo("bens", q31))
+  preencher: ent_nome                (na questão)</code>
                     <p class="mb-1 mt-2"><b>Questão</b>: número, texto e tipo entre colchetes. Use <b>[NOME]</b> para o nome do morador.</p>
 <code>53. Rendimento de [NOME]? [moeda nsnr]
   ajuda: texto de apoio ao entrevistador

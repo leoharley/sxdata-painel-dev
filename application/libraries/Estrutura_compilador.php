@@ -33,7 +33,11 @@ class Estrutura_compilador {
         'aleatorio_sem_padrao_de_sazonalidade'];
 
     const ATRIBUTOS = ['ajuda', 'se', 'pula', 'alerta', 'formula', 'opcoes_de', 'auto', 'complemento', 'campos',
-        'validacao', 'formato', 'codigo', 'destino', 'itens', 'respondente', 'declarado', 'rotulo', 'regra', 'obrigatoria'];
+        'validacao', 'formato', 'codigo', 'destino', 'itens', 'respondente', 'declarado', 'rotulo', 'regra', 'obrigatoria',
+        'tema', 'categoria', 'entrevistado', 'por', 'max', 'min', 'preencher'];
+
+    /** Atributos que valem para a etapa inteira (antes da primeira questão). */
+    const ATRIBUTOS_ETAPA = ['se', 'tema', 'categoria', 'entrevistado', 'por', 'max', 'min', 'rotulo'];
 
     private $erros = [];
     private $avisos = [];
@@ -42,9 +46,19 @@ class Estrutura_compilador {
      * @return array [definição ou NULL se houver erro, erros, avisos]; cada
      *               erro/aviso é ['linha' => int|null, 'mensagem' => string]
      */
-    public static function compilar($texto) {
+    /**
+     * @param callable|null $conjuntos fn(codigo) => ['id', 'codigo', 'versao', 'nome', 'fonte'] ou NULL
+     *                                 (biblioteca de conjuntos de perguntas, para @usar)
+     */
+    public static function compilar($texto, $conjuntos = NULL) {
         $c = new self();
         $def = $c->ler((string) $texto);
+        if (!$c->erros) {
+            $c->resolver_usar($def, $conjuntos);
+        }
+        if (!$c->erros) {
+            $c->montar_etapas($def);
+        }
         if (!$c->erros) {
             $c->traduzir_expressoes($def);
         }
@@ -87,10 +101,31 @@ class Estrutura_compilador {
                 $def[$m[1]] = $m[2];
                 continue;
             }
+            if (preg_match('/^#\s*temas\s*:\s*(.+)$/u', $t, $m)) {
+                $def['temas'] = array_values(array_filter(array_map('trim', explode(',', $m[1])), 'strlen'));
+                continue;
+            }
+            if (preg_match('/^#\s*entrevistado\s*:\s*(obrigatorio|opcional)\s*$/u', $t, $m)) {
+                $def['entrevistado'] = ['modo' => $m[1]];
+                continue;
+            }
             if ($t[0] === '#') { continue; }
 
             if (preg_match('/^@(domicilio|morador)\b\s*(.*)$/u', $t, $m)) {
                 $def['etapas'][] = ['tipo' => 'perguntas', 'nivel' => $m[1], 'titulo' => $m[2], 'perguntas' => [], '_linha' => $ln];
+                $etapa = count($def['etapas']) - 1;
+                unset($p); $p = NULL;
+                continue;
+            }
+            if (preg_match('/^@repetir\s+([a-z_][a-z0-9_]*)\s*(.*)$/u', $t, $m)) {
+                $def['etapas'][] = ['tipo' => 'perguntas', 'nivel' => 'grupo', 'grupo' => $m[1], 'titulo' => $m[2],
+                    'repetir' => [], 'perguntas' => [], '_linha' => $ln];
+                $etapa = count($def['etapas']) - 1;
+                unset($p); $p = NULL;
+                continue;
+            }
+            if (preg_match('/^@usar\s+([a-z_][a-z0-9_]*)\s*(.*)$/u', $t, $m)) {
+                $def['etapas'][] = ['tipo' => 'usar', 'conjunto' => $m[1], 'titulo' => $m[2], 'bloco' => $bloco, 'secao' => $secao, '_linha' => $ln];
                 $etapa = count($def['etapas']) - 1;
                 unset($p); $p = NULL;
                 continue;
@@ -149,6 +184,8 @@ class Estrutura_compilador {
             if (preg_match('/^([a-z_]+)\s*:\s*(.*)$/u', $t, $m) && in_array($m[1], self::ATRIBUTOS, TRUE)) {
                 if ($e['tipo'] === 'moradores' && $p === NULL) {
                     $this->atributo_moradores($e, $m[1], $m[2], $ln);
+                } elseif ($p === NULL && in_array($e['tipo'], ['perguntas', 'usar'], TRUE)) {
+                    $this->atributo_etapa($e, $m[1], $m[2], $ln);
                 } elseif ($p !== NULL) {
                     $this->atributo($p, $m[1], $m[2], $ln);
                 } else {
@@ -237,6 +274,9 @@ class Estrutura_compilador {
                 $p['codigo'] = $valor; break;
             case 'destino': $p['destino'] = $valor; break;
             case 'itens': $p['itens'] = (int) $valor; break;
+            case 'preencher':
+                if (!preg_match('/^ent_[a-z0-9_]+$/', $valor)) { $this->erro($ln, 'preencher: use um dado do entrevistado (ent_nome, ent_codigo, ent_localidade...).'); }
+                $p['preencher'] = $valor; break;
             case 'obrigatoria': $p['obrigatoria'] = !in_array(mb_strtolower($valor), ['nao', 'não', 'false', '0'], TRUE); break;
             case 'pula':
                 if (!preg_match('/^(.*?)\s*->\s*([qQ]?\d+[a-z]?)\s*$/u', $valor, $m)) {
@@ -265,6 +305,104 @@ class Estrutura_compilador {
             default:
                 $this->erro($ln, "Atributo \"$chave\" não se aplica a uma questão.");
         }
+    }
+
+    private function atributo_etapa(array &$e, $chave, $valor, $ln) {
+        $valor = trim($valor);
+        if (!in_array($chave, self::ATRIBUTOS_ETAPA, TRUE)) {
+            $this->erro($ln, "Atributo \"$chave\" fora de uma questão (na etapa valem: " . implode(', ', self::ATRIBUTOS_ETAPA) . ').');
+            return;
+        }
+        $lista = function ($v) { return array_values(array_filter(array_map('trim', explode(',', $v)), 'strlen')); };
+        switch ($chave) {
+            case 'se': $e['_se'] = $valor; $e['_l_se'] = $ln; break;
+            case 'tema': $e['_temas'] = $lista($valor); break;
+            case 'categoria': $e['_categorias'] = $lista($valor); break;
+            case 'entrevistado': $e['_entrevistados'] = $lista($valor); break;
+            case 'por': $e['_repetir']['por'] = self::ref($valor); break;
+            case 'max': $e['_repetir']['max'] = (int) $valor; break;
+            case 'min': $e['_repetir']['min'] = (int) $valor; break;
+            case 'rotulo': $e['_repetir']['rotulo'] = $valor; break;
+        }
+    }
+
+    /** Troca cada @usar pela etapa do conjunto (última versão publicada na biblioteca). */
+    private function resolver_usar(array &$def, $conjuntos) {
+        foreach ($def['etapas'] as $k => $e) {
+            if ($e['tipo'] !== 'usar') { continue; }
+            $c = $conjuntos ? call_user_func($conjuntos, $e['conjunto']) : NULL;
+            if (!$c) { $this->erro($e['_linha'], 'Conjunto "' . $e['conjunto'] . '" não existe na biblioteca ou não tem versão publicada.'); continue; }
+            list($cd, $erros) = self::compilar($c['fonte']);
+            if ($erros) {
+                foreach ($erros as $er) { $this->erro($e['_linha'], 'Conjunto "' . $c['codigo'] . '"' . ($er['linha'] ? ', linha ' . $er['linha'] : '') . ': ' . $er['mensagem']); }
+                continue;
+            }
+            if (count($cd['etapas']) !== 1 || $cd['etapas'][0]['tipo'] !== 'perguntas') {
+                $this->erro($e['_linha'], 'O conjunto "' . $c['codigo'] . '" deve ter exatamente uma etapa (@domicilio, @morador ou @repetir).');
+                continue;
+            }
+            $nova = $cd['etapas'][0];
+            if (($e['titulo'] ?? '') !== '') { $nova['titulo'] = $e['titulo']; }
+            $nova['conjunto'] = ['id' => (int) $c['id'], 'codigo' => $c['codigo'], 'versao' => (int) $c['versao'], 'nome' => $c['nome']];
+            foreach (['_se', '_l_se', '_temas', '_categorias', '_entrevistados'] as $a) {
+                if (isset($e[$a])) { $nova[$a] = $e[$a]; }
+            }
+            if (isset($e['_repetir'])) { $nova['_repetir'] = array_merge($nova['repetir'] ?? [], $e['_repetir']); }
+            if (!empty($nova['se'])) {
+                $nova['_se'] = isset($nova['_se']) ? '(' . $nova['se'] . ') e (' . $nova['_se'] . ')' : $nova['se'];
+                unset($nova['se']);
+            }
+            $nova['_linha'] = $e['_linha'];
+            foreach ($nova['perguntas'] as $j => $q) {
+                $nova['perguntas'][$j]['_linha'] = $e['_linha'];
+                if (($q['bloco'] ?? '') === '' && !empty($e['bloco'])) { $nova['perguntas'][$j]['bloco'] = $e['bloco']; }
+            }
+            $def['etapas'][$k] = $nova;
+        }
+    }
+
+    /** Condição da etapa (se + tema + categoria + entrevistado), repetição e a questão dos temas. */
+    private function montar_etapas(array &$def) {
+        if (!empty($def['temas'])) {
+            $q = ['codigo' => 'temas', 'numero' => '', 'texto' => 'Temas desta entrevista', 'tipo' => 'multipla', 'obrigatoria' => TRUE,
+                'ajuda' => 'Marque os temas a aplicar: as questões de cada tema entram na sequência.', 'opcoes' => [], '_linha' => NULL];
+            foreach ($def['temas'] as $t) { $q['opcoes'][] = ['valor' => self::slug($t), 'texto' => $t]; }
+            $alvo = NULL;
+            foreach ($def['etapas'] as $k => $e) {
+                if ($e['tipo'] === 'perguntas' && $e['nivel'] === 'domicilio' && empty($e['_temas']) && empty($e['_se'])) { $alvo = $k; break; }
+            }
+            if ($alvo === NULL) {
+                array_unshift($def['etapas'], ['tipo' => 'perguntas', 'nivel' => 'domicilio', 'titulo' => 'Temas', 'perguntas' => [$q], '_linha' => NULL]);
+            } else {
+                array_unshift($def['etapas'][$alvo]['perguntas'], $q);
+            }
+        }
+        foreach ($def['etapas'] as &$e) {
+            if ($e['tipo'] !== 'perguntas') { continue; }
+            $partes = [];
+            if (!empty($e['_se'])) { $partes[] = '(' . $e['_se'] . ')'; }
+            if (!empty($e['_temas'])) {
+                if (empty($def['temas'])) { $this->erro($e['_linha'], 'Etapa com tema, mas o formulário não declara "# temas: ...".'); }
+                $partes[] = '(' . implode(' ou ', array_map(function ($t) { return 'temas contem "' . str_replace('"', '', $t) . '"'; }, $e['_temas'])) . ')';
+            }
+            if (!empty($e['_categorias'])) {
+                $partes[] = '(ent_categoria em [' . implode(', ', array_map(function ($c) { return '"' . self::slug($c) . '"'; }, $e['_categorias'])) . '])';
+            }
+            if (!empty($e['_entrevistados'])) {
+                $partes[] = '(ent_codigo em [' . implode(', ', array_map(function ($c) { return '"' . str_replace('"', '', $c) . '"'; }, $e['_entrevistados'])) . '])';
+            }
+            if ((!empty($e['_categorias']) || !empty($e['_entrevistados'])) && empty($def['entrevistado'])) {
+                $this->erro($e['_linha'], 'Etapa por categoria ou entrevistado: declare "# entrevistado: opcional" (ou obrigatorio) no início.');
+            }
+            if ($partes) { $e['se'] = implode(' e ', $partes); $e['_l_se'] = $e['_l_se'] ?? $e['_linha']; }
+            if ($e['nivel'] === 'grupo') {
+                $e['repetir'] = array_merge($e['repetir'] ?? [], $e['_repetir'] ?? []);
+            } elseif (!empty($e['_repetir'])) {
+                $this->erro($e['_linha'], 'por/max/min/rotulo só valem em @repetir.');
+            }
+            unset($e['_se'], $e['_temas'], $e['_categorias'], $e['_entrevistados'], $e['_repetir']);
+        }
+        unset($e);
     }
 
     private function atributo_moradores(array &$e, $chave, $valor, $ln) {
@@ -299,7 +437,8 @@ class Estrutura_compilador {
         $this->perguntas = [];
         foreach ($def['etapas'] as $e) {
             foreach ($e['perguntas'] ?? [] as $p) {
-                $this->perguntas[$p['codigo']] = $p + ['_nivel' => $e['nivel'] ?? 'domicilio'];
+                $nv = $e['nivel'] ?? 'domicilio';
+                $this->perguntas[$p['codigo']] = $p + ['_nivel' => $nv === 'grupo' ? 'grupo:' . $e['grupo'] : $nv];
             }
         }
     }
@@ -307,6 +446,7 @@ class Estrutura_compilador {
     private function traduzir_expressoes(array &$def) {
         $this->indexar($def);
         foreach ($def['etapas'] as &$e) {
+            if (!empty($e['se'])) { $e['se'] = $this->traduzir($e['se'], $e['_l_se'] ?? $e['_linha']); }
             foreach ($e['regras'] ?? [] as $k => $r) {
                 $e['regras'][$k]['se'] = $this->traduzir($r['se'], $r['_linha']);
             }
@@ -391,17 +531,29 @@ class Estrutura_compilador {
         $this->indexar($def);
         if (trim($def['titulo']) === '') { $this->aviso(NULL, 'Sem título (# titulo: ...).'); }
         $vistos = [];
+        $grupos = [];
         $moradores = 0;
         $tem_morador = FALSE;
         foreach ($def['etapas'] as $e) {
             if ($e['tipo'] === 'moradores') { $moradores++; continue; }
+            if ($e['tipo'] !== 'perguntas') { continue; }
             if ($e['nivel'] === 'morador') { $tem_morador = TRUE; }
+            $nivel = $e['nivel'] === 'grupo' ? 'grupo:' . $e['grupo'] : $e['nivel'];
             if (empty($e['perguntas'])) { $this->aviso($e['_linha'], 'Etapa sem questões.'); }
+            if (!empty($e['se'])) { $this->validar_expr($e['se'], $nivel === 'morador' || $e['nivel'] === 'grupo' ? 'domicilio' : $nivel, $e['_l_se'] ?? $e['_linha']); }
+            if ($e['nivel'] === 'grupo') {
+                if (isset($grupos[$e['grupo']])) { $this->erro($e['_linha'], 'Grupo repetido: ' . $e['grupo'] . '.'); }
+                $grupos[$e['grupo']] = TRUE;
+                $por = $e['repetir']['por'] ?? NULL;
+                if ($por !== NULL && (!isset($this->perguntas[$por]) || $this->perguntas[$por]['_nivel'] !== 'domicilio' || $this->perguntas[$por]['tipo'] !== 'inteiro')) {
+                    $this->erro($e['_linha'], "por: a questão $por precisa ser [inteiro] do domicílio.");
+                }
+            }
             foreach ($e['perguntas'] as $p) {
                 $ln = $p['_linha'];
-                if (isset($vistos[$p['codigo']])) { $this->erro($ln, 'Código repetido: ' . $p['codigo'] . ' (também na linha ' . $vistos[$p['codigo']] . ').'); }
+                if (isset($vistos[$p['codigo']])) { $this->erro($ln, 'Código repetido: ' . $p['codigo'] . ($vistos[$p['codigo']] ? ' (também na linha ' . $vistos[$p['codigo']] . ')' : '') . '. Se veio de um conjunto, troque o código com "codigo:".'); }
                 $vistos[$p['codigo']] = $ln;
-                $this->validar_pergunta($p, $e['nivel'], $ln);
+                $this->validar_pergunta($p, $nivel, $ln);
             }
         }
         if ($moradores > 1) { $this->erro(NULL, 'Só pode haver uma lista de moradores (@moradores).'); }
@@ -417,7 +569,7 @@ class Estrutura_compilador {
         }
         // Remove marcas internas de linha
         foreach ($def['etapas'] as &$e) {
-            unset($e['_linha']);
+            unset($e['_linha'], $e['_l_se']);
             foreach ($e['regras'] ?? [] as $k => $r) { unset($e['regras'][$k]['_linha']); }
             foreach ($e['perguntas'] ?? [] as $k => $p) {
                 unset($e['perguntas'][$k]['_linha'], $e['perguntas'][$k]['_l_se'], $e['perguntas'][$k]['_l_formula']);
@@ -482,9 +634,15 @@ class Estrutura_compilador {
     private function checar_refs($n, $nivel, $agregado, $ln) {
         if ($n[0] === 'ref') {
             $p = $this->perguntas[$n[1]] ?? NULL;
-            if (!$p) { $this->erro($ln, "A expressão cita \"{$n[1]}\", que não existe."); return; }
-            if ($p['_nivel'] === 'morador' && $nivel === 'domicilio' && !$agregado) {
-                $this->erro($ln, "\"{$n[1]}\" é uma questão por morador: no domicílio, use soma_moradores(), contar_moradores() ou existe_morador().");
+            if (!$p) {
+                if (strpos($n[1], 'ent_') === 0) { return; } // dado do entrevistado pré-cadastrado
+                $this->erro($ln, "A expressão cita \"{$n[1]}\", que não existe.");
+                return;
+            }
+            if ($p['_nivel'] !== 'domicilio' && $p['_nivel'] !== $nivel && !$agregado) {
+                $this->erro($ln, $p['_nivel'] === 'morador'
+                    ? "\"{$n[1]}\" é uma questão por morador: fora dela, use soma_moradores(), contar_moradores() ou existe_morador()."
+                    : "\"{$n[1]}\" é de um grupo repetido: fora dele, use soma_grupo(), contar_grupo() ou existe_grupo().");
             }
             return;
         }
