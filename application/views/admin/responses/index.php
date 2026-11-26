@@ -303,6 +303,13 @@ function get_location_name_cached($latitude, $longitude)
 <!-- Tabela de Respostas (mantém o código original) -->
 <div class="card">
     <div class="card-body">
+        <?php if (isset($total_filtrado, $limite_lista) && $total_filtrado > count($responses)): ?>
+        <div class="alert alert-info py-2 small">
+            <i class="fas fa-info-circle me-1"></i>
+            Mostrando as <?= number_format(count($responses), 0, ',', '.') ?> entrevistas mais recentes de <?= number_format($total_filtrado, 0, ',', '.') ?>.
+            Use os filtros (questionário, aplicador, datas) para chegar às outras, ou exporte.
+        </div>
+        <?php endif; ?>
         <?php if (!empty($responses)): ?>
         <div class="table-responsive">
             <table class="table data-table">

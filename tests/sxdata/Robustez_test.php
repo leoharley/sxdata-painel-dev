@@ -81,6 +81,8 @@ class Robustez_test extends TestCase {
             ['question_id' => 13, 'response_text' => 'a@b.com'],
         ];
         $this->assertSame([], Validacao_simples::conferir(self::perguntas(), $r));
+        $r[3]['response_text'] = 'Não possui';
+        $this->assertSame([], Validacao_simples::conferir(self::perguntas(), $r), 'anotação de não informado no e-mail não é erro');
     }
 
     public function test_condicao_com_texto_da_opcao_e_valor_do_app() {
@@ -97,7 +99,7 @@ class Robustez_test extends TestCase {
             ['question_id' => 10, 'selected_options' => ['talvez']],
             ['question_id' => 11, 'response_text' => 'três'],
             ['question_id' => 12, 'selected_options' => ['praia']],
-            ['question_id' => 13, 'response_text' => 'nao-e-email'],
+            ['question_id' => 13, 'response_text' => 'fulano@gmail. com'],
             ['question_id' => 99, 'response_text' => 'x'],
             ['question_id' => 13, 'response_text' => 'a@b.com'],
         ]);

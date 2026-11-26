@@ -37,7 +37,11 @@ class Responses extends CI_Controller {
             $filters['sync_status'] = $this->input->get('sync_status');
         }
 
-        $data['responses'] = $this->Response_model->get_filtered($filters);
+        // Com muitas entrevistas, a tela carregava todas (e conferia a foto de
+        // cada uma no disco). Mostra as mais recentes e o total do filtro.
+        $data['limite_lista'] = 2000;
+        $data['total_filtrado'] = $this->Response_model->count_by_filters($filters);
+        $data['responses'] = $this->Response_model->get_filtered($filters, $data['limite_lista']);
         // Para ouvir o áudio direto da listagem, sem abrir cada resposta
         foreach ($data['responses'] as $response) {
             $response->audios = !empty($response->audio_path)

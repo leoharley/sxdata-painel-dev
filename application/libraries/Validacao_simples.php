@@ -10,7 +10,7 @@ defined('BASEPATH') OR exit('No direct script access allowed');
  *
  * - pergunta que não é deste questionário;
  * - pergunta respondida duas vezes;
- * - número que não é número; e-mail inválido; data inválida;
+ * - número que não é número; e-mail com @ mal digitado; data inválida;
  * - opção que não existe na pergunta (compara valor e texto da opção);
  * - obrigatória sem resposta, quando a pergunta está visível. A condição de
  *   visibilidade aceita tanto o texto quanto o valor da opção (o editor grava
@@ -54,7 +54,9 @@ class Validacao_simples {
                 }
             } elseif ($tipo === 'email') {
                 $t = trim((string) (is_array($valor) ? implode(',', $valor) : $valor));
-                if ($t !== '' && !filter_var($t, FILTER_VALIDATE_EMAIL)) {
+                // "NI", "não possui": anotação de não informado, não é erro.
+                // Só aponta quando tentou digitar um e-mail (tem @) e errou.
+                if ($t !== '' && strpos($t, '@') !== FALSE && !filter_var($t, FILTER_VALIDATE_EMAIL)) {
                     $erros[] = self::nome($p) . ': e-mail inválido ("' . self::curto($t) . '").';
                 }
             } elseif ($tipo === 'date') {

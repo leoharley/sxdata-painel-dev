@@ -17,7 +17,12 @@ class Response_model extends CI_Model {
         return $this->db->get()->result();
     }
 
-    public function get_filtered($filters = array()) {
+    /**
+     * @param int|null $limite as mais recentes primeiro. Sem limite, com
+     *        centenas de milhares de entrevistas a tela de respostas travava
+     *        (teste de carga da frente I).
+     */
+    public function get_filtered($filters = array(), $limite = NULL) {
         $this->db->select('fr.*, q.title as questionnaire_title, u.full_name as applied_by_name');
         $this->db->from('form_responses fr');
         $this->db->join('questionnaires q', 'fr.questionnaire_id = q.id', 'left');
@@ -45,6 +50,9 @@ class Response_model extends CI_Model {
         }
 
         $this->db->order_by('fr.created_at', 'DESC');
+        if ($limite) {
+            $this->db->limit((int) $limite);
+        }
         return $this->db->get()->result();
     }
 
