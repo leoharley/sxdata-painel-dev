@@ -40,6 +40,16 @@ class Responder extends CI_Controller {
 
         $questions = $this->load_questions($link->questionnaire_id);
 
+        // PEA Gerdau: o link é de uma ação; as perguntas 1 e 4 mudam conforme
+        // o público dela (sem manter dois questionários)
+        if ($this->db->table_exists('pea_acoes')) {
+            $this->load->model('Pea_model');
+            $acao_pea = $this->Pea_model->acao_do_link($link->id);
+            if ($acao_pea) {
+                $questions = Pea_model::adaptar_ao_publico($questions, $acao_pea->publico);
+            }
+        }
+
         $data = [
             'link'             => $link,
             'questions'        => $questions,

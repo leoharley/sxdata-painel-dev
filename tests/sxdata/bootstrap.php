@@ -18,3 +18,5 @@ require_once APPPATH . 'libraries/Anonimizador.php';
 require_once APPPATH . 'libraries/Ia_provedores.php';
 require_once APPPATH . 'libraries/Cripto_chaves.php';
 require_once APPPATH . 'libraries/Cruzamento.php';
+require_once APPPATH . 'libraries/Pea_motor.php';
+require_once APPPATH . 'libraries/Bancodoc.php';

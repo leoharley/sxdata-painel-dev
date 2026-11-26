@@ -1,0 +1,3401 @@
+{
+ "_sobre": "Carga do PEA Gerdau 2026-2031 extraída do documento aprovado (Tabelas 09, 11, 15, 17, 21, 23, 27; Quadros 5 a 16). O cronograma do PEA marca só presença (X) por trimestre: previstas = 1 por trimestre marcado. Cada ano do ciclo tem 5 colunas no documento (3º, 4º, 1º, 2º e 3º trimestres civis); aqui viram os trimestres 1 a 4 do ano do ciclo (agosto a julho), com a 5ª coluna (3º trimestre do fim do ano) no 4º trimestre.",
+ "ciclo": {
+  "nome": "PEA Gerdau 2026–2031",
+  "inicio": "2026-08-01",
+  "anos": 5,
+  "mes_inicio": 8
+ },
+ "unidades": [
+  {
+   "sigla": "UOB",
+   "nome": "Usina Ouro Branco",
+   "nome_completo": "Usina Presidente Arthur Bernardes (Usina Ouro Branco)",
+   "municipio": "Ouro Branco",
+   "atividade": "Siderúrgica"
+  },
+  {
+   "sigla": "MMB",
+   "nome": "Mina Miguel Burnier",
+   "nome_completo": "Mina de Miguel Burnier",
+   "municipio": "Ouro Preto",
+   "atividade": "Cava e outras estruturas"
+  },
+  {
+   "sigla": "MVL",
+   "nome": "Complexo Minerário Várzea do Lopes",
+   "nome_completo": "Complexo Minerário Várzea do Lopes",
+   "municipio": "Itabirito",
+   "atividade": "Cava e outras estruturas"
+  }
+ ],
+ "comunidades": [
+  {
+   "nome": "Bairro 1º de Maio",
+   "municipio": "Ouro Branco",
+   "unidade": "UOB",
+   "tipo": "ABEA",
+   "localizacao": "área urbana de Ouro Branco"
+  },
+  {
+   "nome": "Bairro São Francisco",
+   "municipio": "Ouro Branco",
+   "unidade": "UOB",
+   "tipo": "ABEA",
+   "localizacao": "área urbana de Ouro Branco"
+  },
+  {
+   "nome": "Povoado de Carreiras",
+   "municipio": "Ouro Branco",
+   "unidade": "UOB",
+   "tipo": "ABEA",
+   "localizacao": "área rural de Ouro Branco"
+  },
+  {
+   "nome": "Lobo Leite",
+   "municipio": "Congonhas",
+   "unidade": "UOB",
+   "tipo": "ABEA",
+   "localizacao": "bairro de Congonhas"
+  },
+  {
+   "nome": "Condomínio Aconchego da Serra",
+   "municipio": "Itabirito",
+   "unidade": "MVL",
+   "tipo": "ABEA",
+   "localizacao": "Itabirito"
+  },
+  {
+   "nome": "Condomínio Residencial Villa Bella",
+   "municipio": "Itabirito",
+   "unidade": "MVL",
+   "tipo": "ABEA",
+   "localizacao": "Itabirito"
+  },
+  {
+   "nome": "Propriedades rurais adjacentes à mina",
+   "municipio": "Itabirito",
+   "unidade": "MVL",
+   "tipo": "ABEA",
+   "localizacao": "Itabirito"
+  },
+  {
+   "nome": "Miguel Burnier",
+   "municipio": "Ouro Preto",
+   "unidade": "MMB",
+   "tipo": "ABEA",
+   "localizacao": "distrito de Ouro Preto"
+  },
+  {
+   "nome": "Engenheiro Correia",
+   "municipio": "Ouro Preto",
+   "unidade": "MMB",
+   "tipo": "ABEA",
+   "localizacao": "distrito de Ouro Preto"
+  },
+  {
+   "nome": "Motta",
+   "municipio": "Ouro Preto",
+   "unidade": "MMB",
+   "tipo": "ABEA",
+   "localizacao": "subdistrito de Ouro Preto"
+  },
+  {
+   "nome": "Chrockatt de Sá",
+   "municipio": "Ouro Preto",
+   "unidade": "MMB",
+   "tipo": "ABEA",
+   "localizacao": "subdistrito de Ouro Preto"
+  },
+  {
+   "nome": "Hargreaves",
+   "municipio": "Ouro Preto",
+   "unidade": "MMB",
+   "tipo": "ABEA",
+   "localizacao": "subdistrito de Ouro Preto"
+  },
+  {
+   "nome": "Pires",
+   "municipio": "Congonhas",
+   "unidade": "AID",
+   "tipo": "AID transporte de minério",
+   "localizacao": "bairro de Congonhas"
+  },
+  {
+   "nome": "Joaquim Murtinho",
+   "municipio": "Congonhas",
+   "unidade": "AID",
+   "tipo": "AID transporte de minério",
+   "localizacao": "bairro de Congonhas"
+  },
+  {
+   "nome": "Alto Maranhão",
+   "municipio": "Congonhas",
+   "unidade": "AID",
+   "tipo": "AID transporte de minério",
+   "localizacao": "distrito de Congonhas"
+  },
+  {
+   "nome": "Gagé",
+   "municipio": "Conselheiro Lafaiete",
+   "unidade": "AID",
+   "tipo": "AID transporte de minério",
+   "localizacao": "bairro de Conselheiro Lafaiete"
+  },
+  {
+   "nome": "Povoado de Ribeirão do Eixo",
+   "municipio": "Itabirito",
+   "unidade": "AID",
+   "tipo": "AID transporte de minério",
+   "localizacao": "Itabirito"
+  }
+ ],
+ "escolas": [
+  {
+   "nome": "Escola Estadual Levindo Costa Carvalho",
+   "endereco": "Rua Amarantina, S/N",
+   "bairro": "Primeiro de Maio",
+   "municipio": "Ouro Branco",
+   "comunidade": "Bairro 1º de Maio",
+   "unidade": "UOB"
+  },
+  {
+   "nome": "Escola Municipal Dom Luciano Mendes",
+   "endereco": "Avenida Ouro Preto, nº 155",
+   "bairro": "Primeiro de Maio",
+   "municipio": "Ouro Branco",
+   "comunidade": "Bairro 1º de Maio",
+   "unidade": "UOB"
+  },
+  {
+   "nome": "Escola Municipal Fernando Félix de Souza",
+   "endereco": "Rua Donato Severino De Souza, S/N",
+   "bairro": "São Francisco",
+   "municipio": "Ouro Branco",
+   "comunidade": "Bairro São Francisco",
+   "unidade": "UOB"
+  },
+  {
+   "nome": "Escola Municipal José Francisco Nogueira",
+   "endereco": "Rua Congonhas, nº 301",
+   "bairro": "Primeiro de Maio",
+   "municipio": "Ouro Branco",
+   "comunidade": "Bairro 1º de Maio",
+   "unidade": "UOB"
+  },
+  {
+   "nome": "Escola Municipal Amynthas Jacques de Moraes",
+   "endereco": "Rua José Rocha, nº 0",
+   "bairro": "Lobo Leite",
+   "municipio": "Congonhas",
+   "comunidade": "Lobo Leite",
+   "unidade": "UOB"
+  },
+  {
+   "nome": "Escola Municipal Professora Celina Cruz de Melo",
+   "endereco": "R Principal, S/N",
+   "bairro": "Distrito Motta",
+   "municipio": "Ouro Preto",
+   "comunidade": "Motta",
+   "unidade": "MMB"
+  },
+  {
+   "nome": "Escola Municipal Monsenhor Rafael",
+   "endereco": "R Nova,S/N",
+   "bairro": "Distrito Miguel Burnier",
+   "municipio": "Ouro Preto",
+   "comunidade": "Miguel Burnier",
+   "unidade": "MMB"
+  },
+  {
+   "nome": "Escola Municipal José Estevam Braga",
+   "endereco": "R da Capelinha, S/N",
+   "bairro": "Distrito Engenheiro Correia",
+   "municipio": "Ouro Preto",
+   "comunidade": "Engenheiro Correia",
+   "unidade": "MMB"
+  },
+  {
+   "nome": "Escola Municipal Dona Caetana Pereira Trindade",
+   "endereco": "Rua Nossa Senhora Do Rosário, nº 130",
+   "bairro": "Alto Maranhão",
+   "municipio": "Congonhas",
+   "comunidade": "Alto Maranhão",
+   "unidade": "AID"
+  },
+  {
+   "nome": "Escola Municipal João Narciso",
+   "endereco": "Rua Aparecida, nº 213",
+   "bairro": "Joaquim Murtinho",
+   "municipio": "Congonhas",
+   "comunidade": "Joaquim Murtinho",
+   "unidade": "AID"
+  },
+  {
+   "nome": "Escola Municipal Senhor Odorico Martinho da Silva",
+   "endereco": "Rua Anastácia Danta, nº 37",
+   "bairro": "Pires",
+   "municipio": "Congonhas",
+   "comunidade": "Pires",
+   "unidade": "AID"
+  },
+  {
+   "nome": "Escola Estadual Queiroz Júnior",
+   "endereco": "R Santa Matilde, nº 18",
+   "bairro": "Gagé",
+   "municipio": "Conselheiro Lafaiete",
+   "comunidade": "Gagé",
+   "unidade": "AID"
+  },
+  {
+   "nome": "Escola Municipal Romeu Guimarães",
+   "endereco": "R da Paciência, S/N",
+   "bairro": "Gagé",
+   "municipio": "Conselheiro Lafaiete",
+   "comunidade": "Gagé",
+   "unidade": "AID"
+  },
+  {
+   "nome": "Escola Municipal Ribeirão do Eixo",
+   "endereco": "Rod Br040 Km583, S/N",
+   "bairro": "Ribeirão do Eixo",
+   "municipio": "Itabirito",
+   "comunidade": "Povoado de Ribeirão do Eixo",
+   "unidade": "AID"
+  }
+ ],
+ "eixos": [
+  "Comunicação",
+  "Informação",
+  "Sensibilização",
+  "Transformação",
+  "Sensibilização e Transformação"
+ ],
+ "projetos": [
+  {
+   "nome": "Eventos Socioambientais",
+   "publico": "interno",
+   "eixo": "Comunicação",
+   "descricao": "Ampliar as oportunidades de contato dos colaboradores com as expressões, temáticas ambientais e datas do calendário socioambiental, utilizando as mais diversas ferramentas pedagógicas e de comunicação.",
+   "periodicidade": "Três ações por ano",
+   "ip_faixas": {
+    "baixa": [
+     10,
+     30
+    ],
+    "media": [
+     30,
+     50
+    ],
+    "alta": [
+     50,
+     null
+    ]
+   },
+   "avaliacao": true
+  },
+  {
+   "nome": "Módulo Básico",
+   "publico": "interno",
+   "eixo": "Informação",
+   "descricao": "Promover o processo contínuo de formação dos colaboradores com foco na ampliação da percepção e comportamentos ambientais.",
+   "periodicidade": "Durante as ações de Integração da Usina Ouro Branco e Programa de Integração da Mineração.",
+   "ip_faixas": {
+    "baixa": [
+     10,
+     60
+    ],
+    "media": [
+     60,
+     100
+    ],
+    "alta": [
+     100,
+     null
+    ]
+   },
+   "avaliacao": true
+  },
+  {
+   "nome": "Encontro Anual do PEA",
+   "publico": "interno",
+   "eixo": "Informação",
+   "descricao": "Promover o processo contínuo de formação ambiental dos gestores e divulgar o PEA.",
+   "periodicidade": "Um encontro por ano",
+   "ip_faixas": {
+    "baixa": [
+     10,
+     30
+    ],
+    "media": [
+     30,
+     50
+    ],
+    "alta": [
+     50,
+     null
+    ]
+   },
+   "avaliacao": true
+  },
+  {
+   "nome": "PEA na Área",
+   "publico": "interno",
+   "eixo": "Sensibilização e Transformação",
+   "descricao": "Fortalecer práticas e valores ambientais, ao promover o engajamento dos colaboradores nas ações promovidas pelo PEA e estimular o intercâmbio de atitudes e comportamentos ambientais entre as diversas áreas do empreendimento.",
+   "periodicidade": "Quatro ações por ano",
+   "ip_faixas": {
+    "baixa": [
+     5,
+     10
+    ],
+    "media": [
+     10,
+     20
+    ],
+    "alta": [
+     20,
+     null
+    ]
+   },
+   "avaliacao": true
+  },
+  {
+   "nome": "Comunicados do PEA",
+   "publico": "externo_comunidade",
+   "eixo": "Comunicação",
+   "descricao": "Ampliar o acesso da comunidade aos temas abordados pelo PEA, promovendo a divulgação de datas, pautas socioambientais e informações sobre as ações desenvolvidas pelo programa.",
+   "periodicidade": "Anual",
+   "ip_faixas": null,
+   "avaliacao": false
+  },
+  {
+   "nome": "Bate-Papo Ambiental",
+   "publico": "externo_comunidade",
+   "eixo": "Informação",
+   "descricao": "Sensibilizar e capacitar os representantes das ABEAs em relação às questões socioambientais, por meio de oficinas temáticas alinhadas às práticas ambientais atuais.",
+   "periodicidade": "Um encontro por ano",
+   "ip_faixas": {
+    "baixa": [
+     5,
+     15
+    ],
+    "media": [
+     15,
+     25
+    ],
+    "alta": [
+     25,
+     null
+    ]
+   },
+   "avaliacao": true
+  },
+  {
+   "nome": "Trilhas do PEA",
+   "publico": "externo_comunidade",
+   "eixo": "Sensibilização",
+   "descricao": "Promover a educação patrimonial por meio de visitas dos representantes às comunidades vizinhas que integram as ABEAs, incentivando o reconhecimento e a valorização do patrimônio natural e cultural local.",
+   "periodicidade": "(02) duas comunidades visitadas por ano",
+   "ip_faixas": {
+    "baixa": [
+     5,
+     10
+    ],
+    "media": [
+     10,
+     15
+    ],
+    "alta": [
+     15,
+     null
+    ]
+   },
+   "avaliacao": true
+  },
+  {
+   "nome": "PEA na Comunidade",
+   "publico": "externo_comunidade",
+   "eixo": "Transformação",
+   "descricao": "Trazer as comunidades para o centro, por meio da valorização de práticas e consideração a valores ambientais nas comunidades das ABEAs, estímulo à participação dos moradores nas atividades do PEA, mapeamento de desafios socioambientais locais e promoção da construção coletiva de soluções sustentáveis.",
+   "periodicidade": "04 (quatro) ações por ano",
+   "ip_faixas": {
+    "baixa": [
+     5,
+     10
+    ],
+    "media": [
+     10,
+     15
+    ],
+    "alta": [
+     15,
+     null
+    ]
+   },
+   "avaliacao": true
+  },
+  {
+   "nome": "Comunicados do PEA Escolar",
+   "publico": "externo_escolar",
+   "eixo": "Comunicação",
+   "descricao": "Ampliar o acesso da comunidade Escolar aos temas abordados pelo PEA, promovendo a divulgação de datas, pautas socioambientais e informações sobre as ações desenvolvidas pelo programa.",
+   "periodicidade": "Anual",
+   "ip_faixas": null,
+   "avaliacao": false
+  },
+  {
+   "nome": "Workshop de Planejamento",
+   "publico": "externo_escolar",
+   "eixo": "Informação",
+   "descricao": "Apresentar resultados anteriores e validar o planejamento anual do Programa Gerdau Germinar com as Secretarias de Educação, diretores e pedagogos das escolas das regiões.",
+   "periodicidade": "(01) um Workshop por ano",
+   "ip_faixas": null,
+   "avaliacao": false
+  },
+  {
+   "nome": "Visitas Técnicas ao Centro de Educação Ambiental",
+   "publico": "externo_escolar",
+   "eixo": "Sensibilização",
+   "descricao": "Sensibilizar alunos e educadores para as temáticas socioambientais, ampliando a percepção ambiental e promovendo um aprendizado significativo e sustentável por meio de vivências interativas e imersivas, alinhado com os princípios da Educação Ambiental.",
+   "periodicidade": "Anual – alinhado ao calendário escolar",
+   "ip_faixas": {
+    "baixa": [
+     500,
+     1000
+    ],
+    "media": [
+     1000,
+     2000
+    ],
+    "alta": [
+     2000,
+     null
+    ]
+   },
+   "avaliacao": true
+  },
+  {
+   "nome": "Semana das APAEs",
+   "publico": "externo_escolar",
+   "eixo": "Sensibilização",
+   "descricao": "Proporcionar aos alunos PCDs das APAEs experiências de educação ambiental inclusivas que promovam a aprendizagem, a ampliação da percepção ambiental e a interação social.",
+   "periodicidade": "(01) um evento por ano",
+   "ip_faixas": {
+    "baixa": [
+     20,
+     50
+    ],
+    "media": [
+     50,
+     100
+    ],
+    "alta": [
+     100,
+     null
+    ]
+   },
+   "avaliacao": true
+  },
+  {
+   "nome": "Laboratório Ambiental",
+   "publico": "externo_escolar",
+   "eixo": "Transformação",
+   "descricao": "Oferecer cursos e oficinas com temática socioambiental diversa, destinados à capacitação contínua dos educadores e multiplicadores socioambientais da região.",
+   "periodicidade": "(02) dois Laboratórios por ano",
+   "ip_faixas": {
+    "baixa": [
+     20,
+     40
+    ],
+    "media": [
+     40,
+     60
+    ],
+    "alta": [
+     60,
+     null
+    ]
+   },
+   "avaliacao": true
+  },
+  {
+   "nome": "Formação Socioambiental nas Escolas das ABEAs",
+   "publico": "externo_escolar",
+   "eixo": "Transformação",
+   "descricao": "Fortalecer a educação ambiental nas escolas, divulgar as boas práticas ambientais.",
+   "periodicidade": "Anual – alinhado ao calendário escolar",
+   "ip_faixas": {
+    "baixa": [
+     20,
+     40
+    ],
+    "media": [
+     40,
+     60
+    ],
+    "alta": [
+     60,
+     null
+    ]
+   },
+   "avaliacao": true
+  },
+  {
+   "nome": "Prêmio Gerdau Germinar",
+   "publico": "externo_escolar",
+   "eixo": "Transformação",
+   "descricao": "Incentivar iniciativas que promovam impactos positivos na educação ambiental por meio da submissão de projetos educativos em edital.",
+   "periodicidade": "Bienal",
+   "ip_faixas": {
+    "baixa": [
+     200,
+     400
+    ],
+    "media": [
+     400,
+     700
+    ],
+    "alta": [
+     700,
+     null
+    ]
+   },
+   "avaliacao": true
+  },
+  {
+   "nome": "Congresso Regional de Educação Ambiental",
+   "publico": "externo_escolar",
+   "eixo": "Transformação",
+   "descricao": "Promover um Congresso Ambiental para divulgar iniciativas inovadoras em educação ambiental e fortalecer a troca de experiências e boas práticas entre instituições de ensino.",
+   "periodicidade": "Bienal",
+   "ip_faixas": {
+    "baixa": [
+     10,
+     30
+    ],
+    "media": [
+     30,
+     50
+    ],
+    "alta": [
+     50,
+     null
+    ]
+   },
+   "avaliacao": true
+  }
+ ],
+ "linhas_tematicas": [
+  {
+   "publico": "interno",
+   "linha": "Consumo Consciente",
+   "conteudos": [
+    "Consumo Consciente: conceito",
+    "Consumo Consciente e água",
+    "Consumo Consciente e energia",
+    "Consumo Consciente e resíduos sólidos",
+    "Atitudes de um Consumidor Consciente",
+    "Pegada Ecológica",
+    "Pegada hídrica",
+    "Pegada de Carbono",
+    "Os 12 R’s do consumo consciente"
+   ]
+  },
+  {
+   "publico": "interno",
+   "linha": "Recursos Hídricos",
+   "conteudos": [
+    "“Planeta Água”",
+    "Ciclo da Água",
+    "Nascentes, mata ciliar e APPs",
+    "A água e a vida no planeta",
+    "A água no corpo humano",
+    "Principais doenças veiculadas pela água",
+    "Importância da manutenção da qualidade da água para a saúde",
+    "Saneamento Básico",
+    "Bacia hidrográfica",
+    "Os principais rios do Brasil",
+    "Rios voadores",
+    "Os principais rios de Minas Gerais",
+    "Principais cursos d’água da região",
+    "Impactos nos recursos hídricos",
+    "Fontes de poluentes",
+    "Assoreamento dos cursos d’água",
+    "Eutrofização",
+    "Poluição hídrica no contexto regional",
+    "Importância da conservação dos recursos hídricos",
+    "Evitando o desperdício - dicas para diminuir o consumo de água"
+   ]
+  },
+  {
+   "publico": "interno",
+   "linha": "Efluentes industriais e domésticos",
+   "conteudos": [
+    "Efluentes: conceito",
+    "Usos da água pelas indústrias",
+    "Estações de tratamento de efluentes",
+    "Saneamento básico",
+    "ETA",
+    "ETE",
+    "Etapas de tratamento de água e esgoto",
+    "Importância do tratamento da água e do esgoto para a saúde pública e para o meio ambiente",
+    "ETA e ETE no contexto do empreendimento"
+   ]
+  },
+  {
+   "publico": "interno",
+   "linha": "Resíduos Sólidos",
+   "conteudos": [
+    "É lixo? Ou resíduo?",
+    "O que é gestão de resíduos?",
+    "Lei Federal nº 12.305/2010, que institui a Política Nacional de Resíduos Sólidos (PNRS)",
+    "Qual é a importância da gestão de resíduos para as empresas?",
+    "Etapas do processo de gestão de resíduos",
+    "A gestão dos resíduos domésticos",
+    "Classificação dos resíduos por: origem, composição e periculosidade",
+    "Materiais Recicláveis",
+    "Separação dos resíduos - evitando a contaminação",
+    "Como funciona uma associação de catadores",
+    "Principais impactos do descarte inadequado",
+    "Principais doenças e vetores associados ao lixo",
+    "Principais medidas preventivas para evitar as doenças associadas ao lixo",
+    "Aterro sanitário doméstico e industrial",
+    "Práticas sustentáveis para a vida cotidiana (resíduos sólidos no ambiente doméstico)",
+    "Logística reversa: responsabilidade compartilhada e iniciativas locais",
+    "Gestão dos resíduos sólidos nas unidades da Gerdau: Usina Ouro Branco, Complexo Minerário Várzea do Lopes e Mina Miguel Burnier"
+   ]
+  },
+  {
+   "publico": "interno",
+   "linha": "Poluição poluentes e suas consequências",
+   "conteudos": [
+    "Poluição: conceito",
+    "Agentes poluidores",
+    "Tipos de poluição",
+    "Poluição hídrica",
+    "Poluição atmosférica",
+    "Poluição do solo",
+    "Poluição sonora"
+   ]
+  },
+  {
+   "publico": "interno",
+   "linha": "Controles Ambientais: ar, ruído e Vibração",
+   "conteudos": [
+    "Emissões atmosféricas",
+    "Principais fontes de poluentes atmosféricos (indústria, transporte, queimada)",
+    "Efeitos da poluição do ar na saúde humana e no meio ambiente",
+    "Tecnologias e soluções para redução da emissão de poluentes",
+    "Emissões sonoras e vibrações",
+    "O ruído e suas consequências para a saúde humana",
+    "Monitoramento dos níveis de ruído na região pela empresa",
+    "Monitoramento da qualidade do ar e níveis de ruídos pela empresa",
+    "Principais medidas preventivas e mitigadoras adotadas pela empresa"
+   ]
+  },
+  {
+   "publico": "interno",
+   "linha": "Biodiversidade",
+   "conteudos": [
+    "O que é biodiversidade?",
+    "Os ecossistemas brasileiros",
+    "Biomas encontrados em Minas Gerais",
+    "Biomas encontrados na região",
+    "Espécies nativas, endêmicas e exóticas",
+    "Espécies ameaçadas de extinção",
+    "Principais espécies arbóreas típicas de Mata Atlântica encontradas na região",
+    "Principais espécies arbóreas típicas do Cerrado encontradas na região",
+    "Diversidade de fauna da região",
+    "Biodiversidade: importância para a alimentação, saúde e economia"
+   ]
+  },
+  {
+   "publico": "interno",
+   "linha": "Desafios e Estratégias para a Conservação da Biodiversidade",
+   "conteudos": [
+    "Principais causas da perda de biodiversidade",
+    "Intervenções antrópicas na região",
+    "Caça predatória",
+    "Incêndios florestais e o impacto na fauna e flora",
+    "Fragmentação florestal",
+    "Animais na estrada? Saiba o que fazer",
+    "Espécies ameaçadas e endêmicas na região",
+    "Pressões sobre a biodiversidade local",
+    "Impactos da mineração sobre a biodiversidade",
+    "Medidas de preservação e conservação desses biomas",
+    "Medidas adotadas pela empresa para a conservação e monitoramento da biodiversidade",
+    "Unidades de Conservação (UCs)",
+    "Licenciamento Ambiental",
+    "Ações inovadoras para a conservação da biodiversidade"
+   ]
+  },
+  {
+   "publico": "interno",
+   "linha": "Segurança no trânsito",
+   "conteudos": [
+    "O que é Segurança no Trânsito?",
+    "Dados sobre acidentes no Brasil, em MG e no município",
+    "Impactos do empreendimento no trânsito local (vias utilizadas, frequência de caminhões etc.)",
+    "Medidas de sinalização, segurança e educação no trânsito",
+    "Dicas para lidar com situações adversas (neblina, trânsito intenso, chuva, falhas e panes, etc.)",
+    "Atropelamento de animais",
+    "O que é um Ecocondutor?"
+   ]
+  },
+  {
+   "publico": "externo_comunidade",
+   "linha": "Meio Ambiente e Recursos Naturais",
+   "conteudos": [
+    "Reflorestamento e arborização das ruas",
+    "Recuperação de áreas degradadas",
+    "Reconstituição da mata de cinturão verde",
+    "Revegetação com espécies nativas",
+    "Arborização Urbana Sustentável",
+    "Uso da camada fértil das minas para processos de revegetação",
+    "Evitar o desmatamento, especialmente em cabeceiras de água",
+    "Conservação de Matas Ciliares e Nascentes",
+    "Realização de manejo adequado do solo",
+    "Controle de processos erosivos",
+    "Promoção de técnicas de recuperação de áreas afetadas por atividade minerária",
+    "Preservação das nascentes",
+    "Preservar a água sem contaminação",
+    "Regularização e fiscalização do uso da água",
+    "Lago Soledade, Córrego Gurita e Córrego Burnier",
+    "Qualidade da água em nascentes e córregos",
+    "Monitoramento da qualidade do ar",
+    "Medidas de controle e mitigação (poluição do ar e da água)"
+   ]
+  },
+  {
+   "publico": "externo_comunidade",
+   "linha": "Resíduos Sólidos e Coleta Seletiva",
+   "conteudos": [
+    "É lixo? Ou resíduo?",
+    "O que é gestão de resíduos?",
+    "Lei Federal nº 12.305/2010, que institui a Política Nacional de Resíduos Sólidos (PNRS)",
+    "Qual é a importância da gestão de resíduos para a comunidade",
+    "Etapas do processo de gestão de resíduos",
+    "A gestão dos resíduos domésticos",
+    "Classificação dos resíduos por: origem, composição e periculosidade",
+    "Materiais Recicláveis",
+    "Separação dos resíduos - evitando a contaminação",
+    "Como funciona uma associação de catadores",
+    "Principais impactos do descarte inadequado",
+    "Principais doenças e vetores associados ao lixo",
+    "Principais medidas preventivas para evitar as doenças associadas ao lixo",
+    "Aterro sanitário doméstico e industrial",
+    "Práticas sustentáveis para a vida cotidiana (resíduos sólidos no ambiente doméstico)",
+    "Logística reversa: responsabilidade compartilhada e iniciativas locais",
+    "Gestão dos resíduos sólidos nas unidades da Gerdau: Usina Ouro Branco, Complexo Minerário Várzea do Lopes e Mina Miguel Burnier"
+   ]
+  },
+  {
+   "publico": "externo_comunidade",
+   "linha": "Educação Ambiental e Participação Comunitária",
+   "conteudos": [
+    "Deliberação Normativa COPAM nº 238/2020",
+    "Implementação do PEA nas Comunidades",
+    "Formação de Agentes Ambientais locais",
+    "Gestão Participativa",
+    "Monitoramento Ambiental Comunitário",
+    "Patrimônio Natural e Cultural",
+    "Política Nacional de Educação Ambiental (Lei 9.795/1999)",
+    "Princípios e Práticas da Educação Ambiental",
+    "Programa Gerdau Germinar",
+    "Responsabilidade Socioambiental",
+    "Desenvolvimento Sustentável e Agenda 2030 (ODS)",
+    "Saúde Ambiental e Qualidade de Vida"
+   ]
+  },
+  {
+   "publico": "externo_comunidade",
+   "linha": "Conservação Ambiental, Incêndios e Brigadas",
+   "conteudos": [
+    "Fundamentos da Prevenção de Incêndios Florestais",
+    "Prevenção e Combate a Incêndios",
+    "Brigadas Florestais",
+    "Educação Comunitária sobre Riscos de Incêndios",
+    "Importância da Vegetação Nativa para o Ecossistema Local",
+    "Técnicas de Recuperação de Áreas Degradadas",
+    "Unidades de Conservação",
+    "Manejo Sustentável da Vegetação e do Solo",
+    "O papel das espécies nativas na manutenção da biodiversidade",
+    "Fauna da região",
+    "Corredores Ecológicos",
+    "Controle de Espécies Invasoras e Exóticas",
+    "Papel da Vegetação na Prevenção de Incêndios",
+    "Ciclos das Plantas e Suas Relações com o Clima",
+    "Viveiros Comunitários e Produção de Mudas Nativas",
+    "AMDA",
+    "Brigada Carcará Ouro Branco"
+   ]
+  },
+  {
+   "publico": "externo_escolar",
+   "linha": "Crescimento Econômico",
+   "conteudos": [
+    "Desenvolvimento Sustentável e Agenda 2030 (ODS)",
+    "ESG",
+    "Setores Produtivos",
+    "Economia da comunidade",
+    "Empreendedorismo",
+    "Relação entre emprego, renda e qualidade de vida",
+    "Como apoiar o comércio local",
+    "Cidadania"
+   ]
+  },
+  {
+   "publico": "externo_escolar",
+   "linha": "Biodiversidade",
+   "conteudos": [
+    "O que é biodiversidade?",
+    "Os ecossistemas brasileiros",
+    "Biomas encontrados em Minas Gerais",
+    "Biomas encontrados na região",
+    "Espécies nativas, endêmicas e exóticas",
+    "Espécies ameaçadas de extinção",
+    "Principais espécies arbóreas típicas de Mata Atlântica encontradas na região",
+    "Principais espécies arbóreas típicas do Cerrado encontradas na região",
+    "Diversidade de fauna da região",
+    "Biodiversidade: importância para a alimentação, saúde e economia"
+   ]
+  },
+  {
+   "publico": "externo_escolar",
+   "linha": "Poluição e Impactos Ambientais",
+   "conteudos": [
+    "Poluição (geral)",
+    "Poluição atmosférica",
+    "Poluição sonora",
+    "Poluição visual",
+    "Poeira",
+    "Emissão de particulados",
+    "Derramamento de minério na BR 040 (carretas)",
+    "Desmatamento",
+    "Queimadas",
+    "Desequilíbrio ecológico",
+    "Doenças respiratórias e de pele",
+    "Problemas de saúde"
+   ]
+  },
+  {
+   "publico": "externo_escolar",
+   "linha": "Educação Ambiental e Participação Comunitária",
+   "conteudos": [
+    "Deliberação Normativa COPAM nº 238/2020",
+    "Implementação do PEA nas Instituições de ensino",
+    "Política Nacional de Educação Ambiental (Lei 9.795/1999)",
+    "Princípios e Práticas da Educação Ambiental",
+    "Programa Gerdau Germinar",
+    "Responsabilidade Socioambiental",
+    "Lei Federal nº 12.305/2010, que institui a Política Nacional de Resíduos Sólidos (PNRS)",
+    "Qual é a importância da gestão de resíduos para a comunidade",
+    "Práticas sustentáveis para a vida cotidiana (resíduos sólidos no ambiente doméstico)",
+    "Saúde Ambiental e Qualidade de Vida"
+   ]
+  }
+ ],
+ "cronograma": [
+  {
+   "publico": "interno",
+   "projeto": "Eventos Socioambientais",
+   "ano_do_ciclo": 1,
+   "trimestre": 2,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 15"
+  },
+  {
+   "publico": "interno",
+   "projeto": "Eventos Socioambientais",
+   "ano_do_ciclo": 1,
+   "trimestre": 4,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 15"
+  },
+  {
+   "publico": "interno",
+   "projeto": "Eventos Socioambientais",
+   "ano_do_ciclo": 1,
+   "trimestre": 4,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 15"
+  },
+  {
+   "publico": "interno",
+   "projeto": "Eventos Socioambientais",
+   "ano_do_ciclo": 2,
+   "trimestre": 2,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 15"
+  },
+  {
+   "publico": "interno",
+   "projeto": "Eventos Socioambientais",
+   "ano_do_ciclo": 2,
+   "trimestre": 4,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 15"
+  },
+  {
+   "publico": "interno",
+   "projeto": "Eventos Socioambientais",
+   "ano_do_ciclo": 2,
+   "trimestre": 4,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 15"
+  },
+  {
+   "publico": "interno",
+   "projeto": "Eventos Socioambientais",
+   "ano_do_ciclo": 3,
+   "trimestre": 2,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 15"
+  },
+  {
+   "publico": "interno",
+   "projeto": "Eventos Socioambientais",
+   "ano_do_ciclo": 3,
+   "trimestre": 4,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 15"
+  },
+  {
+   "publico": "interno",
+   "projeto": "Eventos Socioambientais",
+   "ano_do_ciclo": 3,
+   "trimestre": 4,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 15"
+  },
+  {
+   "publico": "interno",
+   "projeto": "Eventos Socioambientais",
+   "ano_do_ciclo": 4,
+   "trimestre": 2,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 15"
+  },
+  {
+   "publico": "interno",
+   "projeto": "Eventos Socioambientais",
+   "ano_do_ciclo": 4,
+   "trimestre": 4,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 15"
+  },
+  {
+   "publico": "interno",
+   "projeto": "Eventos Socioambientais",
+   "ano_do_ciclo": 4,
+   "trimestre": 4,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 15"
+  },
+  {
+   "publico": "interno",
+   "projeto": "Eventos Socioambientais",
+   "ano_do_ciclo": 5,
+   "trimestre": 2,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 15"
+  },
+  {
+   "publico": "interno",
+   "projeto": "Eventos Socioambientais",
+   "ano_do_ciclo": 5,
+   "trimestre": 3,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 15"
+  },
+  {
+   "publico": "interno",
+   "projeto": "Eventos Socioambientais",
+   "ano_do_ciclo": 5,
+   "trimestre": 4,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 15"
+  },
+  {
+   "publico": "interno",
+   "projeto": "Módulo Básico",
+   "ano_do_ciclo": 1,
+   "trimestre": 1,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 15"
+  },
+  {
+   "publico": "interno",
+   "projeto": "Módulo Básico",
+   "ano_do_ciclo": 1,
+   "trimestre": 2,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 15"
+  },
+  {
+   "publico": "interno",
+   "projeto": "Módulo Básico",
+   "ano_do_ciclo": 1,
+   "trimestre": 3,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 15"
+  },
+  {
+   "publico": "interno",
+   "projeto": "Módulo Básico",
+   "ano_do_ciclo": 1,
+   "trimestre": 4,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 15"
+  },
+  {
+   "publico": "interno",
+   "projeto": "Módulo Básico",
+   "ano_do_ciclo": 1,
+   "trimestre": 4,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 15"
+  },
+  {
+   "publico": "interno",
+   "projeto": "Módulo Básico",
+   "ano_do_ciclo": 2,
+   "trimestre": 1,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 15"
+  },
+  {
+   "publico": "interno",
+   "projeto": "Módulo Básico",
+   "ano_do_ciclo": 2,
+   "trimestre": 2,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 15"
+  },
+  {
+   "publico": "interno",
+   "projeto": "Módulo Básico",
+   "ano_do_ciclo": 2,
+   "trimestre": 3,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 15"
+  },
+  {
+   "publico": "interno",
+   "projeto": "Módulo Básico",
+   "ano_do_ciclo": 2,
+   "trimestre": 4,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 15"
+  },
+  {
+   "publico": "interno",
+   "projeto": "Módulo Básico",
+   "ano_do_ciclo": 2,
+   "trimestre": 4,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 15"
+  },
+  {
+   "publico": "interno",
+   "projeto": "Módulo Básico",
+   "ano_do_ciclo": 3,
+   "trimestre": 1,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 15"
+  },
+  {
+   "publico": "interno",
+   "projeto": "Módulo Básico",
+   "ano_do_ciclo": 3,
+   "trimestre": 2,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 15"
+  },
+  {
+   "publico": "interno",
+   "projeto": "Módulo Básico",
+   "ano_do_ciclo": 3,
+   "trimestre": 3,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 15"
+  },
+  {
+   "publico": "interno",
+   "projeto": "Módulo Básico",
+   "ano_do_ciclo": 3,
+   "trimestre": 4,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 15"
+  },
+  {
+   "publico": "interno",
+   "projeto": "Módulo Básico",
+   "ano_do_ciclo": 3,
+   "trimestre": 4,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 15"
+  },
+  {
+   "publico": "interno",
+   "projeto": "Módulo Básico",
+   "ano_do_ciclo": 4,
+   "trimestre": 1,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 15"
+  },
+  {
+   "publico": "interno",
+   "projeto": "Módulo Básico",
+   "ano_do_ciclo": 4,
+   "trimestre": 2,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 15"
+  },
+  {
+   "publico": "interno",
+   "projeto": "Módulo Básico",
+   "ano_do_ciclo": 4,
+   "trimestre": 3,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 15"
+  },
+  {
+   "publico": "interno",
+   "projeto": "Módulo Básico",
+   "ano_do_ciclo": 4,
+   "trimestre": 4,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 15"
+  },
+  {
+   "publico": "interno",
+   "projeto": "Módulo Básico",
+   "ano_do_ciclo": 4,
+   "trimestre": 4,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 15"
+  },
+  {
+   "publico": "interno",
+   "projeto": "Módulo Básico",
+   "ano_do_ciclo": 5,
+   "trimestre": 1,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 15"
+  },
+  {
+   "publico": "interno",
+   "projeto": "Módulo Básico",
+   "ano_do_ciclo": 5,
+   "trimestre": 2,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 15"
+  },
+  {
+   "publico": "interno",
+   "projeto": "Módulo Básico",
+   "ano_do_ciclo": 5,
+   "trimestre": 3,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 15"
+  },
+  {
+   "publico": "interno",
+   "projeto": "Módulo Básico",
+   "ano_do_ciclo": 5,
+   "trimestre": 4,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 15"
+  },
+  {
+   "publico": "interno",
+   "projeto": "Encontro Anual do PEA",
+   "ano_do_ciclo": 1,
+   "trimestre": 1,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 15"
+  },
+  {
+   "publico": "interno",
+   "projeto": "Encontro Anual do PEA",
+   "ano_do_ciclo": 2,
+   "trimestre": 1,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 15"
+  },
+  {
+   "publico": "interno",
+   "projeto": "Encontro Anual do PEA",
+   "ano_do_ciclo": 3,
+   "trimestre": 1,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 15"
+  },
+  {
+   "publico": "interno",
+   "projeto": "Encontro Anual do PEA",
+   "ano_do_ciclo": 4,
+   "trimestre": 1,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 15"
+  },
+  {
+   "publico": "interno",
+   "projeto": "Encontro Anual do PEA",
+   "ano_do_ciclo": 5,
+   "trimestre": 1,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 15"
+  },
+  {
+   "publico": "interno",
+   "projeto": "PEA na Área",
+   "ano_do_ciclo": 1,
+   "trimestre": 2,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 15"
+  },
+  {
+   "publico": "interno",
+   "projeto": "PEA na Área",
+   "ano_do_ciclo": 1,
+   "trimestre": 3,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 15"
+  },
+  {
+   "publico": "interno",
+   "projeto": "PEA na Área",
+   "ano_do_ciclo": 1,
+   "trimestre": 4,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 15"
+  },
+  {
+   "publico": "interno",
+   "projeto": "PEA na Área",
+   "ano_do_ciclo": 1,
+   "trimestre": 4,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 15"
+  },
+  {
+   "publico": "interno",
+   "projeto": "PEA na Área",
+   "ano_do_ciclo": 2,
+   "trimestre": 2,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 15"
+  },
+  {
+   "publico": "interno",
+   "projeto": "PEA na Área",
+   "ano_do_ciclo": 2,
+   "trimestre": 3,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 15"
+  },
+  {
+   "publico": "interno",
+   "projeto": "PEA na Área",
+   "ano_do_ciclo": 2,
+   "trimestre": 4,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 15"
+  },
+  {
+   "publico": "interno",
+   "projeto": "PEA na Área",
+   "ano_do_ciclo": 2,
+   "trimestre": 4,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 15"
+  },
+  {
+   "publico": "interno",
+   "projeto": "PEA na Área",
+   "ano_do_ciclo": 3,
+   "trimestre": 2,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 15"
+  },
+  {
+   "publico": "interno",
+   "projeto": "PEA na Área",
+   "ano_do_ciclo": 3,
+   "trimestre": 3,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 15"
+  },
+  {
+   "publico": "interno",
+   "projeto": "PEA na Área",
+   "ano_do_ciclo": 3,
+   "trimestre": 4,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 15"
+  },
+  {
+   "publico": "interno",
+   "projeto": "PEA na Área",
+   "ano_do_ciclo": 3,
+   "trimestre": 4,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 15"
+  },
+  {
+   "publico": "interno",
+   "projeto": "PEA na Área",
+   "ano_do_ciclo": 4,
+   "trimestre": 2,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 15"
+  },
+  {
+   "publico": "interno",
+   "projeto": "PEA na Área",
+   "ano_do_ciclo": 4,
+   "trimestre": 3,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 15"
+  },
+  {
+   "publico": "interno",
+   "projeto": "PEA na Área",
+   "ano_do_ciclo": 4,
+   "trimestre": 4,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 15"
+  },
+  {
+   "publico": "interno",
+   "projeto": "PEA na Área",
+   "ano_do_ciclo": 4,
+   "trimestre": 4,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 15"
+  },
+  {
+   "publico": "interno",
+   "projeto": "PEA na Área",
+   "ano_do_ciclo": 5,
+   "trimestre": 2,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 15"
+  },
+  {
+   "publico": "interno",
+   "projeto": "PEA na Área",
+   "ano_do_ciclo": 5,
+   "trimestre": 3,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 15"
+  },
+  {
+   "publico": "interno",
+   "projeto": "PEA na Área",
+   "ano_do_ciclo": 5,
+   "trimestre": 4,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 15"
+  },
+  {
+   "publico": "externo_comunidade",
+   "projeto": "Comunicados do PEA",
+   "ano_do_ciclo": 1,
+   "trimestre": 1,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 21"
+  },
+  {
+   "publico": "externo_comunidade",
+   "projeto": "Comunicados do PEA",
+   "ano_do_ciclo": 1,
+   "trimestre": 2,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 21"
+  },
+  {
+   "publico": "externo_comunidade",
+   "projeto": "Comunicados do PEA",
+   "ano_do_ciclo": 1,
+   "trimestre": 3,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 21"
+  },
+  {
+   "publico": "externo_comunidade",
+   "projeto": "Comunicados do PEA",
+   "ano_do_ciclo": 1,
+   "trimestre": 4,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 21"
+  },
+  {
+   "publico": "externo_comunidade",
+   "projeto": "Comunicados do PEA",
+   "ano_do_ciclo": 1,
+   "trimestre": 4,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 21"
+  },
+  {
+   "publico": "externo_comunidade",
+   "projeto": "Comunicados do PEA",
+   "ano_do_ciclo": 2,
+   "trimestre": 1,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 21"
+  },
+  {
+   "publico": "externo_comunidade",
+   "projeto": "Comunicados do PEA",
+   "ano_do_ciclo": 2,
+   "trimestre": 2,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 21"
+  },
+  {
+   "publico": "externo_comunidade",
+   "projeto": "Comunicados do PEA",
+   "ano_do_ciclo": 2,
+   "trimestre": 3,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 21"
+  },
+  {
+   "publico": "externo_comunidade",
+   "projeto": "Comunicados do PEA",
+   "ano_do_ciclo": 2,
+   "trimestre": 4,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 21"
+  },
+  {
+   "publico": "externo_comunidade",
+   "projeto": "Comunicados do PEA",
+   "ano_do_ciclo": 2,
+   "trimestre": 4,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 21"
+  },
+  {
+   "publico": "externo_comunidade",
+   "projeto": "Comunicados do PEA",
+   "ano_do_ciclo": 3,
+   "trimestre": 1,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 21"
+  },
+  {
+   "publico": "externo_comunidade",
+   "projeto": "Comunicados do PEA",
+   "ano_do_ciclo": 3,
+   "trimestre": 2,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 21"
+  },
+  {
+   "publico": "externo_comunidade",
+   "projeto": "Comunicados do PEA",
+   "ano_do_ciclo": 3,
+   "trimestre": 3,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 21"
+  },
+  {
+   "publico": "externo_comunidade",
+   "projeto": "Comunicados do PEA",
+   "ano_do_ciclo": 3,
+   "trimestre": 4,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 21"
+  },
+  {
+   "publico": "externo_comunidade",
+   "projeto": "Comunicados do PEA",
+   "ano_do_ciclo": 3,
+   "trimestre": 4,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 21"
+  },
+  {
+   "publico": "externo_comunidade",
+   "projeto": "Comunicados do PEA",
+   "ano_do_ciclo": 4,
+   "trimestre": 1,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 21"
+  },
+  {
+   "publico": "externo_comunidade",
+   "projeto": "Comunicados do PEA",
+   "ano_do_ciclo": 4,
+   "trimestre": 2,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 21"
+  },
+  {
+   "publico": "externo_comunidade",
+   "projeto": "Comunicados do PEA",
+   "ano_do_ciclo": 4,
+   "trimestre": 3,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 21"
+  },
+  {
+   "publico": "externo_comunidade",
+   "projeto": "Comunicados do PEA",
+   "ano_do_ciclo": 4,
+   "trimestre": 4,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 21"
+  },
+  {
+   "publico": "externo_comunidade",
+   "projeto": "Comunicados do PEA",
+   "ano_do_ciclo": 4,
+   "trimestre": 4,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 21"
+  },
+  {
+   "publico": "externo_comunidade",
+   "projeto": "Comunicados do PEA",
+   "ano_do_ciclo": 5,
+   "trimestre": 1,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 21"
+  },
+  {
+   "publico": "externo_comunidade",
+   "projeto": "Comunicados do PEA",
+   "ano_do_ciclo": 5,
+   "trimestre": 2,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 21"
+  },
+  {
+   "publico": "externo_comunidade",
+   "projeto": "Comunicados do PEA",
+   "ano_do_ciclo": 5,
+   "trimestre": 3,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 21"
+  },
+  {
+   "publico": "externo_comunidade",
+   "projeto": "Comunicados do PEA",
+   "ano_do_ciclo": 5,
+   "trimestre": 4,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 21"
+  },
+  {
+   "publico": "externo_comunidade",
+   "projeto": "Bate-Papo Ambiental",
+   "ano_do_ciclo": 1,
+   "trimestre": 2,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 21"
+  },
+  {
+   "publico": "externo_comunidade",
+   "projeto": "Bate-Papo Ambiental",
+   "ano_do_ciclo": 1,
+   "trimestre": 4,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 21"
+  },
+  {
+   "publico": "externo_comunidade",
+   "projeto": "Bate-Papo Ambiental",
+   "ano_do_ciclo": 2,
+   "trimestre": 2,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 21"
+  },
+  {
+   "publico": "externo_comunidade",
+   "projeto": "Bate-Papo Ambiental",
+   "ano_do_ciclo": 2,
+   "trimestre": 4,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 21"
+  },
+  {
+   "publico": "externo_comunidade",
+   "projeto": "Bate-Papo Ambiental",
+   "ano_do_ciclo": 3,
+   "trimestre": 2,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 21"
+  },
+  {
+   "publico": "externo_comunidade",
+   "projeto": "Bate-Papo Ambiental",
+   "ano_do_ciclo": 3,
+   "trimestre": 4,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 21"
+  },
+  {
+   "publico": "externo_comunidade",
+   "projeto": "Bate-Papo Ambiental",
+   "ano_do_ciclo": 4,
+   "trimestre": 2,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 21"
+  },
+  {
+   "publico": "externo_comunidade",
+   "projeto": "Bate-Papo Ambiental",
+   "ano_do_ciclo": 4,
+   "trimestre": 4,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 21"
+  },
+  {
+   "publico": "externo_comunidade",
+   "projeto": "Bate-Papo Ambiental",
+   "ano_do_ciclo": 5,
+   "trimestre": 2,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 21"
+  },
+  {
+   "publico": "externo_comunidade",
+   "projeto": "Bate-Papo Ambiental",
+   "ano_do_ciclo": 5,
+   "trimestre": 4,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 21"
+  },
+  {
+   "publico": "externo_comunidade",
+   "projeto": "Trilhas do PEA",
+   "ano_do_ciclo": 1,
+   "trimestre": 3,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 21"
+  },
+  {
+   "publico": "externo_comunidade",
+   "projeto": "Trilhas do PEA",
+   "ano_do_ciclo": 1,
+   "trimestre": 4,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 21"
+  },
+  {
+   "publico": "externo_comunidade",
+   "projeto": "Trilhas do PEA",
+   "ano_do_ciclo": 2,
+   "trimestre": 3,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 21"
+  },
+  {
+   "publico": "externo_comunidade",
+   "projeto": "Trilhas do PEA",
+   "ano_do_ciclo": 2,
+   "trimestre": 4,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 21"
+  },
+  {
+   "publico": "externo_comunidade",
+   "projeto": "Trilhas do PEA",
+   "ano_do_ciclo": 3,
+   "trimestre": 3,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 21"
+  },
+  {
+   "publico": "externo_comunidade",
+   "projeto": "Trilhas do PEA",
+   "ano_do_ciclo": 3,
+   "trimestre": 4,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 21"
+  },
+  {
+   "publico": "externo_comunidade",
+   "projeto": "Trilhas do PEA",
+   "ano_do_ciclo": 4,
+   "trimestre": 3,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 21"
+  },
+  {
+   "publico": "externo_comunidade",
+   "projeto": "Trilhas do PEA",
+   "ano_do_ciclo": 4,
+   "trimestre": 4,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 21"
+  },
+  {
+   "publico": "externo_comunidade",
+   "projeto": "Trilhas do PEA",
+   "ano_do_ciclo": 5,
+   "trimestre": 3,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 21"
+  },
+  {
+   "publico": "externo_comunidade",
+   "projeto": "Trilhas do PEA",
+   "ano_do_ciclo": 5,
+   "trimestre": 4,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 21"
+  },
+  {
+   "publico": "externo_comunidade",
+   "projeto": "PEA na Comunidade",
+   "ano_do_ciclo": 1,
+   "trimestre": 1,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 21"
+  },
+  {
+   "publico": "externo_comunidade",
+   "projeto": "PEA na Comunidade",
+   "ano_do_ciclo": 1,
+   "trimestre": 2,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 21"
+  },
+  {
+   "publico": "externo_comunidade",
+   "projeto": "PEA na Comunidade",
+   "ano_do_ciclo": 1,
+   "trimestre": 3,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 21"
+  },
+  {
+   "publico": "externo_comunidade",
+   "projeto": "PEA na Comunidade",
+   "ano_do_ciclo": 1,
+   "trimestre": 4,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 21"
+  },
+  {
+   "publico": "externo_comunidade",
+   "projeto": "PEA na Comunidade",
+   "ano_do_ciclo": 1,
+   "trimestre": 4,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 21"
+  },
+  {
+   "publico": "externo_comunidade",
+   "projeto": "PEA na Comunidade",
+   "ano_do_ciclo": 2,
+   "trimestre": 1,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 21"
+  },
+  {
+   "publico": "externo_comunidade",
+   "projeto": "PEA na Comunidade",
+   "ano_do_ciclo": 2,
+   "trimestre": 2,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 21"
+  },
+  {
+   "publico": "externo_comunidade",
+   "projeto": "PEA na Comunidade",
+   "ano_do_ciclo": 2,
+   "trimestre": 3,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 21"
+  },
+  {
+   "publico": "externo_comunidade",
+   "projeto": "PEA na Comunidade",
+   "ano_do_ciclo": 2,
+   "trimestre": 4,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 21"
+  },
+  {
+   "publico": "externo_comunidade",
+   "projeto": "PEA na Comunidade",
+   "ano_do_ciclo": 2,
+   "trimestre": 4,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 21"
+  },
+  {
+   "publico": "externo_comunidade",
+   "projeto": "PEA na Comunidade",
+   "ano_do_ciclo": 3,
+   "trimestre": 1,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 21"
+  },
+  {
+   "publico": "externo_comunidade",
+   "projeto": "PEA na Comunidade",
+   "ano_do_ciclo": 3,
+   "trimestre": 2,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 21"
+  },
+  {
+   "publico": "externo_comunidade",
+   "projeto": "PEA na Comunidade",
+   "ano_do_ciclo": 3,
+   "trimestre": 3,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 21"
+  },
+  {
+   "publico": "externo_comunidade",
+   "projeto": "PEA na Comunidade",
+   "ano_do_ciclo": 3,
+   "trimestre": 4,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 21"
+  },
+  {
+   "publico": "externo_comunidade",
+   "projeto": "PEA na Comunidade",
+   "ano_do_ciclo": 3,
+   "trimestre": 4,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 21"
+  },
+  {
+   "publico": "externo_comunidade",
+   "projeto": "PEA na Comunidade",
+   "ano_do_ciclo": 4,
+   "trimestre": 1,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 21"
+  },
+  {
+   "publico": "externo_comunidade",
+   "projeto": "PEA na Comunidade",
+   "ano_do_ciclo": 4,
+   "trimestre": 2,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 21"
+  },
+  {
+   "publico": "externo_comunidade",
+   "projeto": "PEA na Comunidade",
+   "ano_do_ciclo": 4,
+   "trimestre": 3,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 21"
+  },
+  {
+   "publico": "externo_comunidade",
+   "projeto": "PEA na Comunidade",
+   "ano_do_ciclo": 4,
+   "trimestre": 4,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 21"
+  },
+  {
+   "publico": "externo_comunidade",
+   "projeto": "PEA na Comunidade",
+   "ano_do_ciclo": 4,
+   "trimestre": 4,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 21"
+  },
+  {
+   "publico": "externo_comunidade",
+   "projeto": "PEA na Comunidade",
+   "ano_do_ciclo": 5,
+   "trimestre": 1,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 21"
+  },
+  {
+   "publico": "externo_comunidade",
+   "projeto": "PEA na Comunidade",
+   "ano_do_ciclo": 5,
+   "trimestre": 2,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 21"
+  },
+  {
+   "publico": "externo_comunidade",
+   "projeto": "PEA na Comunidade",
+   "ano_do_ciclo": 5,
+   "trimestre": 3,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 21"
+  },
+  {
+   "publico": "externo_comunidade",
+   "projeto": "PEA na Comunidade",
+   "ano_do_ciclo": 5,
+   "trimestre": 4,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 21"
+  },
+  {
+   "publico": "externo_escolar",
+   "projeto": "Comunicados do PEA Escolar",
+   "ano_do_ciclo": 1,
+   "trimestre": 1,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 27"
+  },
+  {
+   "publico": "externo_escolar",
+   "projeto": "Comunicados do PEA Escolar",
+   "ano_do_ciclo": 1,
+   "trimestre": 2,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 27"
+  },
+  {
+   "publico": "externo_escolar",
+   "projeto": "Comunicados do PEA Escolar",
+   "ano_do_ciclo": 1,
+   "trimestre": 3,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 27"
+  },
+  {
+   "publico": "externo_escolar",
+   "projeto": "Comunicados do PEA Escolar",
+   "ano_do_ciclo": 1,
+   "trimestre": 4,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 27"
+  },
+  {
+   "publico": "externo_escolar",
+   "projeto": "Comunicados do PEA Escolar",
+   "ano_do_ciclo": 1,
+   "trimestre": 4,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 27"
+  },
+  {
+   "publico": "externo_escolar",
+   "projeto": "Comunicados do PEA Escolar",
+   "ano_do_ciclo": 2,
+   "trimestre": 1,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 27"
+  },
+  {
+   "publico": "externo_escolar",
+   "projeto": "Comunicados do PEA Escolar",
+   "ano_do_ciclo": 2,
+   "trimestre": 2,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 27"
+  },
+  {
+   "publico": "externo_escolar",
+   "projeto": "Comunicados do PEA Escolar",
+   "ano_do_ciclo": 2,
+   "trimestre": 3,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 27"
+  },
+  {
+   "publico": "externo_escolar",
+   "projeto": "Comunicados do PEA Escolar",
+   "ano_do_ciclo": 2,
+   "trimestre": 4,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 27"
+  },
+  {
+   "publico": "externo_escolar",
+   "projeto": "Comunicados do PEA Escolar",
+   "ano_do_ciclo": 2,
+   "trimestre": 4,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 27"
+  },
+  {
+   "publico": "externo_escolar",
+   "projeto": "Comunicados do PEA Escolar",
+   "ano_do_ciclo": 3,
+   "trimestre": 1,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 27"
+  },
+  {
+   "publico": "externo_escolar",
+   "projeto": "Comunicados do PEA Escolar",
+   "ano_do_ciclo": 3,
+   "trimestre": 2,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 27"
+  },
+  {
+   "publico": "externo_escolar",
+   "projeto": "Comunicados do PEA Escolar",
+   "ano_do_ciclo": 3,
+   "trimestre": 3,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 27"
+  },
+  {
+   "publico": "externo_escolar",
+   "projeto": "Comunicados do PEA Escolar",
+   "ano_do_ciclo": 3,
+   "trimestre": 4,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 27"
+  },
+  {
+   "publico": "externo_escolar",
+   "projeto": "Comunicados do PEA Escolar",
+   "ano_do_ciclo": 3,
+   "trimestre": 4,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 27"
+  },
+  {
+   "publico": "externo_escolar",
+   "projeto": "Comunicados do PEA Escolar",
+   "ano_do_ciclo": 4,
+   "trimestre": 1,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 27"
+  },
+  {
+   "publico": "externo_escolar",
+   "projeto": "Comunicados do PEA Escolar",
+   "ano_do_ciclo": 4,
+   "trimestre": 2,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 27"
+  },
+  {
+   "publico": "externo_escolar",
+   "projeto": "Comunicados do PEA Escolar",
+   "ano_do_ciclo": 4,
+   "trimestre": 3,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 27"
+  },
+  {
+   "publico": "externo_escolar",
+   "projeto": "Comunicados do PEA Escolar",
+   "ano_do_ciclo": 4,
+   "trimestre": 4,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 27"
+  },
+  {
+   "publico": "externo_escolar",
+   "projeto": "Comunicados do PEA Escolar",
+   "ano_do_ciclo": 4,
+   "trimestre": 4,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 27"
+  },
+  {
+   "publico": "externo_escolar",
+   "projeto": "Comunicados do PEA Escolar",
+   "ano_do_ciclo": 5,
+   "trimestre": 1,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 27"
+  },
+  {
+   "publico": "externo_escolar",
+   "projeto": "Comunicados do PEA Escolar",
+   "ano_do_ciclo": 5,
+   "trimestre": 2,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 27"
+  },
+  {
+   "publico": "externo_escolar",
+   "projeto": "Comunicados do PEA Escolar",
+   "ano_do_ciclo": 5,
+   "trimestre": 4,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 27"
+  },
+  {
+   "publico": "externo_escolar",
+   "projeto": "Visitas Técnicas ao Centro de Educação Ambiental",
+   "ano_do_ciclo": 1,
+   "trimestre": 1,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 27"
+  },
+  {
+   "publico": "externo_escolar",
+   "projeto": "Visitas Técnicas ao Centro de Educação Ambiental",
+   "ano_do_ciclo": 1,
+   "trimestre": 2,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 27"
+  },
+  {
+   "publico": "externo_escolar",
+   "projeto": "Visitas Técnicas ao Centro de Educação Ambiental",
+   "ano_do_ciclo": 1,
+   "trimestre": 4,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 27"
+  },
+  {
+   "publico": "externo_escolar",
+   "projeto": "Visitas Técnicas ao Centro de Educação Ambiental",
+   "ano_do_ciclo": 1,
+   "trimestre": 4,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 27"
+  },
+  {
+   "publico": "externo_escolar",
+   "projeto": "Visitas Técnicas ao Centro de Educação Ambiental",
+   "ano_do_ciclo": 2,
+   "trimestre": 1,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 27"
+  },
+  {
+   "publico": "externo_escolar",
+   "projeto": "Visitas Técnicas ao Centro de Educação Ambiental",
+   "ano_do_ciclo": 2,
+   "trimestre": 2,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 27"
+  },
+  {
+   "publico": "externo_escolar",
+   "projeto": "Visitas Técnicas ao Centro de Educação Ambiental",
+   "ano_do_ciclo": 2,
+   "trimestre": 4,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 27"
+  },
+  {
+   "publico": "externo_escolar",
+   "projeto": "Visitas Técnicas ao Centro de Educação Ambiental",
+   "ano_do_ciclo": 2,
+   "trimestre": 4,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 27"
+  },
+  {
+   "publico": "externo_escolar",
+   "projeto": "Visitas Técnicas ao Centro de Educação Ambiental",
+   "ano_do_ciclo": 3,
+   "trimestre": 1,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 27"
+  },
+  {
+   "publico": "externo_escolar",
+   "projeto": "Visitas Técnicas ao Centro de Educação Ambiental",
+   "ano_do_ciclo": 3,
+   "trimestre": 2,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 27"
+  },
+  {
+   "publico": "externo_escolar",
+   "projeto": "Visitas Técnicas ao Centro de Educação Ambiental",
+   "ano_do_ciclo": 3,
+   "trimestre": 4,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 27"
+  },
+  {
+   "publico": "externo_escolar",
+   "projeto": "Visitas Técnicas ao Centro de Educação Ambiental",
+   "ano_do_ciclo": 3,
+   "trimestre": 4,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 27"
+  },
+  {
+   "publico": "externo_escolar",
+   "projeto": "Visitas Técnicas ao Centro de Educação Ambiental",
+   "ano_do_ciclo": 4,
+   "trimestre": 1,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 27"
+  },
+  {
+   "publico": "externo_escolar",
+   "projeto": "Visitas Técnicas ao Centro de Educação Ambiental",
+   "ano_do_ciclo": 4,
+   "trimestre": 2,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 27"
+  },
+  {
+   "publico": "externo_escolar",
+   "projeto": "Visitas Técnicas ao Centro de Educação Ambiental",
+   "ano_do_ciclo": 4,
+   "trimestre": 4,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 27"
+  },
+  {
+   "publico": "externo_escolar",
+   "projeto": "Visitas Técnicas ao Centro de Educação Ambiental",
+   "ano_do_ciclo": 4,
+   "trimestre": 4,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 27"
+  },
+  {
+   "publico": "externo_escolar",
+   "projeto": "Visitas Técnicas ao Centro de Educação Ambiental",
+   "ano_do_ciclo": 5,
+   "trimestre": 1,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 27"
+  },
+  {
+   "publico": "externo_escolar",
+   "projeto": "Visitas Técnicas ao Centro de Educação Ambiental",
+   "ano_do_ciclo": 5,
+   "trimestre": 2,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 27"
+  },
+  {
+   "publico": "externo_escolar",
+   "projeto": "Visitas Técnicas ao Centro de Educação Ambiental",
+   "ano_do_ciclo": 5,
+   "trimestre": 3,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 27"
+  },
+  {
+   "publico": "externo_escolar",
+   "projeto": "Visitas Técnicas ao Centro de Educação Ambiental",
+   "ano_do_ciclo": 5,
+   "trimestre": 4,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 27"
+  },
+  {
+   "publico": "externo_escolar",
+   "projeto": "Semana das APAEs",
+   "ano_do_ciclo": 1,
+   "trimestre": 1,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 27"
+  },
+  {
+   "publico": "externo_escolar",
+   "projeto": "Semana das APAEs",
+   "ano_do_ciclo": 2,
+   "trimestre": 1,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 27"
+  },
+  {
+   "publico": "externo_escolar",
+   "projeto": "Semana das APAEs",
+   "ano_do_ciclo": 3,
+   "trimestre": 1,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 27"
+  },
+  {
+   "publico": "externo_escolar",
+   "projeto": "Semana das APAEs",
+   "ano_do_ciclo": 4,
+   "trimestre": 1,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 27"
+  },
+  {
+   "publico": "externo_escolar",
+   "projeto": "Semana das APAEs",
+   "ano_do_ciclo": 5,
+   "trimestre": 1,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 27"
+  },
+  {
+   "publico": "externo_escolar",
+   "projeto": "Laboratório Ambiental",
+   "ano_do_ciclo": 1,
+   "trimestre": 2,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 27"
+  },
+  {
+   "publico": "externo_escolar",
+   "projeto": "Laboratório Ambiental",
+   "ano_do_ciclo": 1,
+   "trimestre": 4,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 27"
+  },
+  {
+   "publico": "externo_escolar",
+   "projeto": "Laboratório Ambiental",
+   "ano_do_ciclo": 2,
+   "trimestre": 2,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 27"
+  },
+  {
+   "publico": "externo_escolar",
+   "projeto": "Laboratório Ambiental",
+   "ano_do_ciclo": 2,
+   "trimestre": 4,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 27"
+  },
+  {
+   "publico": "externo_escolar",
+   "projeto": "Laboratório Ambiental",
+   "ano_do_ciclo": 3,
+   "trimestre": 2,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 27"
+  },
+  {
+   "publico": "externo_escolar",
+   "projeto": "Laboratório Ambiental",
+   "ano_do_ciclo": 3,
+   "trimestre": 4,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 27"
+  },
+  {
+   "publico": "externo_escolar",
+   "projeto": "Laboratório Ambiental",
+   "ano_do_ciclo": 4,
+   "trimestre": 2,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 27"
+  },
+  {
+   "publico": "externo_escolar",
+   "projeto": "Laboratório Ambiental",
+   "ano_do_ciclo": 4,
+   "trimestre": 4,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 27"
+  },
+  {
+   "publico": "externo_escolar",
+   "projeto": "Laboratório Ambiental",
+   "ano_do_ciclo": 5,
+   "trimestre": 2,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 27"
+  },
+  {
+   "publico": "externo_escolar",
+   "projeto": "Laboratório Ambiental",
+   "ano_do_ciclo": 5,
+   "trimestre": 4,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 27"
+  },
+  {
+   "publico": "externo_escolar",
+   "projeto": "Formação Socioambiental nas Escolas das ABEAs",
+   "ano_do_ciclo": 1,
+   "trimestre": 1,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 27"
+  },
+  {
+   "publico": "externo_escolar",
+   "projeto": "Formação Socioambiental nas Escolas das ABEAs",
+   "ano_do_ciclo": 1,
+   "trimestre": 2,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 27"
+  },
+  {
+   "publico": "externo_escolar",
+   "projeto": "Formação Socioambiental nas Escolas das ABEAs",
+   "ano_do_ciclo": 1,
+   "trimestre": 4,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 27"
+  },
+  {
+   "publico": "externo_escolar",
+   "projeto": "Formação Socioambiental nas Escolas das ABEAs",
+   "ano_do_ciclo": 1,
+   "trimestre": 4,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 27"
+  },
+  {
+   "publico": "externo_escolar",
+   "projeto": "Formação Socioambiental nas Escolas das ABEAs",
+   "ano_do_ciclo": 2,
+   "trimestre": 1,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 27"
+  },
+  {
+   "publico": "externo_escolar",
+   "projeto": "Formação Socioambiental nas Escolas das ABEAs",
+   "ano_do_ciclo": 2,
+   "trimestre": 2,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 27"
+  },
+  {
+   "publico": "externo_escolar",
+   "projeto": "Formação Socioambiental nas Escolas das ABEAs",
+   "ano_do_ciclo": 2,
+   "trimestre": 4,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 27"
+  },
+  {
+   "publico": "externo_escolar",
+   "projeto": "Formação Socioambiental nas Escolas das ABEAs",
+   "ano_do_ciclo": 2,
+   "trimestre": 4,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 27"
+  },
+  {
+   "publico": "externo_escolar",
+   "projeto": "Formação Socioambiental nas Escolas das ABEAs",
+   "ano_do_ciclo": 3,
+   "trimestre": 1,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 27"
+  },
+  {
+   "publico": "externo_escolar",
+   "projeto": "Formação Socioambiental nas Escolas das ABEAs",
+   "ano_do_ciclo": 3,
+   "trimestre": 2,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 27"
+  },
+  {
+   "publico": "externo_escolar",
+   "projeto": "Formação Socioambiental nas Escolas das ABEAs",
+   "ano_do_ciclo": 3,
+   "trimestre": 4,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 27"
+  },
+  {
+   "publico": "externo_escolar",
+   "projeto": "Formação Socioambiental nas Escolas das ABEAs",
+   "ano_do_ciclo": 3,
+   "trimestre": 4,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 27"
+  },
+  {
+   "publico": "externo_escolar",
+   "projeto": "Formação Socioambiental nas Escolas das ABEAs",
+   "ano_do_ciclo": 4,
+   "trimestre": 1,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 27"
+  },
+  {
+   "publico": "externo_escolar",
+   "projeto": "Formação Socioambiental nas Escolas das ABEAs",
+   "ano_do_ciclo": 4,
+   "trimestre": 2,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 27"
+  },
+  {
+   "publico": "externo_escolar",
+   "projeto": "Formação Socioambiental nas Escolas das ABEAs",
+   "ano_do_ciclo": 4,
+   "trimestre": 4,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 27"
+  },
+  {
+   "publico": "externo_escolar",
+   "projeto": "Formação Socioambiental nas Escolas das ABEAs",
+   "ano_do_ciclo": 4,
+   "trimestre": 4,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 27"
+  },
+  {
+   "publico": "externo_escolar",
+   "projeto": "Formação Socioambiental nas Escolas das ABEAs",
+   "ano_do_ciclo": 5,
+   "trimestre": 1,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 27"
+  },
+  {
+   "publico": "externo_escolar",
+   "projeto": "Formação Socioambiental nas Escolas das ABEAs",
+   "ano_do_ciclo": 5,
+   "trimestre": 2,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 27"
+  },
+  {
+   "publico": "externo_escolar",
+   "projeto": "Formação Socioambiental nas Escolas das ABEAs",
+   "ano_do_ciclo": 5,
+   "trimestre": 4,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 27"
+  },
+  {
+   "publico": "externo_escolar",
+   "projeto": "Prêmio Gerdau Germinar",
+   "ano_do_ciclo": 1,
+   "trimestre": 2,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 27"
+  },
+  {
+   "publico": "externo_escolar",
+   "projeto": "Prêmio Gerdau Germinar",
+   "ano_do_ciclo": 1,
+   "trimestre": 3,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 27"
+  },
+  {
+   "publico": "externo_escolar",
+   "projeto": "Prêmio Gerdau Germinar",
+   "ano_do_ciclo": 1,
+   "trimestre": 4,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 27"
+  },
+  {
+   "publico": "externo_escolar",
+   "projeto": "Prêmio Gerdau Germinar",
+   "ano_do_ciclo": 1,
+   "trimestre": 4,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 27"
+  },
+  {
+   "publico": "externo_escolar",
+   "projeto": "Prêmio Gerdau Germinar",
+   "ano_do_ciclo": 2,
+   "trimestre": 1,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 27"
+  },
+  {
+   "publico": "externo_escolar",
+   "projeto": "Prêmio Gerdau Germinar",
+   "ano_do_ciclo": 2,
+   "trimestre": 2,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 27"
+  },
+  {
+   "publico": "externo_escolar",
+   "projeto": "Prêmio Gerdau Germinar",
+   "ano_do_ciclo": 2,
+   "trimestre": 3,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 27"
+  },
+  {
+   "publico": "externo_escolar",
+   "projeto": "Prêmio Gerdau Germinar",
+   "ano_do_ciclo": 2,
+   "trimestre": 4,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 27"
+  },
+  {
+   "publico": "externo_escolar",
+   "projeto": "Prêmio Gerdau Germinar",
+   "ano_do_ciclo": 2,
+   "trimestre": 4,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 27"
+  },
+  {
+   "publico": "externo_escolar",
+   "projeto": "Prêmio Gerdau Germinar",
+   "ano_do_ciclo": 3,
+   "trimestre": 1,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 27"
+  },
+  {
+   "publico": "externo_escolar",
+   "projeto": "Prêmio Gerdau Germinar",
+   "ano_do_ciclo": 3,
+   "trimestre": 2,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 27"
+  },
+  {
+   "publico": "externo_escolar",
+   "projeto": "Prêmio Gerdau Germinar",
+   "ano_do_ciclo": 3,
+   "trimestre": 3,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 27"
+  },
+  {
+   "publico": "externo_escolar",
+   "projeto": "Prêmio Gerdau Germinar",
+   "ano_do_ciclo": 3,
+   "trimestre": 4,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 27"
+  },
+  {
+   "publico": "externo_escolar",
+   "projeto": "Prêmio Gerdau Germinar",
+   "ano_do_ciclo": 3,
+   "trimestre": 4,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 27"
+  },
+  {
+   "publico": "externo_escolar",
+   "projeto": "Prêmio Gerdau Germinar",
+   "ano_do_ciclo": 4,
+   "trimestre": 1,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 27"
+  },
+  {
+   "publico": "externo_escolar",
+   "projeto": "Prêmio Gerdau Germinar",
+   "ano_do_ciclo": 4,
+   "trimestre": 2,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 27"
+  },
+  {
+   "publico": "externo_escolar",
+   "projeto": "Prêmio Gerdau Germinar",
+   "ano_do_ciclo": 4,
+   "trimestre": 3,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 27"
+  },
+  {
+   "publico": "externo_escolar",
+   "projeto": "Prêmio Gerdau Germinar",
+   "ano_do_ciclo": 4,
+   "trimestre": 4,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 27"
+  },
+  {
+   "publico": "externo_escolar",
+   "projeto": "Prêmio Gerdau Germinar",
+   "ano_do_ciclo": 4,
+   "trimestre": 4,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 27"
+  },
+  {
+   "publico": "externo_escolar",
+   "projeto": "Prêmio Gerdau Germinar",
+   "ano_do_ciclo": 5,
+   "trimestre": 1,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 27"
+  },
+  {
+   "publico": "externo_escolar",
+   "projeto": "Prêmio Gerdau Germinar",
+   "ano_do_ciclo": 5,
+   "trimestre": 2,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 27"
+  },
+  {
+   "publico": "externo_escolar",
+   "projeto": "Prêmio Gerdau Germinar",
+   "ano_do_ciclo": 5,
+   "trimestre": 3,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 27"
+  },
+  {
+   "publico": "externo_escolar",
+   "projeto": "Prêmio Gerdau Germinar",
+   "ano_do_ciclo": 5,
+   "trimestre": 4,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 27"
+  },
+  {
+   "publico": "externo_escolar",
+   "projeto": "Prêmio Gerdau Germinar",
+   "ano_do_ciclo": 5,
+   "trimestre": 4,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 27"
+  },
+  {
+   "publico": "externo_escolar",
+   "projeto": "Congresso Regional de Educação Ambiental",
+   "ano_do_ciclo": 2,
+   "trimestre": 2,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 27"
+  },
+  {
+   "publico": "externo_escolar",
+   "projeto": "Congresso Regional de Educação Ambiental",
+   "ano_do_ciclo": 4,
+   "trimestre": 2,
+   "acoes_previstas": 1,
+   "fonte": "Tabela 27"
+  }
+ ],
+ "eieap": [
+  {
+   "indice": "Conhecimento do meio ambiente",
+   "unidade": "UOB",
+   "linha_base_2021": null,
+   "valor_2025": 91,
+   "meta_2026": null
+  },
+  {
+   "indice": "Conhecimento do meio ambiente",
+   "unidade": "MVL",
+   "linha_base_2021": null,
+   "valor_2025": 96.4,
+   "meta_2026": null
+  },
+  {
+   "indice": "Conhecimento do meio ambiente",
+   "unidade": "MMB",
+   "linha_base_2021": null,
+   "valor_2025": 95.5,
+   "meta_2026": null
+  },
+  {
+   "indice": "Conhecimento do meio ambiente",
+   "unidade": "Gerdau",
+   "linha_base_2021": null,
+   "valor_2025": 94.3,
+   "meta_2026": null
+  },
+  {
+   "indice": "Expressões",
+   "unidade": "UOB",
+   "linha_base_2021": null,
+   "valor_2025": 53.5,
+   "meta_2026": null
+  },
+  {
+   "indice": "Expressões",
+   "unidade": "MVL",
+   "linha_base_2021": null,
+   "valor_2025": 47.7,
+   "meta_2026": null
+  },
+  {
+   "indice": "Expressões",
+   "unidade": "MMB",
+   "linha_base_2021": null,
+   "valor_2025": 52,
+   "meta_2026": null
+  },
+  {
+   "indice": "Expressões",
+   "unidade": "Gerdau",
+   "linha_base_2021": null,
+   "valor_2025": 51.1,
+   "meta_2026": null
+  },
+  {
+   "indice": "Problemas ambientais",
+   "unidade": "UOB",
+   "linha_base_2021": null,
+   "valor_2025": 63.3,
+   "meta_2026": null
+  },
+  {
+   "indice": "Problemas ambientais",
+   "unidade": "MVL",
+   "linha_base_2021": null,
+   "valor_2025": 71.6,
+   "meta_2026": null
+  },
+  {
+   "indice": "Problemas ambientais",
+   "unidade": "MMB",
+   "linha_base_2021": null,
+   "valor_2025": 68.5,
+   "meta_2026": null
+  },
+  {
+   "indice": "Problemas ambientais",
+   "unidade": "Gerdau",
+   "linha_base_2021": null,
+   "valor_2025": 67.8,
+   "meta_2026": null
+  },
+  {
+   "indice": "Soluções para os problemas ambientais",
+   "unidade": "UOB",
+   "linha_base_2021": null,
+   "valor_2025": 49.9,
+   "meta_2026": null
+  },
+  {
+   "indice": "Soluções para os problemas ambientais",
+   "unidade": "MVL",
+   "linha_base_2021": null,
+   "valor_2025": 55.1,
+   "meta_2026": null
+  },
+  {
+   "indice": "Soluções para os problemas ambientais",
+   "unidade": "MMB",
+   "linha_base_2021": null,
+   "valor_2025": 62.6,
+   "meta_2026": null
+  },
+  {
+   "indice": "Soluções para os problemas ambientais",
+   "unidade": "Gerdau",
+   "linha_base_2021": null,
+   "valor_2025": 55.9,
+   "meta_2026": null
+  },
+  {
+   "indice": "Conhecimento Ambiental Geral",
+   "unidade": "UOB",
+   "linha_base_2021": 51.2,
+   "valor_2025": 64.4,
+   "meta_2026": 67
+  },
+  {
+   "indice": "Conhecimento Ambiental Geral",
+   "unidade": "MVL",
+   "linha_base_2021": 50.1,
+   "valor_2025": 67.7,
+   "meta_2026": 66.2
+  },
+  {
+   "indice": "Conhecimento Ambiental Geral",
+   "unidade": "MMB",
+   "linha_base_2021": 51,
+   "valor_2025": 69.7,
+   "meta_2026": 67.5
+  },
+  {
+   "indice": "Conhecimento Ambiental Geral",
+   "unidade": "Gerdau",
+   "linha_base_2021": 50.8,
+   "valor_2025": 67.3,
+   "meta_2026": 66.9
+  },
+  {
+   "indice": "Conhecimento Ambiental Interno",
+   "unidade": "UOB",
+   "linha_base_2021": 20.6,
+   "valor_2025": 35.5,
+   "meta_2026": 42.5
+  },
+  {
+   "indice": "Conhecimento Ambiental Interno",
+   "unidade": "MVL",
+   "linha_base_2021": 28.6,
+   "valor_2025": 32.3,
+   "meta_2026": 51.6
+  },
+  {
+   "indice": "Conhecimento Ambiental Interno",
+   "unidade": "MMB",
+   "linha_base_2021": 25.4,
+   "valor_2025": 35.6,
+   "meta_2026": 50.8
+  },
+  {
+   "indice": "Conhecimento Ambiental Interno",
+   "unidade": "Gerdau",
+   "linha_base_2021": 24.9,
+   "valor_2025": 34.4,
+   "meta_2026": 46.5
+  },
+  {
+   "indice": "Interesse e Motivação Geral",
+   "unidade": "UOB",
+   "linha_base_2021": 50.1,
+   "valor_2025": 41,
+   "meta_2026": 65
+  },
+  {
+   "indice": "Interesse e Motivação Geral",
+   "unidade": "MVL",
+   "linha_base_2021": 47.2,
+   "valor_2025": 36.7,
+   "meta_2026": 61.3
+  },
+  {
+   "indice": "Interesse e Motivação Geral",
+   "unidade": "MMB",
+   "linha_base_2021": 46.6,
+   "valor_2025": 54.1,
+   "meta_2026": 60.5
+  },
+  {
+   "indice": "Interesse e Motivação Geral",
+   "unidade": "Gerdau",
+   "linha_base_2021": 48,
+   "valor_2025": 43.9,
+   "meta_2026": 62.3
+  },
+  {
+   "indice": "Atitude Geral",
+   "unidade": "UOB",
+   "linha_base_2021": 63.2,
+   "valor_2025": 87.3,
+   "meta_2026": 72.4
+  },
+  {
+   "indice": "Atitude Geral",
+   "unidade": "MVL",
+   "linha_base_2021": 56.8,
+   "valor_2025": 88,
+   "meta_2026": 66.5
+  },
+  {
+   "indice": "Atitude Geral",
+   "unidade": "MMB",
+   "linha_base_2021": 59.3,
+   "valor_2025": 90.8,
+   "meta_2026": 66.7
+  },
+  {
+   "indice": "Atitude Geral",
+   "unidade": "Gerdau",
+   "linha_base_2021": 59.8,
+   "valor_2025": 88.7,
+   "meta_2026": 68.5
+  },
+  {
+   "indice": "Indicador de Percepção Ambiental Geral",
+   "unidade": "UOB",
+   "linha_base_2021": 54.8,
+   "valor_2025": 64.3,
+   "meta_2026": 68.1
+  },
+  {
+   "indice": "Indicador de Percepção Ambiental Geral",
+   "unidade": "MVL",
+   "linha_base_2021": 51.4,
+   "valor_2025": 64.1,
+   "meta_2026": 64.7
+  },
+  {
+   "indice": "Indicador de Percepção Ambiental Geral",
+   "unidade": "MMB",
+   "linha_base_2021": 52.3,
+   "valor_2025": 71.5,
+   "meta_2026": 64.9
+  },
+  {
+   "indice": "Indicador de Percepção Ambiental Geral",
+   "unidade": "Gerdau",
+   "linha_base_2021": 52.8,
+   "valor_2025": 66.6,
+   "meta_2026": 65.9
+  },
+  {
+   "indice": "Interesse e Motivação Interno",
+   "unidade": "UOB",
+   "linha_base_2021": 68.5,
+   "valor_2025": 92.8,
+   "meta_2026": 72.7
+  },
+  {
+   "indice": "Interesse e Motivação Interno",
+   "unidade": "MVL",
+   "linha_base_2021": 65.2,
+   "valor_2025": 100,
+   "meta_2026": 73.8
+  },
+  {
+   "indice": "Interesse e Motivação Interno",
+   "unidade": "MMB",
+   "linha_base_2021": 63.2,
+   "valor_2025": 100,
+   "meta_2026": 75.9
+  },
+  {
+   "indice": "Interesse e Motivação Interno",
+   "unidade": "Gerdau",
+   "linha_base_2021": 65.6,
+   "valor_2025": 97.6,
+   "meta_2026": 74.1
+  },
+  {
+   "indice": "Atitude Interno",
+   "unidade": "UOB",
+   "linha_base_2021": null,
+   "valor_2025": 68,
+   "meta_2026": null
+  },
+  {
+   "indice": "Atitude Interno",
+   "unidade": "MVL",
+   "linha_base_2021": null,
+   "valor_2025": 67.3,
+   "meta_2026": null
+  },
+  {
+   "indice": "Atitude Interno",
+   "unidade": "MMB",
+   "linha_base_2021": null,
+   "valor_2025": 72.3,
+   "meta_2026": null
+  },
+  {
+   "indice": "Atitude Interno",
+   "unidade": "Gerdau",
+   "linha_base_2021": null,
+   "valor_2025": 69.2,
+   "meta_2026": null
+  },
+  {
+   "indice": "Indicador de Percepção Ambiental Interna",
+   "unidade": "UOB",
+   "linha_base_2021": 48.7,
+   "valor_2025": 65,
+   "meta_2026": 59.4
+  },
+  {
+   "indice": "Indicador de Percepção Ambiental Interna",
+   "unidade": "MVL",
+   "linha_base_2021": 49.8,
+   "valor_2025": 66.7,
+   "meta_2026": 63.2
+  },
+  {
+   "indice": "Indicador de Percepção Ambiental Interna",
+   "unidade": "MMB",
+   "linha_base_2021": 48.9,
+   "valor_2025": 68.9,
+   "meta_2026": 63.8
+  },
+  {
+   "indice": "Indicador de Percepção Ambiental Interna",
+   "unidade": "Gerdau",
+   "linha_base_2021": 49.1,
+   "valor_2025": 66.9,
+   "meta_2026": 61.5
+  },
+  {
+   "indice": "Indicador de Percepção Ambiental",
+   "unidade": "UOB",
+   "linha_base_2021": 51.8,
+   "valor_2025": 64.6,
+   "meta_2026": 63.7
+  },
+  {
+   "indice": "Indicador de Percepção Ambiental",
+   "unidade": "MVL",
+   "linha_base_2021": 50.6,
+   "valor_2025": 65.4,
+   "meta_2026": 63.9
+  },
+  {
+   "indice": "Indicador de Percepção Ambiental",
+   "unidade": "MMB",
+   "linha_base_2021": 51.1,
+   "valor_2025": 70.2,
+   "meta_2026": 64.3
+  },
+  {
+   "indice": "Indicador de Percepção Ambiental",
+   "unidade": "Gerdau",
+   "linha_base_2021": 51,
+   "valor_2025": 66.8,
+   "meta_2026": 63.7
+  },
+  {
+   "indice": "Comportamento Consumidor Geral",
+   "unidade": "UOB",
+   "linha_base_2021": null,
+   "valor_2025": 51.3,
+   "meta_2026": null
+  },
+  {
+   "indice": "Comportamento Consumidor Geral",
+   "unidade": "MVL",
+   "linha_base_2021": null,
+   "valor_2025": 49.2,
+   "meta_2026": null
+  },
+  {
+   "indice": "Comportamento Consumidor Geral",
+   "unidade": "MMB",
+   "linha_base_2021": null,
+   "valor_2025": 46.9,
+   "meta_2026": null
+  },
+  {
+   "indice": "Comportamento Consumidor Geral",
+   "unidade": "Gerdau",
+   "linha_base_2021": null,
+   "valor_2025": 49.1,
+   "meta_2026": null
+  },
+  {
+   "indice": "Comportamento Político Geral",
+   "unidade": "UOB",
+   "linha_base_2021": null,
+   "valor_2025": 15.6,
+   "meta_2026": null
+  },
+  {
+   "indice": "Comportamento Político Geral",
+   "unidade": "MVL",
+   "linha_base_2021": null,
+   "valor_2025": 16.6,
+   "meta_2026": null
+  },
+  {
+   "indice": "Comportamento Político Geral",
+   "unidade": "MMB",
+   "linha_base_2021": null,
+   "valor_2025": 18.4,
+   "meta_2026": null
+  },
+  {
+   "indice": "Comportamento Político Geral",
+   "unidade": "Gerdau",
+   "linha_base_2021": null,
+   "valor_2025": 16.9,
+   "meta_2026": null
+  },
+  {
+   "indice": "Indicador de Comportamento Ambiental Geral",
+   "unidade": "UOB",
+   "linha_base_2021": null,
+   "valor_2025": 33.5,
+   "meta_2026": null
+  },
+  {
+   "indice": "Indicador de Comportamento Ambiental Geral",
+   "unidade": "MVL",
+   "linha_base_2021": null,
+   "valor_2025": 32.9,
+   "meta_2026": null
+  },
+  {
+   "indice": "Indicador de Comportamento Ambiental Geral",
+   "unidade": "MMB",
+   "linha_base_2021": null,
+   "valor_2025": 32.6,
+   "meta_2026": null
+  },
+  {
+   "indice": "Indicador de Comportamento Ambiental Geral",
+   "unidade": "Gerdau",
+   "linha_base_2021": null,
+   "valor_2025": 33,
+   "meta_2026": null
+  },
+  {
+   "indice": "Comportamento Consumidor Interno",
+   "unidade": "UOB",
+   "linha_base_2021": null,
+   "valor_2025": 70.7,
+   "meta_2026": null
+  },
+  {
+   "indice": "Comportamento Consumidor Interno",
+   "unidade": "MVL",
+   "linha_base_2021": null,
+   "valor_2025": 72.7,
+   "meta_2026": null
+  },
+  {
+   "indice": "Comportamento Consumidor Interno",
+   "unidade": "MMB",
+   "linha_base_2021": null,
+   "valor_2025": 75.1,
+   "meta_2026": null
+  },
+  {
+   "indice": "Comportamento Consumidor Interno",
+   "unidade": "Gerdau",
+   "linha_base_2021": null,
+   "valor_2025": 72.8,
+   "meta_2026": null
+  },
+  {
+   "indice": "Comportamento Político Interno",
+   "unidade": "UOB",
+   "linha_base_2021": null,
+   "valor_2025": 66.1,
+   "meta_2026": null
+  },
+  {
+   "indice": "Comportamento Político Interno",
+   "unidade": "MVL",
+   "linha_base_2021": null,
+   "valor_2025": 70.7,
+   "meta_2026": null
+  },
+  {
+   "indice": "Comportamento Político Interno",
+   "unidade": "MMB",
+   "linha_base_2021": null,
+   "valor_2025": 71.1,
+   "meta_2026": null
+  },
+  {
+   "indice": "Comportamento Político Interno",
+   "unidade": "Gerdau",
+   "linha_base_2021": null,
+   "valor_2025": 69.3,
+   "meta_2026": null
+  },
+  {
+   "indice": "Indicador de Comportamento Ambiental Interno",
+   "unidade": "UOB",
+   "linha_base_2021": null,
+   "valor_2025": 68.4,
+   "meta_2026": null
+  },
+  {
+   "indice": "Indicador de Comportamento Ambiental Interno",
+   "unidade": "MVL",
+   "linha_base_2021": null,
+   "valor_2025": 71.7,
+   "meta_2026": null
+  },
+  {
+   "indice": "Indicador de Comportamento Ambiental Interno",
+   "unidade": "MMB",
+   "linha_base_2021": null,
+   "valor_2025": 73.1,
+   "meta_2026": null
+  },
+  {
+   "indice": "Indicador de Comportamento Ambiental Interno",
+   "unidade": "Gerdau",
+   "linha_base_2021": null,
+   "valor_2025": 71,
+   "meta_2026": null
+  },
+  {
+   "indice": "Indicador de Educação Ambiental",
+   "unidade": "UOB",
+   "linha_base_2021": null,
+   "valor_2025": 55.6,
+   "meta_2026": null
+  },
+  {
+   "indice": "Indicador de Educação Ambiental",
+   "unidade": "MVL",
+   "linha_base_2021": null,
+   "valor_2025": 56.6,
+   "meta_2026": null
+  },
+  {
+   "indice": "Indicador de Educação Ambiental",
+   "unidade": "MMB",
+   "linha_base_2021": null,
+   "valor_2025": 58.7,
+   "meta_2026": null
+  },
+  {
+   "indice": "Indicador de Educação Ambiental",
+   "unidade": "Gerdau",
+   "linha_base_2021": 50.4,
+   "valor_2025": 57,
+   "meta_2026": null
+  }
+ ],
+ "colaboradores": [
+  {
+   "unidade": "UOB",
+   "proprios": 5638,
+   "parceiros": 3450,
+   "total": 9088
+  },
+  {
+   "unidade": "MVL",
+   "proprios": 67,
+   "parceiros": 633,
+   "total": 700
+  },
+  {
+   "unidade": "MMB",
+   "proprios": 906,
+   "parceiros": 1636,
+   "total": 2542
+  },
+  {
+   "unidade": "Total",
+   "proprios": 6611,
+   "parceiros": 5719,
+   "total": 12330
+  }
+ ],
+ "notas_da_extracao": [
+  "Fonte: \"PEA Gerdau 2026 - 2031.pdf\" (c:/Demanda_Jose_Neto/Docs). As tabelas foram reconstruídas a partir do pea.txt (pdftotext -layout) e conferidas com uma segunda extração do mesmo PDF em modo \"pdftotext -table\", que preserva melhor o alinhamento das colunas; nos casos de dúvida prevaleceu a leitura -table.",
+  "Cronograma (Tabelas 15, 21 e 27): cada ano do ciclo ocupa 5 colunas de trimestre rotuladas como no documento: 3° (ano inicial), 4°, 1°, 2°, 3° (ano seguinte). Ex.: 1° ANO = 3°/2026, 4°/2026, 1°/2027, 2°/2027, 3°/2027; 2° ANO = 3°/2027 ... 3°/2028; e assim até o 5° ANO = 3°/2030 ... 3°/2031. O 3° trimestre aparece duas vezes na virada de cada ano (fim de um ano e início do seguinte), coerente com o texto: início no 3° trimestre de 2026 (provavelmente agosto) e fim de cada ano no 3° trimestre do ano seguinte (agosto).",
+  "Cronograma, campos: \"trimestre\" = rótulo do trimestre civil (1..4) tal como impresso; \"ano_calendario\" = ano civil desse trimestre; \"coluna_no_ano\" = posição 1..5 dentro do ano do ciclo (1 = 3° tri inicial, 5 = 3° tri final); \"coluna_tabela\" = 1..25 na tabela inteira. Para distinguir as duas colunas \"3°\" use coluna_no_ano (1 ou 5) ou ano_calendario.",
+  "Cronograma: o documento marca apenas presença (\"X\") por célula, sem quantidade. \"acoes_previstas\" = 1 significa \"há ação prevista naquele trimestre\"; a quantidade anual vem da periodicidade do projeto.",
+  "Cronograma: linhas \"Formulário Semestral\" e \"Relatório Anual\" (bloco \"FORMULÁRIOS E RELATÓRIOS\") foram incluídas com tipo = \"acompanhamento\"; não são projetos. Embora chamado \"semestral\", o formulário aparece uma vez por ano (coluna 3 de cada ano = 1° trimestre civil) nas três tabelas; o relatório anual aparece na coluna 5 (3° trimestre final) de cada ano.",
+  "Cronograma: as posições dos \"X\" foram obtidas pela coluna de caractere na extração -table e associadas ao rótulo de trimestre mais próximo; os \"X\" de duas colunas (9 e 14) ficaram a 2 caracteres do cabeçalho, sempre mais perto da coluna atribuída e coerentes com o padrão repetido dos demais anos.",
+  "Cronograma: nas Tabelas 21 e 27 o cabeçalho interno da tabela traz por engano a legenda \"Tabela 19. Cronograma do Programa “O PEA vai até você” destinado ao Público Interno\"; o título acima da tabela (Tabela 21 = Comunidades, Tabela 27 = Escolar) é o que vale.",
+  "Cronograma: o 5° ano não repete sempre o padrão dos anos anteriores (ex.: Eventos Socioambientais em 1°/2°/3° de 2030-31 nas colunas 22-24 e sem a coluna 25; Comunicados do PEA Escolar sem a coluna 23; vários projetos sem marca na coluna 25 = 3°/2031). Foi registrado como impresso.",
+  "Cronograma: diferenças entre a periodicidade escrita e a grade: Bate-Papo Ambiental é \"Um encontro por ano\", mas a grade marca 2 trimestres por ano; PEA na Comunidade (\"04 (quatro) ações por ano\" no Quadro 13, \"02 (duas) comunidades selecionadas por ano\" no texto) e Comunicados (\"seis vezes ao ano\") aparecem em quase todos os trimestres; Prêmio Gerdau Germinar é \"Bienal\", mas está marcado em 24 das 25 colunas (o processo do edital é contínuo); Congresso Regional (Bienal) aparece nas colunas 7 (4°/2027, 2° ano) e 17 (4°/2029, 4° ano).",
+  "Faixas de IP (projetos[].ip_faixas): [min, max] com min inclusivo e max exclusivo (o documento usa \"min ≤ IP < max\"); \"alta\" é [min, null] (\"min ≤ IP\"). Os valores do índice são 0 (IP = 0, \"Sem participantes\"/\"Ação não realizada\"), 30 (baixa), 60 (média) e 100 (alta). O IP é o número de participantes, não percentual. Há um vão entre 0 e o mínimo da faixa baixa (ex.: 1 a 9 participantes no Eventos Socioambientais) que o documento não classifica.",
+  "Faixas de leitura (faixas_leitura): \"de\" inclusivo e \"ate\" exclusivo, como nas tabelas (\"40 ≤ IS < 80\"); de = ate = 0 representa a linha \"= 0\"; a linha seguinte (\"IS < 40\", \"0 < IIA < 70\", \"IE < 40\") começa acima de 0. No ICC o documento escreve \"IC\" nas faixas (IC < 50; 50 ≤ IC < 80; IC ≥ 80). A Tabela 02 (EIEAP) usa intervalos fechados com uma casa decimal (01 a 19,9; 20 a 39,9; 40 a 69,9; 70 a 89,9; 90 a 100) e não tem coluna de categoria (categoria = null).",
+  "As tabelas de ICC, IS, IIA e IE são idênticas para os três públicos (Tabelas 10-14 interno, 16-20 comunidades, 22-26 escolar); foram registradas uma vez em faixas_leitura. O IP é o único indicador com faixas por projeto (Tabelas 11, 17 e 23).",
+  "Fórmulas do documento: IS = (nº de respostas \"Satisfeito\" + \"Muito satisfeito\") * 100 / nº total de participantes; IIA = ((0,8*a) + (0,6*c) + 0,2*(d-1)) / 0,6, com a = % que ampliaram conhecimento, c = % que não conheciam o tema e agora conhecem, d = % que continuam a desconhecer; IE = (ICC + IP + IS + IIA) / 4, onde o IP entra pelo valor do índice (0/30/60/100). ICC, IS e IIA são calculados por ação, projeto, ano e ciclo; IE por ano e ciclo; IP por ano e ciclo (interno) ou por ação, projeto, ano e ciclo (externos).",
+  "Unidades/comunidades: o Quadro 5 (repetido no Quadro 6 e no Quadro 1 do anexo DSP) tem 4 linhas de unidade (Usina Ouro Branco; Complexo Minerário Várzea do Lopes; Mina de Miguel Burnier; AID dos Empreendimentos da Gerdau / Transporte de minério) e 4 grupos de comunidades na coluna da direita, em ordem. A associação grupo -> unidade foi confirmada pelas listas de presença das oficinas DSP (\"ABEA - Usina Ouro Branco: Bairro 1º de Maio, Bairro São Francisco e Povoado de Carreiras/Ouro Branco, Bairro Lobo Leite/Congonhas\"; \"ABEA - Mina de Várzea do Lopes: Condomínio VillaBella / Aconchego da Serra\"; \"ABEA – Mina de Miguel Burnier: Miguel Burnier e Motta/Ouro Preto\"; \"AID/Transporte minério de ferro: Gagé, Pires, Joaquim Murtinho, Alto Maranhão, Ribeirão do Eixo\").",
+  "Comunidades com unidade = \"AID\" não pertencem a uma unidade: são a AID do transporte de minério entre as minas e a usina (tipo = \"AID transporte de minério\"). \"AID\" não é sigla de unidade e não consta em \"unidades\".",
+  "Quadro 6 repete exatamente as 17 comunidades do Quadro 5 (não acrescenta nenhuma). O campo \"localizacao\" guarda o complemento entre parênteses do documento (ex.: \"área urbana de Ouro Branco\", \"distrito de Ouro Preto\").",
+  "Escolas (Quadro 7): a unidade foi lida pela coluna ABEA na extração -table: as 4 primeiras escolas (Ouro Branco) e a E. M. Amynthas Jacques de Moraes (Lobo Leite, primeira linha da página seguinte, continuação da célula \"Usina Ouro Branco\") = UOB, confirmado pelas listas de presença do DSP (\"ABEA - Usina Ouro Branco: Escola Municipal Amynthas Jacques de Morais/Congonhas\"); Motta, Miguel Burnier e Engenheiro Correia = MMB; demais = AID. Nenhuma escola é listada para o MVL.",
+  "Escolas: o Quadro 7 escreve \"Conselheiro Lafaite\"; foi normalizado para \"Conselheiro Lafaiete\" (grafia usada no Quadro 5). O campo \"comunidade\" liga o bairro da escola ao nome da comunidade do Quadro 5 (ex.: bairro \"Primeiro de Maio\" -> \"Bairro 1º de Maio\"; \"Distrito Motta\" -> \"Motta\"; \"Ribeirão do Eixo\" -> \"Povoado de Ribeirão do Eixo\"); \"bairro\" e \"endereco\" estão como impressos.",
+  "Projetos: são 16 (4 interno, 4 comunidades, 8 escolar). \"descricao\" é o texto da coluna OBJETIVOS dos Quadros 10/13/16, exceto PEA na Comunidade: no Quadro 13 o objetivo dele é cópia do PEA na Área do público interno (\"...engajamento dos colaboradores... áreas do empreendimento\"), por isso foi usado o \"Objetivo\" da seção descritiva do projeto. \"periodicidade\" = coluna PERIODICIDADE do quadro; \"periodicidade_texto\" = item \"Periodicidade\" da seção descritiva (às vezes divergem).",
+  "Eixos: no público interno o Quadro 10 agrupa \"SENSIBILIZAÇÃO E TRANSFORMAÇÃO\" num só eixo (PEA na Área). O Encontro Anual do PEA está na linha INFORMAÇÃO no Quadro 10, mas a seção descritiva o coloca sob o título \"EIXO SENSIBILIZAÇÃO E TRANSFORMAÇÃO\" (registrado em eixo_secao_descritiva). No escolar, o Laboratório Ambiental fica entre os rótulos SENSIBILIZAÇÃO e TRANSFORMAÇÃO no Quadro 16; a seção descritiva o põe sob \"EIXO TRANSFORMAÇÃO\", que foi o adotado.",
+  "Projetos: \"nome_cronograma\" é o rótulo usado nas tabelas de cronograma (no cronograma.projeto foi usado o \"nome\" do projeto para facilitar o join). No cronograma escolar a linha \"COMUNICADOS DO PEA ESCOLAR\" aparece quebrada em duas linhas e \"VISITAS TÉCNICAS AO BIOCENTRO\" corresponde ao projeto \"Visitas Técnicas ao Centro de Educação Ambiental\"; \"FORMAÇÃO SOCIOAMBIENTAL PARA ESCOLAS DAS ABEAs\" = \"Formação Socioambiental nas Escolas das ABEAs\".",
+  "Linhas temáticas: os itens de conteúdo foram separados pelo \";\" do documento, sem a pontuação final (\";\" ou \".\"), juntando as linhas quebradas pelo layout. No Quadro 9 o item \"Importância da conservação dos recursos hídricos.Evitando o desperdício - dicas para diminuir o consumo de água.\" (dois itens colados no original) foi dividido em dois. \"Política Nacional de Educação Ambiental;\" + \"(Lei 9.795/1999);\" (Quadros 12 e 15) virou um item só. No Quadro 12, \"Manejo Sustentável da Vegetação e do Solo\" aparece duas vezes na linha \"Conservação Ambiental, Incêndios e Brigadas\"; foi mantido uma vez. O nome da linha \"Poluição poluentes e suas consequências\" (Quadro 9) está como impresso (provavelmente \"Poluição: poluentes e suas consequências\").",
+  "Linhas temáticas, Quadro 12: o item \"Medidas de controle e mitigação (poluição do ar e da água)\" está no topo da página 57, antes do bloco de resíduos, mas sem rótulo próprio; é a continuação da linha \"Meio Ambiente e Recursos Naturais\" (que termina na página anterior com \"Monitoramento da qualidade do ar\"). Os itens da página 58 (de \"O papel das espécies nativas...\" a \"Brigada Carcará Ouro Branco\") continuam a linha \"Conservação Ambiental, Incêndios e Brigadas\".",
+  "EIEAP: Tabela 03 dá os valores de 2025 (período 01/07/2024 a 30/06/2025) para 20 indicadores x 4 localidades (UOB, MVL, MMB, GERDAU); a Tabela 04 dá linha de base EIEAP 2021, valor atual 2025 e meta 2026 só para 8 indicadores. Nos demais, linha_base_2021 e meta_2026 = null. A Tabela 04 usa nomes um pouco diferentes (ex.: \"Interesse e Motivação Interna\", \"Percepção Ambiental Geral\"); o nome dela está em indice_tabela04.",
+  "EIEAP, Tabela 03 página 2: no -layout os rótulos ficam deslocados uma linha em relação aos números; a leitura correta (confirmada pelo -table e pelo texto: comportamento ambiental geral 33,0, interno 71,0, educação ambiental 57,0) é: Indicador de Comportamento Ambiental Geral 33,5/32,9/32,6/33,0; Comportamento Consumidor Interno 70,7/72,7/75,1/72,8; Comportamento Político Interno 66,1/70,7/71,1/69,3; Indicador de Comportamento Ambiental Interno 68,4/71,7/73,1/71,0; Indicador de Educação Ambiental 55,6/56,6/58,7/57,0. Da mesma forma, na Tabela 04 as linhas \"Percepção Ambiental Interna\" e \"Percepção Ambiental\" estão com o rótulo uma linha abaixo no -layout.",
+  "EIEAP: comportamento ambiental (geral e interno) não tem meta, segundo o próprio texto (\"Ambos são indicadores que não possuem metas a serem cumpridas, logo não foram contemplados na Tabela 04\"). A linha de base 2021 do Indicador de Educação Ambiental (Gerdau = 50,4) vem do texto da p. 22, não de tabela; o EIEAP 2021 por unidade desse indicador não aparece no documento.",
+  "Colaboradores (Tabela 09, dezembro/2025): a linha \"Total\" soma as três unidades (6.611 próprios + 5.719 parceiros = 12.330). O documento diz que o número está superestimado por projetos de expansão e tende a cair no ciclo 2026-2031.",
+  "Datas do ciclo: o ciclo anterior (2021-2026) começou em agosto de 2021 e termina em agosto de 2026; o novo ciclo 2026-2031 começa no 3° trimestre de 2026 (provavelmente agosto)."
+ ],
+ "lacunas_da_extracao": [
+  "Workshop de Planejamento (público escolar, Quadro 16): não tem linha no cronograma (Tabela 27, pea.txt ~3687-3720 e PDF p. 97) nem faixa de IP (Tabela 23, pea.txt ~3465-3550); cronograma ausente e ip_faixas = null.",
+  "Comunicados do PEA (comunidades) e Comunicados do PEA Escolar: não têm faixa de IP nas Tabelas 17 e 23 (pea.txt ~2627-2660 e ~3465-3550); ip_faixas = null.",
+  "EIEAP: linha de base 2021 e meta 2026 só existem para os 8 indicadores da Tabela 04 (pea.txt 812-840); os outros 12 indicadores da Tabela 03 (pea.txt 747-782) ficam com linha_base_2021 = null e meta_2026 = null (exceto a linha de base do Indicador de Educação Ambiental Gerdau = 50,4, tirada do texto, linha 784-785). O Indicador de Educação Ambiental por unidade (UOB/MVL/MMB) em 2021 não aparece.",
+  "EIEAP MVL \"Interesse e Motivação Geral\" 2025: Tabela 03 = 36,7 (linha 759) e Tabela 04 = 64,1 (linha 827). Foi usado 36,7 (coerente com o Indicador de Percepção Ambiental Geral do MVL); o 64,1 da Tabela 04 parece cópia do valor da linha de Percepção Ambiental Geral e está em valor_2025_tabela04.",
+  "Faixas de IP: o documento não classifica valores entre 1 e o mínimo da faixa \"baixa\" de cada projeto (ex.: 1-9 no Eventos Socioambientais, 1-499 nas Visitas Técnicas); não há regra para eles.",
+  "Faixas de leitura da Tabela 02 (EIEAP, linhas 723-733): valores entre 0 e 1 e entre os limites com uma casa decimal (ex.: 19,95) não estão cobertos; a tabela só traz \"VALORES\" e \"CLASSIFICAÇÃO\" (sem categoria).",
+  "Cronograma: quantidade de ações por trimestre não é informada (só \"X\"); acoes_previstas = 1 indica apenas presença.",
+  "Quadro 7: o documento não informa a comunidade/unidade de cada escola explicitamente na mesma linha; foi deduzida pela coluna ABEA (célula mesclada) e pelo bairro (pea.txt 1315-1372). A E. M. Amynthas Jacques de Moraes fica no topo da segunda página do quadro, ao lado do rótulo \"Mina de Miguel Burnier\" no -layout; foi atribuída à UOB pelo bairro (Lobo Leite) e pelas listas do DSP (linhas 9152-9154, 9590-9592)."
+ ]
+}
