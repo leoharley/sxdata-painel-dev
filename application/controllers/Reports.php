@@ -96,7 +96,8 @@ class Reports extends CI_Controller {
     // MÉTODO MELHORADO: Exportação completa com muito mais informações
     public function export_all() {
         $filters = $this->get_filters();
-        
+        auditar('exportar', 'relatorio', $filters['questionnaire_id'] ?? NULL, 'Relatório completo em Excel', NULL, $filters);
+
         try {
             // Criar novo arquivo Excel
             $spreadsheet = new Spreadsheet();
@@ -999,6 +1000,7 @@ public function get_question_details() {
 
 public function export_question_analysis() {
    $filters = $this->get_filters();
+   auditar('exportar', 'relatorio', $filters['questionnaire_id'] ?? NULL, 'Análise por pergunta', NULL, $filters);
    $question_analysis = $this->Response_model->get_question_analysis($filters);
    
    if (empty($question_analysis)) {
@@ -1217,6 +1219,7 @@ public function export_specific_questionnaire() {
     
     $filters = $this->get_filters();
     $questionnaire_id = $filters['questionnaire_id'] ?? null;
+    auditar('exportar', 'questionario', $questionnaire_id, 'Relatório do questionário em Excel', NULL, $filters);
     
     if (!$questionnaire_id) {
         $this->session->set_flashdata('error', 'Questionário não especificado para exportação.');

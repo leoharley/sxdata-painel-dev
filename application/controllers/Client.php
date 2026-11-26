@@ -131,12 +131,33 @@ class Client extends CI_Controller {
             return;
         }
 
+        // Frente I: o cliente só gera descrição de questionário dos projetos
+        // dele, com limite de tamanho e de quantidade (cada chamada gasta IA).
+        $questionnaire_id = (int) $questionnaire_id;
+        if ($questionnaire_id <= 0 || !$this->_client_can_view_analysis((object) array('questionnaire_id' => $questionnaire_id))) {
+            $this->output->set_status_header(403);
+            echo json_encode(array('success' => false, 'message' => 'Questionário não disponível para o seu usuário.'));
+            return;
+        }
+        if (strlen((string) $chart_data) > 20000 || mb_strlen((string) $chart_title) > 300) {
+            echo json_encode(array('success' => false, 'message' => 'Gráfico grande demais para descrever automaticamente.'));
+            return;
+        }
+        $janela = array_filter((array) $this->session->userdata('ia_descricoes'), function ($t) { return $t > time() - 3600; });
+        if (count($janela) >= 30) {
+            echo json_encode(array('success' => false, 'message' => 'Limite de descrições automáticas por hora atingido. Tente mais tarde.'));
+            return;
+        }
+        $janela[] = time();
+        $this->session->set_userdata('ia_descricoes', array_values($janela));
+        auditar('ia', 'questionario', $questionnaire_id, 'Descrição automática de gráfico: ' . mb_substr((string) $chart_title, 0, 120));
+
         // Resolver nomes das perguntas referenciadas no título
         $question_context = '';
         if (preg_match_all('/q_(\d+)/', $chart_title, $matches)) {
             foreach ($matches[1] as $qid) {
                 $question = $this->Question_model->get_by_id($qid);
-                if ($question) {
+                if ($question && (int) $question->questionnaire_id === $questionnaire_id) {
                     $question_context .= "q_{$qid} = \"{$question->question_text}\"\n";
                 }
             }

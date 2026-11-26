@@ -69,6 +69,7 @@ class Responses extends CI_Controller {
         if (isset($data['questionnaire']->formato) && $data['questionnaire']->formato === 'estruturado') {
             redirect('formularios-estruturados/entrevista/' . (int) $id);
         }
+        auditar('visualizar', 'entrevista', (int) $id, 'Abriu a entrevista' . (!empty($response->respondent_name) ? ' de ' . $response->respondent_name : ''));
 
         $data['title'] = 'Visualizar Resposta - SXData';
         $data['response'] = $response;
@@ -162,7 +163,8 @@ class Responses extends CI_Controller {
         }
 
         $responses = $this->Response_model->get_for_export($filters);
-        
+        auditar('exportar', 'questionario', $filters['questionnaire_id'] ?? NULL, 'Excel das respostas (' . count($responses) . ' linhas)', NULL, $filters);
+
         // Gerar arquivo Excel
         $this->excel->create_export($responses);
     }
@@ -240,7 +242,8 @@ class Responses extends CI_Controller {
         try {
             // Contar registros antes da exportação
             $record_count = $this->Response_model->count_by_filters($filters);
-            
+            auditar('exportar', 'questionario', $filters['questionnaire_id'] ?? 'todos', 'Dados brutos (' . (int) $record_count . ' entrevistas)', NULL, $filters);
+
             // Log início da exportação
             $this->Response_model->log_export_activity(
                 $user_id, 

@@ -284,6 +284,17 @@
                     Inteligência Artificial
                 </a>
             </li>
+            <?php if (in_array($user_role, ['administrador', 'supervisor'], true)):
+                $_cc = contadores_controle(); $_pend = (int) ($_cc['revisao'] ?? 0) + (int) ($_cc['erros'] ?? 0) + (int) ($_cc['aparelhos'] ?? 0); ?>
+            <li class="nav-item">
+                <a class="nav-link <?= $this->uri->segment(1) == 'controle' ? 'active' : '' ?>" href="<?= base_url('controle') ?>"
+                   title="<?= (int) ($_cc['revisao'] ?? 0) ?> a revisar · <?= (int) ($_cc['erros'] ?? 0) ?> erro(s) · <?= (int) ($_cc['aparelhos'] ?? 0) ?> aparelho(s) com fila parada">
+                    <i class="fas fa-user-shield"></i>
+                    Controle e segurança
+                    <?php if ($_pend > 0): ?><span class="badge rounded-pill bg-warning text-dark ms-1"><?= $_pend ?></span><?php endif; ?>
+                </a>
+            </li>
+            <?php endif; ?>
             <?php if ($user_role === 'administrador'): ?>
             <li class="nav-item">
                 <a class="nav-link <?= $this->uri->segment(1) == 'settings' ? 'active' : '' ?>" href="<?= base_url('settings') ?>">
@@ -319,6 +330,7 @@
                         </a>
                         <ul class="dropdown-menu">
                             <li style="display:none"><a class="dropdown-item" href="<?= base_url('profile') ?>">Perfil</a></li>
+                            <li><a class="dropdown-item" href="<?= base_url('conta/seguranca') ?>"><i class="fas fa-shield-alt me-1"></i> Minha conta (senha e 2FA)</a></li>
                             <?php if ($this->session->userdata('admin_role') === 'administrador'): ?>
                             <li><a class="dropdown-item" href="<?= base_url('settings') ?>">Configurações</a></li>
                             <?php endif; ?>

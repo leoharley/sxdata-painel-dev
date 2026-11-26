@@ -9,6 +9,9 @@ class User_model extends CI_Model {
     }
 
     public function get_all() {
+        if ($this->robustez()) {
+            $this->db->where('deleted_at IS NULL', NULL, FALSE);
+        }
         $this->db->order_by('created_at', 'DESC');
         return $this->db->get('users')->result();
     }
@@ -51,6 +54,9 @@ class User_model extends CI_Model {
             'username' => $username,
             'is_active' => TRUE
         ))->row();
+        if ($user && !empty($user->deleted_at)) {
+            return FALSE;
+        }
 
         if ($user && password_verify($password, $user->password_hash)) {
             // Atualizar último login
@@ -68,6 +74,9 @@ class User_model extends CI_Model {
         ');
         $this->db->from('users u');
         $this->db->join('form_responses fr', 'u.id = fr.applied_by', 'left');
+        if ($this->robustez()) {
+            $this->db->where('u.deleted_at IS NULL', NULL, FALSE);
+        }
         $this->db->group_by('u.id, u.full_name, u.username, u.email, u.role, u.is_active, u.created_at, u.updated_at, u.password_hash');
         $this->db->order_by('u.created_at', 'DESC');
         
@@ -95,8 +104,84 @@ class User_model extends CI_Model {
     }
 
     public function delete($id) {
+        // Exclusão física apaga o "quem aplicou" das entrevistas (FK SET NULL).
+        // Com a migração da frente I, vira exclusão lógica, com restauração.
+        if ($this->robustez()) {
+            return $this->excluir_logico($id, NULL);
+        }
         $this->db->where('id', $id);
         return $this->db->delete('users');
+    }
+
+    // ------------------------------------------------------------
+    // Frente I: bloqueio, 2FA e exclusão lógica (sql/robustez_migration.sql)
+    // ------------------------------------------------------------
+
+    /** As colunas novas de users existem? */
+    public function robustez() {
+        static $tem = NULL;
+        if ($tem === NULL) {
+            $tem = $this->db->field_exists('deleted_at', 'users') && $this->db->field_exists('totp_ativo', 'users');
+        }
+        return $tem;
+    }
+
+    public function por_username($username) {
+        return $this->db->get_where('users', ['username' => (string) $username])->row();
+    }
+
+    /** Conta a falha; ao chegar no limite, bloqueia por $minutos. Devolve [falhas, bloqueado_ate]. */
+    public function registrar_falha($id, $limite, $minutos = 15) {
+        $u = $this->db->select('falhas_login')->get_where('users', ['id' => (int) $id])->row();
+        $falhas = ($u ? (int) $u->falhas_login : 0) + 1;
+        $dados = ['falhas_login' => $falhas];
+        $ate = NULL;
+        if ($falhas >= $limite) {
+            $ate = date('Y-m-d H:i:s', time() + $minutos * 60);
+            $dados['bloqueado_ate'] = $ate;
+            $dados['falhas_login'] = 0;
+        }
+        $this->db->where('id', (int) $id)->update('users', $dados);
+        return [$falhas, $ate];
+    }
+
+    public function limpar_falhas($id) {
+        $this->db->where('id', (int) $id)->update('users', ['falhas_login' => 0, 'bloqueado_ate' => NULL]);
+    }
+
+    public function desbloquear($id) {
+        $this->limpar_falhas($id);
+    }
+
+    public function excluir_logico($id, $por) {
+        return $this->db->where('id', (int) $id)->update('users', [
+            'deleted_at' => date('Y-m-d H:i:s'), 'deleted_by' => $por ? (int) $por : NULL,
+            'is_active' => FALSE, 'updated_at' => date('Y-m-d H:i:s'),
+        ]);
+    }
+
+    /** Volta para a lista, mas inativo: o administrador decide quando reativar. */
+    public function restaurar($id) {
+        return $this->db->where('id', (int) $id)->update('users', ['deleted_at' => NULL, 'deleted_by' => NULL, 'updated_at' => date('Y-m-d H:i:s')]);
+    }
+
+    public function excluidos() {
+        if (!$this->robustez()) {
+            return [];
+        }
+        return $this->db->select('u.id, u.username, u.full_name, u.role, u.deleted_at, d.full_name AS excluido_por')
+            ->from('users u')->join('users d', 'd.id = u.deleted_by', 'left')
+            ->where('u.deleted_at IS NOT NULL', NULL, FALSE)->order_by('u.deleted_at', 'DESC')->get()->result();
+    }
+
+    public function salvar_totp($id, $segredo, $ativo, $passo = NULL) {
+        return $this->db->where('id', (int) $id)->update('users', [
+            'totp_secret' => $segredo, 'totp_ativo' => (bool) $ativo, 'totp_ultimo_passo' => $passo,
+        ]);
+    }
+
+    public function usar_passo_totp($id, $passo) {
+        $this->db->where('id', (int) $id)->update('users', ['totp_ultimo_passo' => (int) $passo]);
     }
 
     public function count_all() {

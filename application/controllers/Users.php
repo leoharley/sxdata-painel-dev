@@ -1,6 +1,8 @@
 <?php
 defined('BASEPATH') OR exit('No direct script access allowed');
 
+require_once APPPATH . 'libraries/Politica_senha.php';
+
 class Users extends CI_Controller {
 
     public function __construct() {
@@ -26,8 +28,18 @@ class Users extends CI_Controller {
         $this->form_validation->set_rules('username', 'Usuário', 'required|max_length[50]|is_unique[users.username]');
         $this->form_validation->set_rules('email', 'Email', 'required|valid_email|is_unique[users.email]');
         $this->form_validation->set_rules('role', 'Função', 'required|in_list[aplicador,supervisor,administrador,cliente]');
-        $this->form_validation->set_rules('password', 'Senha', 'required|min_length[6]');
+        $this->form_validation->set_rules('password', 'Senha', 'required');
         $this->form_validation->set_rules('password_confirm', 'Confirmação de Senha', 'required|matches[password]');
+
+        $erros_senha = Politica_senha::validar($this->input->post('password'), $this->input->post('username'), $this->input->post('full_name'));
+        if (!$this->pode_dar_papel($this->input->post('role'))) {
+            $this->session->set_flashdata('error', 'Somente um administrador pode criar outro administrador.');
+            redirect('users');
+        }
+        if ($erros_senha) {
+            $this->session->set_flashdata('error', html_escape(implode(' ', $erros_senha)));
+            redirect('users');
+        }
 
         if ($this->form_validation->run()) {
             $user_data = array(
@@ -39,7 +51,8 @@ class Users extends CI_Controller {
                 'is_active' => TRUE
             );
 
-            if ($this->User_model->create($user_data)) {
+            if ($novo_id = $this->User_model->create($user_data)) {
+                auditar('criar', 'usuario', $novo_id, 'Usuário ' . $user_data['username'] . ' (' . $user_data['role'] . ')', NULL, $user_data);
                 $this->session->set_flashdata('success', 'Usuário criado com sucesso!');
             } else {
                 $this->session->set_flashdata('error', 'Erro ao criar usuário.');
@@ -102,10 +115,20 @@ class Users extends CI_Controller {
         
         $this->form_validation->set_rules('role', 'Função', 'required|in_list[aplicador,supervisor,administrador,cliente]');
         
+        // Supervisor não altera administrador nem promove alguém a administrador
+        if (!$this->pode_mexer($existing_user) || !$this->pode_dar_papel($this->input->post('role'))) {
+            $this->session->set_flashdata('error', 'Somente um administrador pode alterar administradores.');
+            redirect('users');
+        }
+
         // Senha é opcional na edição
         if ($this->input->post('password')) {
-            $this->form_validation->set_rules('password', 'Nova Senha', 'min_length[6]');
             $this->form_validation->set_rules('password_confirm', 'Confirmação da Nova Senha', 'matches[password]');
+            $erros_senha = Politica_senha::validar($this->input->post('password'), $this->input->post('username'), $this->input->post('full_name'));
+            if ($erros_senha) {
+                $this->session->set_flashdata('error', html_escape(implode(' ', $erros_senha)));
+                redirect('users');
+            }
         }
 
         if ($this->form_validation->run()) {
@@ -122,6 +145,8 @@ class Users extends CI_Controller {
             }
 
             if ($this->User_model->update($id, $user_data)) {
+                list($antes, $depois) = auditoria_diferenca((array) $existing_user, $user_data);
+                auditar('editar', 'usuario', $id, 'Usuário ' . $existing_user->username . (isset($user_data['password']) ? ' (com senha nova)' : ''), $antes, $depois);
                 $this->session->set_flashdata('success', 'Usuário atualizado com sucesso!');
             } else {
                 $this->session->set_flashdata('error', 'Erro ao atualizar usuário.');
@@ -150,8 +175,15 @@ class Users extends CI_Controller {
             return;
         }
         
+        if (!$this->pode_mexer($user)) {
+            $this->session->set_flashdata('error', 'Somente um administrador pode alterar administradores.');
+            redirect('users');
+            return;
+        }
+
         if ($this->User_model->update($id, array('is_active' => $new_status))) {
             $action = $new_status ? 'ativado' : 'desativado';
+            auditar('editar', 'usuario', $id, 'Usuário ' . $user->username . ' ' . $action, ['is_active' => $user->is_active], ['is_active' => $new_status]);
             $this->session->set_flashdata('success', "Usuário {$action} com sucesso!");
         } else {
             $this->session->set_flashdata('error', 'Erro ao alterar status do usuário.');
@@ -161,11 +193,16 @@ class Users extends CI_Controller {
     }
 
     public function reset_password($id) {
+        $user = $this->User_model->get_by_id($id);
+        if (!$user || !$this->pode_mexer($user)) {
+            $this->session->set_flashdata('error', $user ? 'Somente um administrador pode redefinir a senha de um administrador.' : 'Usuário não encontrado.');
+            redirect('users');
+        }
         $new_password = $this->generate_password();
-        
+
         if ($this->User_model->update($id, array('password' => $new_password))) {
-            $user = $this->User_model->get_by_id($id);
-            
+            auditar('senha', 'usuario', $id, 'Senha redefinida para o usuário ' . $user->username);
+
             // Aqui você pode implementar o envio por email
             $this->session->set_flashdata('success', "Senha redefinida! Nova senha: {$new_password}");
         } else {
@@ -175,9 +212,18 @@ class Users extends CI_Controller {
         redirect('users');
     }
 
-    private function generate_password($length = 8) {
-        $chars = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
-        return substr(str_shuffle($chars), 0, $length);
+    private function generate_password($length = 10) {
+        // Já cumpre a política de senha (letras e números)
+        return Politica_senha::gerar($length);
+    }
+
+    /** Supervisor não mexe em administrador. */
+    private function pode_mexer($user) {
+        return $this->session->userdata('admin_role') === 'administrador' || $user->role !== 'administrador';
+    }
+
+    private function pode_dar_papel($papel) {
+        return $this->session->userdata('admin_role') === 'administrador' || $papel !== 'administrador';
     }
 
     private function check_auth() {

@@ -144,6 +144,22 @@
                                 </button>
                                 <?php endif; ?>
                             </div>
+                            <?php if ($this->session->userdata('admin_role') === 'administrador' && property_exists($user, 'deleted_at')):
+                                $bloqueado = !empty($user->bloqueado_ate) && strtotime($user->bloqueado_ate) > time();
+                                $tem_2fa = in_array($user->totp_ativo ?? FALSE, [TRUE, 't', 1, '1'], TRUE); ?>
+                            <div class="mt-1 d-flex justify-content-center gap-1">
+                                <?php if ($tem_2fa): ?><span class="badge bg-success" title="Verificação em duas etapas ativa"><i class="fas fa-shield-alt"></i> 2FA</span><?php endif; ?>
+                                <?php if ($bloqueado): ?>
+                                    <?= form_open('controle/desbloquear_usuario/' . (int) $user->id, ['class' => 'd-inline']) ?><button class="btn btn-sm btn-warning py-0" title="Bloqueado até <?= date('H:i', strtotime($user->bloqueado_ate)) ?>"><i class="fas fa-unlock"></i> Desbloquear</button><?= form_close() ?>
+                                <?php endif; ?>
+                                <?php if ($tem_2fa): ?>
+                                    <?= form_open('controle/remover_2fa/' . (int) $user->id, ['class' => 'd-inline']) ?><button class="btn btn-sm btn-outline-secondary py-0" title="Remover 2FA (celular perdido)" onclick="return confirm('Remover a verificação em duas etapas deste usuário?')"><i class="fas fa-mobile-alt"></i></button><?= form_close() ?>
+                                <?php endif; ?>
+                                <?php if ($user->id != $current_user_id): ?>
+                                    <?= form_open('controle/excluir_usuario/' . (int) $user->id, ['class' => 'd-inline']) ?><button class="btn btn-sm btn-outline-danger py-0" title="Excluir (vai para a lixeira)" onclick="return confirm('Excluir o usuário <?= html_escape(addslashes($user->username)) ?>? As entrevistas dele continuam no sistema e ele pode ser restaurado na Lixeira.')"><i class="fas fa-trash"></i></button><?= form_close() ?>
+                                <?php endif; ?>
+                            </div>
+                            <?php endif; ?>
                         </td>
                     </tr>
                     <?php endforeach; ?>

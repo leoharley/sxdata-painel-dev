@@ -11,3 +11,6 @@ require_once APPPATH . 'libraries/Expressao.php';
 require_once APPPATH . 'libraries/Estrutura_motor.php';
 require_once APPPATH . 'libraries/Estrutura_compilador.php';
 require_once APPPATH . 'libraries/Estrutura_envio.php';
+require_once APPPATH . 'libraries/Totp.php';
+require_once APPPATH . 'libraries/Politica_senha.php';
+require_once APPPATH . 'libraries/Validacao_simples.php';

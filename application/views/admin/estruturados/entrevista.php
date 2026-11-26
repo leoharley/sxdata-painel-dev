@@ -45,7 +45,16 @@ $linhas = function (array $perguntas, array $resps, $nome) {
                 <?php endif; ?>
             </div>
         </div>
-        <?= $fr->revisao_status === 'pendente' ? '<span class="badge bg-warning text-dark fs-6">Na fila de revisão</span>' : '<span class="badge bg-success fs-6">Conferida</span>' ?>
+        <div class="text-end">
+            <?= $fr->revisao_status === 'pendente' ? '<span class="badge bg-warning text-dark fs-6">Na fila de revisão</span>' : '<span class="badge bg-success fs-6">Conferida</span>' ?>
+            <?php $pode_excluir = $this->session->userdata('admin_role') === 'administrador' && $this->db->table_exists('lixeira'); if ($pode_excluir): ?>
+            <?= form_open('controle/excluir_entrevista/' . (int) $fr->id, ['class' => 'd-inline ms-2', 'onsubmit' => "var m = prompt('Excluir esta entrevista (domicílio, moradores e repetições)? Ela vai para a Lixeira e pode ser restaurada.\\n\\nMotivo (opcional):', ''); if (m === null) return false; this.motivo.value = m; return true;"]) ?>
+                <input type="hidden" name="motivo" value="">
+                <input type="hidden" name="voltar" value="formularios-estruturados/entrevistas/<?= (int) $fr->qid ?>">
+                <button class="btn btn-sm btn-outline-danger"><i class="fas fa-trash me-1"></i> Excluir</button>
+            <?= form_close() ?>
+            <?php endif; ?>
+        </div>
     </div>
 
     <?php if (!empty($revisao['erros']) || !empty($revisao['divergencias'])): ?>
@@ -104,6 +113,10 @@ $linhas = function (array $perguntas, array $resps, $nome) {
                             <?= (int) $m->ordem ?>. <?= html_escape($m->nome) ?></button></h2>
                         <div id="m<?= $i ?>_<?= $k ?>" class="accordion-collapse collapse <?= $k ? '' : 'show' ?>">
                             <table class="table table-sm mb-0"><?= $linhas($e['perguntas'], $m->respostas, $m->nome) ?></table>
+                            <?php if (!empty($pode_excluir) && isset($m->id)): ?>
+                            <div class="text-end p-2"><?= form_open('controle/excluir_morador/' . (int) $m->id, ['class' => 'd-inline', 'onsubmit' => "var x = prompt('Excluir este morador e as respostas dele? Vai para a Lixeira.\\n\\nMotivo (opcional):', ''); if (x === null) return false; this.motivo.value = x; return true;"]) ?>
+                                <input type="hidden" name="motivo" value=""><button class="btn btn-sm btn-outline-danger"><i class="fas fa-user-minus me-1"></i> Excluir morador</button><?= form_close() ?></div>
+                            <?php endif; ?>
                         </div>
                     </div>
                     <?php endforeach; ?>

@@ -102,6 +102,12 @@ function format_location_name($data)
                     <i class="fas fa-arrow-left me-2"></i>
                     Voltar
                 </a>
+                <?php if ($this->session->userdata('admin_role') === 'administrador' && $this->db->table_exists('lixeira')): ?>
+                <?= form_open('controle/excluir_entrevista/' . (int) $response->id, ['class' => 'd-inline ms-2', 'onsubmit' => "var m = prompt('Excluir esta entrevista? Ela vai para a Lixeira e pode ser restaurada.\\n\\nMotivo (opcional):', ''); if (m === null) return false; this.motivo.value = m; return true;"]) ?>
+                    <input type="hidden" name="motivo" value="">
+                    <button class="btn btn-outline-danger"><i class="fas fa-trash me-1"></i> Excluir</button>
+                <?= form_close() ?>
+                <?php endif; ?>
             </div>
         </div>
     </div>

@@ -161,3 +161,9 @@ $route['formularios-estruturados/(.+)'] = 'estruturados/$1';
 $route['api/estruturado/formularios'] = 'api/estruturado/formularios';
 $route['api/estruturado/enviar'] = 'api/estruturado/enviar';
 $route['api/estruturado/entrevistados'] = 'api/estruturado/entrevistados';
+
+// Frente I: controle e segurança (sql/robustez_migration.sql)
+$route['controle'] = 'seguranca/index';
+$route['controle/(.+)'] = 'seguranca/$1';
+$route['api/system/erro'] = 'api/system/erro';
+$route['api/system/dispositivo'] = 'api/system/dispositivo';

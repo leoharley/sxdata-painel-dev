@@ -1355,6 +1355,23 @@ class Questionnaires extends CI_Controller {
     }
 
     public function delete($id) {
+        // Sem respostas, a exclusão passa pela lixeira (pode ser restaurada).
+        // Com respostas, continua só inativando (Questionnaire_model::delete).
+        $this->load->model('Lixeira_model');
+        $q = $this->Questionnaire_model->get_by_id($id);
+        $tem_respostas = $this->db->where('questionnaire_id', (int) $id)->count_all_results('form_responses') > 0;
+        if ($q && !$tem_respostas && $this->Lixeira_model->disponivel()) {
+            try {
+                $this->Lixeira_model->excluir_questionario($id, $this->session->userdata('admin_id'));
+                $this->session->set_flashdata('success', 'Questionário excluído. Ele pode ser restaurado em Controle e segurança > Lixeira.');
+            } catch (Exception $e) {
+                $this->session->set_flashdata('error', 'Erro ao excluir questionário: ' . html_escape($e->getMessage()));
+            }
+            redirect('questionnaires');
+        }
+        if ($q && $tem_respostas) {
+            auditar('editar', 'questionario', (int) $id, 'Questionário inativado (tem respostas, não pode ser excluído): ' . $q->title);
+        }
         if ($this->Questionnaire_model->delete($id)) {
             $this->session->set_flashdata('success', 'Questionário excluído com sucesso!');
         } else {
@@ -1460,6 +1477,7 @@ class Questionnaires extends CI_Controller {
         if (!$questionnaire) {
             show_404();
         }
+        auditar('exportar', 'questionario', (int) $questionnaire_id, 'Estrutura do questionário com lógica: ' . $questionnaire->title);
         
         $questions = $this->get_questions_safe($questionnaire_id);
         

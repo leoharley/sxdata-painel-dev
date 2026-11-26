@@ -111,7 +111,28 @@
                         <?= $error ?>
                     </div>
                 <?php endif; ?>
-                
+                <?php if (!empty($info)): ?>
+                    <div class="alert alert-info" role="alert">
+                        <i class="fas fa-info-circle me-2"></i>
+                        <?= html_escape($info) ?>
+                    </div>
+                <?php endif; ?>
+
+                <?php if (!empty($etapa_2fa)): ?>
+                <?= form_open('auth/dois_fatores') ?>
+                    <p class="small text-muted">Abra o aplicativo autenticador do seu celular e digite o código de 6 dígitos da conta <strong>SXData</strong>.</p>
+                    <div class="mb-4">
+                        <label for="codigo" class="form-label">Código de verificação</label>
+                        <div class="input-group">
+                            <span class="input-group-text"><i class="fas fa-shield-alt"></i></span>
+                            <input type="text" class="form-control with-icon" id="codigo" name="codigo" inputmode="numeric"
+                                   autocomplete="one-time-code" pattern="[0-9 ]{6,7}" maxlength="7" placeholder="000000" required autofocus>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-login"><i class="fas fa-check me-2"></i>Confirmar</button>
+                    <div class="text-center mt-3"><a href="<?= site_url('auth/logout') ?>" class="small">Voltar ao login</a></div>
+                <?= form_close() ?>
+                <?php else: ?>
                 <?= form_open('auth/login') ?>
                     <div class="mb-3">
                         <label for="username" class="form-label">Usuário</label>
@@ -142,6 +163,7 @@
                         Entrar
                     </button>
                 <?= form_close() ?>
+                <?php endif; ?>
             </div>
         </div>
     </div>

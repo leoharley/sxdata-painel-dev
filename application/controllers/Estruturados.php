@@ -388,11 +388,13 @@ class Estruturados extends CI_Controller {
     public function entrevista($fid) {
         $e = $this->estr->entrevista($fid);
         if (!$e) { show_404(); }
+        auditar('visualizar', 'entrevista', (int) $fid, 'Abriu a entrevista estruturada (domicílio e moradores)');
         $this->exibir('admin/estruturados/entrevista', ['title' => 'Entrevista #' . (int) $fid] + $e);
     }
 
     public function exportar($id) {
         $q = $this->obter_ou_404($id);
+        auditar('exportar', 'questionario', (int) $q->id, 'Excel do formulário estruturado: ' . $q->title);
         $v = $this->estr->versao($q->id);
         if (!$v) {
             $this->session->set_flashdata('error', 'Formulário sem versão publicada.');

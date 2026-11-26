@@ -22,8 +22,20 @@ class Settings extends CI_Controller {
 
     public function update() {
         $settings = $this->input->post('settings');
-        
+
         if ($settings) {
+            // Caixa desmarcada não vem no POST: sem isto, nunca dava para desligar
+            foreach (['require_https', 'enable_2fa', 'auto_backup_photos', 'email_notifications',
+                      'notify_new_responses', 'notify_sync_errors', 'auto_retry_failed'] as $caixa) {
+                if (!isset($settings[$caixa])) {
+                    $settings[$caixa] = '0';
+                }
+            }
+            $antes_cfg = $this->Settings_model->get_all_settings();
+            list($a, $d) = auditoria_diferenca(array_intersect_key($antes_cfg, $settings) + array_fill_keys(array_keys($settings), NULL), $settings);
+            if ($d) {
+                auditar('config', 'configuracao', NULL, 'Configurações alteradas: ' . implode(', ', array_keys($d)), $a, $d);
+            }
             foreach ($settings as $key => $value) {
                 // Converter MB para bytes para max_file_size
                 if ($key === 'max_file_size') {

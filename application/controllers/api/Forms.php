@@ -21,6 +21,9 @@ class Forms extends CI_Controller {
     /** @var array cache de colunas opcionais (dependem da migracao) */
     private $columns = array();
 
+    /** @var array|null confirmacao por parte do ultimo envio gravado */
+    private $partes = null;
+
     public function __construct() {
         parent::__construct();
         $this->load->model('Response_model');
@@ -155,7 +158,16 @@ class Forms extends CI_Controller {
                 throw new Exception('Transaction failed');
             }
 
+            // Conferencia no servidor: nunca recusa, so marca para revisao
+            $revisao = $this->conferir($form_response_id, $json);
+
             $this->db->trans_commit();
+
+            $this->partes = [
+                'respostas' => $saved_answers,
+                'recebidas' => count(array_filter($json['responses'], function ($r) { return is_array($r) && isset($r['question_id']); })),
+                'revisao'   => $revisao,
+            ];
 
             log_message('info', 'forms/submit OK - id=' . $form_response_id
                 . ' itens=' . $saved_answers
@@ -444,6 +456,7 @@ class Forms extends CI_Controller {
      * as versoes em campo leem), `id` e `data.id`. Chamar so apos o commit.
      */
     private function respond_success($id, $is_edit, $duplicated, $message) {
+        $missing = $this->missing_media($id);
         $this->output->set_status_header(200);
         echo json_encode([
             'success'          => true,
@@ -454,9 +467,55 @@ class Forms extends CI_Controller {
             'duplicated'       => (bool) $duplicated,
             // Fotos/audio que a coleta cita e o servidor nao tem. O app
             // reenvia o que ainda tiver no aparelho e reenvia a coleta.
-            'missing_media'    => $this->missing_media($id),
+            'missing_media'    => $missing,
+            // Confirmacao por parte (frente I): o app confere que o servidor
+            // gravou todas as respostas antes de liberar a coleta. Campo novo,
+            // as versoes atuais do app ignoram.
+            'partes'           => $this->partes !== null
+                ? $this->partes + ['midias_pendentes' => $missing]
+                : ['midias_pendentes' => $missing],
             'message'          => $message
         ]);
+    }
+
+    /**
+     * Confere o envio contra o questionario (Validacao_simples) e grava o
+     * resultado em revisao_status/revisao_erros. Erro aqui nao impede a
+     * gravacao: so fica no log.
+     */
+    private function conferir($form_response_id, $json) {
+        if (!$this->has_column('revisao_status')) {
+            return null;
+        }
+        try {
+            require_once APPPATH . 'libraries/Validacao_simples.php';
+            $qid = (int) $json['questionnaire_id'];
+            $perguntas = [];
+            foreach ($this->db->select('id, question_text, question_type, is_required, conditional_logic')
+                         ->get_where('questions', ['questionnaire_id' => $qid])->result() as $p) {
+                $perguntas[(int) $p->id] = [
+                    'texto' => $p->question_text, 'tipo' => $p->question_type,
+                    'obrigatoria' => in_array($p->is_required, [true, 't', 1, '1', 'true'], true),
+                    'logica' => $p->conditional_logic, 'opcoes' => [],
+                ];
+            }
+            if ($perguntas) {
+                $ops = $this->db->select('question_id, option_value, option_text')
+                    ->where_in('question_id', array_keys($perguntas))->get('question_options')->result();
+                foreach ($ops as $o) {
+                    $perguntas[(int) $o->question_id]['opcoes'][] = [$o->option_value, $o->option_text];
+                }
+            }
+            $erros = Validacao_simples::conferir($perguntas, is_array($json['responses']) ? $json['responses'] : []);
+            $this->db->where('id', (int) $form_response_id)->update('form_responses', [
+                'revisao_status' => $erros ? 'pendente' : null,
+                'revisao_erros'  => $erros ? json_encode($erros, JSON_UNESCAPED_UNICODE) : null,
+            ]);
+            return $erros ? 'pendente' : null;
+        } catch (Throwable $e) {
+            log_message('error', 'forms/submit - conferencia falhou: ' . $e->getMessage());
+            return null;
+        }
     }
 
     /**

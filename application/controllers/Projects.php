@@ -160,7 +160,15 @@ class Projects extends CI_Controller {
                 'Não é possível excluir este projeto pois existem ' . $questionnaires_count . 
                 ' questionários vinculados a ele. Remova os questionários primeiro ou altere o status do projeto.');
         } else {
-            if ($this->Project_model->delete($id)) {
+            $this->load->model('Lixeira_model');
+            if ($this->Lixeira_model->disponivel()) {
+                try {
+                    $this->Lixeira_model->excluir_projeto($id, $this->session->userdata('admin_id'));
+                    $this->session->set_flashdata('success', 'Projeto excluído. Ele pode ser restaurado em Controle e segurança > Lixeira.');
+                } catch (Exception $e) {
+                    $this->session->set_flashdata('error', 'Erro ao excluir projeto: ' . html_escape($e->getMessage()));
+                }
+            } elseif ($this->Project_model->delete($id)) {
                 $this->session->set_flashdata('success', 'Projeto excluído com sucesso!');
             } else {
                 $this->session->set_flashdata('error', 'Erro ao excluir projeto.');
