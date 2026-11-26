@@ -210,6 +210,11 @@ class Questionnaire_model extends CI_Model {
         // sem alterar o status do questionario (historico preservado no painel).
         // COALESCE cobre o LEFT JOIN sem projeto, onde p.status vem NULL.
         $this->db->where("COALESCE(p.status, 'active') NOT IN ('completed', 'cancelled')", NULL, FALSE);
+        // Formulário estruturado vai por api/estruturado/formularios: o app atual
+        // não o entende e mostraria um questionário vazio
+        if ($this->tem_formato()) {
+            $this->db->where('q.formato', 'simples');
+        }
         $this->db->group_by('q.id,p.name');
         $this->db->order_by('q.title', 'ASC');
 
@@ -233,6 +238,15 @@ class Questionnaire_model extends CI_Model {
         }
 
         return $questionnaires;
+    }
+
+    /** A coluna "formato" (sql/estruturado_migration.sql) já existe? */
+    private function tem_formato() {
+        static $tem = NULL;
+        if ($tem === NULL) {
+            $tem = $this->db->field_exists('formato', 'questionnaires');
+        }
+        return $tem;
     }
 
     /**

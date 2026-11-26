@@ -64,9 +64,14 @@ class Responses extends CI_Controller {
             show_404();
         }
 
+        $data['questionnaire'] = $this->Questionnaire_model->get_by_id($response->questionnaire_id);
+        // Entrevista de formulário estruturado (domicílio + moradores) tem tela própria
+        if (isset($data['questionnaire']->formato) && $data['questionnaire']->formato === 'estruturado') {
+            redirect('formularios-estruturados/entrevista/' . (int) $id);
+        }
+
         $data['title'] = 'Visualizar Resposta - SXData';
         $data['response'] = $response;
-        $data['questionnaire'] = $this->Questionnaire_model->get_by_id($response->questionnaire_id);
         $data['questions'] = $this->Question_model->get_by_questionnaire($response->questionnaire_id);
         $data['answers'] = $this->Response_model->get_answers($id);
         $data['applied_by'] = $this->User_model->get_by_id($response->applied_by);

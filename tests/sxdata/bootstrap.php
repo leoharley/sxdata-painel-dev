@@ -10,3 +10,4 @@ require_once APPPATH . 'libraries/Mapa_temas.php';
 require_once APPPATH . 'libraries/Expressao.php';
 require_once APPPATH . 'libraries/Estrutura_motor.php';
 require_once APPPATH . 'libraries/Estrutura_compilador.php';
+require_once APPPATH . 'libraries/Estrutura_envio.php';

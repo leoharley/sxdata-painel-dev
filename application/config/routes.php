@@ -154,3 +154,9 @@ $route['relatorios-automatizados/(.+)'] = 'relatorios_municipais/$1';
 // Mapa integrado (docs/PLANO_MAPA_INTEGRADO.md)
 $route['mapa-integrado'] = 'mapa_integrado/index';
 $route['mapa-integrado/(.+)'] = 'mapa_integrado/$1';
+
+// Formulários estruturados (docs/PLANO_EVOLUCAO_GERDAU_SRA.md, docs/FORMULARIOS_ESTRUTURADOS.md)
+$route['formularios-estruturados'] = 'estruturados/index';
+$route['formularios-estruturados/(.+)'] = 'estruturados/$1';
+$route['api/estruturado/formularios'] = 'api/estruturado/formularios';
+$route['api/estruturado/enviar'] = 'api/estruturado/enviar';

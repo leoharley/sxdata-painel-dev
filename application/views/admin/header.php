@@ -238,6 +238,14 @@
                     Questionários
                 </a>
             </li>
+            <?php if (in_array($user_role, ['administrador', 'supervisor'], true)): ?>
+            <li class="nav-item">
+                <a class="nav-link <?= $this->uri->segment(1) == 'formularios-estruturados' ? 'active' : '' ?>" href="<?= base_url('formularios-estruturados') ?>">
+                    <i class="fas fa-house-user"></i>
+                    Formulários estruturados
+                </a>
+            </li>
+            <?php endif; ?>
             <li class="nav-item">
                 <a class="nav-link <?= $this->uri->segment(1) == 'responses' ? 'active' : '' ?>" href="<?= base_url('responses') ?>">
                     <i class="fas fa-chart-bar"></i>

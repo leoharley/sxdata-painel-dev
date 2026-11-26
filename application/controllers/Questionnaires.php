@@ -390,6 +390,10 @@ class Questionnaires extends CI_Controller {
         if (!$questionnaire) {
             show_404();
         }
+        // Formulário estruturado tem editor próprio (este editor não o entende)
+        if (isset($questionnaire->formato) && $questionnaire->formato === 'estruturado') {
+            redirect('formularios-estruturados/editar/' . (int) $id);
+        }
 
         // Debug em desenvolvimento
         if (ENVIRONMENT === 'development') {

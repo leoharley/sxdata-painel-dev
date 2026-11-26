@@ -300,6 +300,55 @@ class Estrutura_motor {
         return TRUE;
     }
 
+    /**
+     * Resposta em texto legível (tela da entrevista, exportação).
+     * @param bool $numero_cru números (moeda, inteiro, calculado) sem formatação, para planilhas
+     */
+    public static function rotulo_resposta(array $p, $resp, $numero_cru = FALSE) {
+        if (!is_array($resp)) { return ''; }
+        if (!empty($resp['nsnr'])) { return 'NS/NR'; }
+        $v = $resp['valor'] ?? NULL;
+        if ($v === NULL || $v === '' || $v === []) { return ''; }
+        $tipo = $p['tipo'];
+        $formato = $tipo === 'calculado' ? ($p['formato'] ?? 'decimal') : $tipo;
+        $opcoes = [];
+        foreach ($p['opcoes'] ?? [] as $o) { $opcoes[$o['valor']] = $o; }
+        $opcao = function ($valor) use ($opcoes, $resp) {
+            $o = $opcoes[$valor] ?? NULL;
+            $t = $o ? preg_replace('/\s*[\.:]?\s*(Quant[oa]s|Qual\(is\)|Qual|Quais|Descreva quais|Quem\/como|Onde\?).*$/u', '', $o['texto']) : (string) $valor;
+            $c = $resp['complementos'][$valor] ?? NULL;
+            return ($c !== NULL && $c !== '') ? "$t: $c" : $t;
+        };
+        switch ($tipo) {
+            case 'unica': $txt = $opcao($v); break;
+            case 'multipla': $txt = implode('; ', array_map($opcao, (array) $v)); break;
+            case 'composto':
+                $partes = [];
+                foreach ($p['campos'] ?? [] as $c) {
+                    if (isset($v[$c['codigo']]) && $v[$c['codigo']] !== '') { $partes[] = $v[$c['codigo']] . ' ' . $c['rotulo']; }
+                }
+                $txt = implode(', ', $partes);
+                break;
+            case 'lista': $txt = implode('; ', array_filter(array_map('strval', (array) $v), 'strlen')); break;
+            case 'coordenadas': $txt = is_array($v) ? (($v['lat'] ?? '') . ', ' . ($v['lng'] ?? '')) : (string) $v; break;
+            case 'data': $txt = preg_match('/^(\d{4})-(\d{2})-(\d{2})$/', (string) $v, $m) ? "$m[3]/$m[2]/$m[1]" : (string) $v; break;
+            default:
+                if (is_numeric($v) && in_array($formato, ['moeda', 'decimal', 'inteiro', 'duracao', 'auto'], TRUE)) {
+                    if ($numero_cru) { return $v + 0; }
+                    if ($formato === 'moeda') { $txt = 'R$ ' . number_format((float) $v, 2, ',', '.'); }
+                    elseif ($formato === 'duracao') { $txt = intdiv((int) $v, 60) . ' h ' . ((int) $v % 60) . ' min'; }
+                    elseif ($formato === 'decimal') { $txt = number_format((float) $v, 2, ',', '.'); }
+                    else { $txt = (string) ($v + 0); }
+                } else {
+                    $txt = is_scalar($v) ? (string) $v : json_encode($v, JSON_UNESCAPED_UNICODE);
+                }
+        }
+        if (isset($resp['complemento']) && $resp['complemento'] !== '') {
+            $txt .= ' | ' . ($p['complemento']['rotulo'] ?? 'Complemento') . ': ' . $resp['complemento'];
+        }
+        return $txt;
+    }
+
     /** Texto da pergunta com o nome do morador no lugar de [NOME]. */
     public static function texto_para(array $p, $nome) {
         return str_replace('[NOME]', $nome !== NULL && $nome !== '' ? $nome : 'o(a) morador(a)', $p['texto'] ?? '');
