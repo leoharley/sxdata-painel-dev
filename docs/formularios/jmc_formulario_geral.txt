@@ -1,0 +1,1383 @@
+# titulo: JMC - Pesquisa Socioeconômica das Unidades Familiares (Formulário Geral)
+# descricao: Linha de base socioeconômica - Itapicuru e Jaboticaba. Projeto Jacobina Mineração - Pan American Silver. Fonte: JMC_Pesquisa_Socioeconomica_Formulario_Geral_Desenvolvedor_25112026.pdf
+// Formato: docs/FORMULARIOS_ESTRUTURADOS.md. Pontos interpretados estão marcados com "// INTERPRETAÇÃO".
+
+@domicilio Identificação e composição familiar
+== BLOCO A - AUTORIZAÇÃO E IDENTIFICAÇÃO
+-- A.1 Termo de autorização de pesquisa (consentimento)
+
+1. O Termo de Autorização de Pesquisa foi lido para o(a) entrevistado(a)? [unica]
+  ajuda: Técnico: realizar a leitura conforme o Plano de Comunicação.
+  - Sim
+  - Não
+
+2. O(a) entrevistado(a) consente em participar da pesquisa? [unica]
+  - Sim
+  - Não
+
+3. O(a) entrevistado(a) consente com o registro de fotografias? [unica]
+  - Sim
+  - Não
+
+-- A.2 Metadados
+
+4. Povoado: [unica]
+  - Itapicuru
+  - Jaboticaba
+
+5. Data da entrevista: [data auto=data]
+
+6. Hora de início: [hora auto=hora]
+
+7. ID do imóvel: [texto]
+  ajuda: Técnico: registrar o código do imóvel, comum a todos os domicílios e unidades familiares nele existentes.
+
+8. Quantos domicílios existem neste imóvel? [inteiro]
+  ajuda: Técnico: considerar como domicílio cada moradia com entrada independente e separada das demais por paredes, muros ou cercas, conforme definição do IBGE.
+
+9. ID do domicílio: [texto]
+  ajuda: Técnico: registrar o código do domicílio em que reside a unidade familiar entrevistada, vinculado ao ID do imóvel (questão 7); cada domicílio do imóvel recebe um código próprio.
+
+10. Quantas unidades familiares residem neste domicílio? [inteiro]
+  ajuda: Técnico: considerar como unidade familiar o morador ou conjunto de moradores que compartilham a mesma fonte de alimentação ou as despesas com moradia (conceito de unidade de consumo da POF/IBGE); havendo mais de uma, aplicar um formulário para cada unidade familiar, com IDs de imóvel e domicílio vinculados.
+
+11. ID da Unidade Familiar: [texto]
+  ajuda: Técnico: aplicar um formulário por unidade familiar (UF); preencher o código conforme metodologia de codificação definida, vinculado aos IDs do imóvel (questão 7) e do domicílio (questão 9).
+
+-- A.3 Identificação do respondente e contato
+
+12. Qual é o nome completo do(a) respondente? [texto]
+  ajuda: Técnico: entrevistar preferencialmente o(a) chefe de família.
+
+13. Qual é o telefone/WhatsApp de contato? [telefone]
+
+14. Qual é o endereço do imóvel? [texto]
+
+== BLOCO B - DADOS SOCIODEMOGRÁFICOS, TRABALHO, RENDA E RELAÇÕES SOCIAIS
+-- B.1 Composição familiar
+
+15. Quantas pessoas, contando com você, moram na sua casa? [inteiro]
+  ajuda: Técnico: considerar apenas os membros da unidade familiar identificada na questão 11 que habitualmente vivem no domicílio, inclusive os temporariamente ausentes; não incluir ocupantes periódicos (questão 16) nem membros de outras unidades familiares do mesmo domicílio.
+
+16. Há pessoas que ocupam o domicílio apenas periodicamente? Quantas? [inteiro]
+  ajuda: Técnico: registrar apenas a quantidade; ocupantes periódicos não devem ser incluídos na lista de moradores da questão 17. Registrar 0 se não houver.
+
+@moradores 17. Qual é o nome completo de cada pessoa que mora no domicílio?
+  ajuda: Técnico: registrar os nomes completos ou com pelo menos um sobrenome, um por linha, na quantidade informada na questão 15. Começar pelo(a) respondente (01), já identificado(a) na questão 12, seguido do(a) cônjuge/companheiro(a) (02), dos filhos(as), do mais velho ao mais novo, e dos demais moradores.
+  respondente: q12
+  declarado: q15
+  rotulo: Morador
+  regra: contar_moradores(q19 == "Chefe") == 0 | Um dos moradores deve ser identificado como Chefe (questão 19). | bloqueia
+  regra: contar_moradores(q19 == "Chefe") > 1 | Mais de um morador foi identificado como Chefe (questão 19). | bloqueia
+
+@morador Questões sobre cada morador (18 a 67)
+  var idade = idade(q21, q5)
+
+18. Qual é o gênero de [NOME]? [unica]
+  - Homem
+  - Mulher
+
+19. Qual é a posição de [NOME] na família? [unica]
+  ajuda: Técnico: considerar a posição em relação ao(à) chefe de família; um dos moradores deve obrigatoriamente ser identificado como chefe.
+  - Chefe
+  - Cônjuge/companheiro(a)
+  - Filho(a)
+  - Genro/nora
+  - Neto(a)
+  - Pai/mãe
+  - Sogro(a)
+  - Irmão(ã)
+  - Cunhado(a)
+  - Sobrinho(a)
+  - Outros parentes
+  - Outros não parentes
+  - Pensionista
+  - Empregado(a) doméstico(a)
+  - Parente do(a) empregado(a) doméstico(a)
+
+// INTERPRETAÇÃO: CPF aceita NS/NR para não travar a entrevista quando a pessoa não informa.
+20. Qual é o CPF de [NOME]? [cpf nsnr]
+  se: q19 em ["Chefe", "Cônjuge/companheiro(a)"]
+
+21. Qual é a data de nascimento de [NOME]? [data]
+
+22. Qual é a cor/raça de [NOME]? [unica]
+  ajuda: Técnico: registrar a cor/raça autodeclarada.
+  - Branca
+  - Preta
+  - Parda
+  - Amarela
+  - Indígena
+
+23. Qual é a religião de [NOME]? [unica]
+  - Católico
+  - Evangélico
+  - Matrizes africanas
+  - Não possui
+  - Outra. Qual?
+
+24. Qual é o estado civil de [NOME]? [unica]
+  - Solteiro(a)
+  - Casado(a)
+  - União estável ou consensual
+  - Separado(a) judicialmente/desquitado(a)
+  - Divorciado(a)
+  - Viúvo(a)
+
+-- B.2 Educação e capacitação
+
+25. [NOME] sabe ler e escrever? [unica]
+  ajuda: Técnico: considerar a capacidade de ler e escrever um bilhete simples, conforme o critério do IBGE.
+  se: idade >= 5
+  - Sim
+  - Não
+
+26. Qual é o nível de escolaridade mais alto de [NOME]? [unica]
+  - Nunca frequentou escola
+  - Creche
+  - Pré-escola
+  - Ensino fundamental incompleto
+  - Ensino fundamental completo
+  - Ensino médio incompleto
+  - Ensino médio completo
+  - Curso técnico incompleto
+  - Curso técnico completo
+  - Ensino superior incompleto
+  - Ensino superior completo
+  - Especialização incompleta
+  - Especialização completa
+  - Mestrado
+  - Doutorado
+
+27. [NOME] estuda atualmente? [unica]
+  - Sim
+  - Não
+
+28. Qual é o motivo de [NOME] não frequentar a escola? [unica]
+  se: q27 == "Não"
+  - Morador fora da idade escolar (4 a 17 anos)
+  - Falta de recursos financeiros
+  - Por questão de trabalho
+  - Por medo dos professores
+  - Devido a doença ou deficiência
+  - Por ajudar nas tarefas domésticas
+  - Família não permite que estude
+  - Não há instituições de ensino
+  - Não tem interesse em estudar
+  - Devido à gravidez
+  - Escola distante de casa
+  - Outros. Qual?
+
+29. Em qual tipo de instituição de ensino [NOME] estuda? [unica]
+  se: q27 == "Sim"
+  - Pública
+  - Privada
+  - Bolsista (privada)
+  - NSA
+
+30. Qual é o meio de transporte de [NOME] até a escola? [unica]
+  se: q27 == "Sim"
+  - A pé
+  - Bicicleta
+  - Motocicleta
+  - Carro próprio
+  - Transporte público
+  - Tração animal
+  - NSA
+
+31. Onde fica a escola de [NOME]? [unica]
+  se: q27 == "Sim"
+  - Itapicuru
+  - Jaboticaba
+  - Jacobina
+  - Outros. Qual?
+  - NSA
+
+32. Como avalia a qualidade da educação recebida por [NOME]? [unica]
+  se: q27 == "Sim"
+  - Muito ruim
+  - Ruim
+  - Regular
+  - Boa
+  - Muito boa
+  - NSA
+
+33. [NOME] já realizou algum curso profissionalizante/capacitação? Qual? [multipla]
+  - Técnico agrícola
+  - Técnico em pecuária
+  - Técnicas de pesca
+  - Artesanato
+  - Culinária/padeiro/confeiteiro
+  - Corte e costura
+  - Área de beleza (manicure, cabeleireira, designer de sobrancelha, esteticista, maquiadora)
+  - Técnico de informática (computador, notebook, impressoras etc.)
+  - Técnico eletrônico (celulares, aparelhos eletrodomésticos etc.)
+  - Motorista profissional/transporte de passageiros/transporte de produtos perigosos
+  - Segurança patrimonial
+  - Empreendedorismo para novos negócios
+  - Cursos profissionalizantes na área industrial e mineração
+  - Nenhum
+  - Outros. Qual?
+
+34. Em quais anos [NOME] realizou os cursos? [texto]
+  ajuda: Separar os anos por vírgulas.
+  se: q33 != "Nenhum"
+  validacao: anos_virgula
+
+35. [NOME] possui interesse em realizar algum tipo de curso profissionalizante? [unica]
+  - Sim
+  - Não
+  - NS/NR
+
+36. Em qual curso profissionalizante/capacitação [NOME] tem interesse? [unica]
+  se: q35 == "Sim"
+  - Técnico agrícola
+  - Técnico em pecuária
+  - Técnicas de pesca
+  - Artesanato
+  - Culinária/padeiro/confeiteiro
+  - Corte e costura
+  - Área de beleza (manicure, cabeleireira, designer de sobrancelha, esteticista, maquiadora)
+  - Técnico de informática (computador, notebook, impressoras etc.)
+  - Técnico eletrônico (celulares, aparelhos eletrodomésticos etc.)
+  - Motorista profissional/transporte de passageiros/transporte de produtos perigosos
+  - Segurança patrimonial
+  - Empreendedorismo para novos negócios
+  - Cursos profissionalizantes na área industrial e mineração
+  - Nenhum
+  - Outros. Qual?
+
+-- B.3 Saúde e bem-estar
+
+37. [NOME] possui alguma doença? [unica]
+  - Sim
+  - Não
+  - NS/NR
+
+38. Qual(is) doença(s) [NOME] possui? [multipla]
+  se: q37 == "Sim"
+  - Doenças crônicas metabólicas e/ou endócrinas (diabetes, acidente vascular cerebral, hipertensão arterial, tireoide, colesterol alto, obesidade)
+  - Câncer
+  - Doenças renais/urinárias (insuficiência renal, doença renal crônica, cálculo renal, infecção urinária)
+  - Doenças respiratórias (gripe, rinite, asma, sinusite, tuberculose, faringite, pneumonia, bronquite)
+  - Cardiovascular (infarto, insuficiência cardíaca, arritmia)
+  - Gastrointestinal (prisão de ventre, gases, indigestão, refluxo gastroesofágico, gastrite)
+  - Diarreia
+  - Arboviroses (dengue, zika, chikungunya)
+  - Infecções sexualmente transmissíveis (gonorreia, herpes, HIV, HPV, sífilis, hepatite B, hepatite C)
+  - Outros. Qual?
+
+39. [NOME] realiza tratamento de saúde contínuo? [unica]
+  - Sim
+  - Não
+  - NS/NR
+
+40. Qual é o tipo de serviço de saúde utilizado por [NOME] no tratamento? [unica]
+  se: q39 == "Sim"
+  - SUS
+  - Particular
+  - Misto
+  - NS/NR
+
+41. Onde [NOME] realiza o tratamento? [texto]
+  se: q39 == "Sim"
+
+42. Com que frequência [NOME] realiza o tratamento? [unica]
+  se: q39 == "Sim"
+  - Diário
+  - Semanal
+  - Quinzenal
+  - Mensal
+  - Trimestral
+  - Semestral
+  - NS/NR
+
+43. [NOME] é acompanhado(a) por Agente Comunitário de Saúde? [unica]
+  - Sim
+  - Não
+  - NS/NR
+
+44. [NOME] apresenta doença incapacitante (dificuldade para enxergar, ouvir, caminhar, falar, compreender ou cuidar de si mesmo)? [unica]
+  - Sim
+  - Não
+  - NS/NR
+
+45. Qual(is) doença(s) incapacitante(s) [NOME] apresenta? [multipla]
+  se: q44 == "Sim"
+  - Parkinson
+  - Paralisia
+  - AVC
+  - Hanseníase
+  - Artrose/artrite
+  - Dependência química - álcool
+  - Dependência química - drogas
+  - Outra. Qual? ______________
+
+46. [NOME] possui algum tipo de deficiência? [unica]
+  - Sim
+  - Não
+  - NS/NR
+
+47. Qual é o tipo de deficiência de [NOME]? [multipla]
+  se: q46 == "Sim"
+  - Visual (mesmo usando óculos)
+  - Auditiva (mesmo usando aparelhos auditivos)
+  - Motora (locomoção ou subir escadas)
+  - Fala ou comunicação
+  - Mental ou intelectual
+  - Dificuldade no autocuidado (necessidades fisiológicas, higiene, alimentação etc.)
+  - Outra. Qual?
+
+-- B.4 Trabalho e renda
+
+48. Na semana passada, [NOME] trabalhou pelo menos uma hora em atividade remunerada em dinheiro, produtos, mercadorias ou benefícios, ou sem remuneração, ajudando em negócio ou produção de membro do domicílio? [unica]
+  ajuda: Técnico: critério de ocupação da PNAD Contínua (semana de referência = semana anterior à entrevista); a produção exclusivamente para consumo próprio é registrada no Bloco C. Marcar "Não está em idade de trabalhar" para moradores com menos de 14 anos; nesse caso, as questões 49 a 62 não são aplicadas.
+  alerta: idade < 14 e q48 != "Não está em idade de trabalhar (menos de 14 anos)" | Morador com menos de 14 anos: confira a resposta da questão 48.
+  - Sim, trabalhou
+  - Não trabalhou, mas estava temporariamente afastado(a) de um trabalho
+  - Não
+  - Não está em idade de trabalhar (menos de 14 anos)
+  - NS/NR
+
+49. No trabalho principal, [NOME] era: [unica]
+  ajuda: Técnico: categorias de posição na ocupação da PNAD Contínua; considerar como trabalho principal aquele com maior número de horas habitualmente trabalhadas.
+  se: q48 em ["Sim, trabalhou", "Não trabalhou, mas estava temporariamente afastado(a) de um trabalho"]
+  - Empregado(a) do setor privado com carteira de trabalho assinada
+  - Empregado(a) do setor privado sem carteira de trabalho assinada
+  - Trabalhador(a) doméstico(a) com carteira de trabalho assinada
+  - Trabalhador(a) doméstico(a) sem carteira de trabalho assinada
+  - Empregado(a) do setor público com carteira de trabalho assinada
+  - Empregado(a) do setor público sem carteira de trabalho assinada
+  - Militar ou servidor(a) público(a) estatutário(a)
+  - Empregador(a) (possui ao menos um empregado)
+  - Conta própria (trabalha no próprio negócio, sem empregados)
+  - Trabalhador(a) familiar auxiliar (ajuda membro do domicílio, sem remuneração)
+  - NS/NR
+
+50. O negócio de [NOME] possui CNPJ registrado? [unica]
+  se: q49 em ["Empregador(a) (possui ao menos um empregado)", "Conta própria (trabalha no próprio negócio, sem empregados)"]
+  - Sim, como MEI
+  - Sim, outro tipo de CNPJ
+  - Não
+  - NS/NR
+
+51. Qual é o segmento de atividade do trabalho principal de [NOME]? [unica]
+  se: q48 em ["Sim, trabalhou", "Não trabalhou, mas estava temporariamente afastado(a) de um trabalho"]
+  - Agricultura, pecuária, silvicultura e pesca
+  - Mineração, pedreiras e jazidas
+  - Indústrias e fábricas
+  - Fornecimento de energia e gás
+  - Abastecimento de água, esgoto e gestão de resíduos
+  - Construção civil
+  - Comércio atacadista e varejista
+  - Transporte, reparação de veículos e motocicletas
+  - Serviços de hospedagem e alimentação
+  - Informação e comunicação
+  - Atividades financeiras e de seguros
+  - Atividades imobiliárias
+  - Atividades profissionais, científicas e técnicas
+  - Atividades de serviços administrativos e de apoio
+  - Administração pública, defesa e seguridade social obrigatória
+  - Educação
+  - Saúde humana e assistência social
+  - Atividades artísticas e recreativas
+  - Serviços domésticos
+  - Outras atividades de serviços (especificar)
+  - NS/NR
+
+52. Qual é a função ou ocupação de [NOME] no trabalho principal? [unica]
+  se: q48 em ["Sim, trabalhou", "Não trabalhou, mas estava temporariamente afastado(a) de um trabalho"]
+  - Agricultor(a) ou criador(a)
+  - Trabalhador(a) rural (caseiro, vaqueiro, ordenhador)
+  - Garimpeiro(a)
+  - Assistente administrativo
+  - Vendedor(a)/consultor(a) de vendas
+  - Operador(a) de caixa
+  - Recepcionista
+  - Garçom/garçonete
+  - Almoxarife
+  - Motorista
+  - Mecânico(a)
+  - Eletricista
+  - Pedreiro(a), ajudante ou servente de obras
+  - Agente comunitário(a) de saúde
+  - Técnico(a) de enfermagem
+  - Profissional de saúde (enfermeiro, fisioterapeuta, psicólogo, biomédico, farmacêutico, médico)
+  - Trabalhador(a) doméstico(a) (diarista, empregada doméstica)
+  - Cuidador(a)
+  - Jardineiro(a)
+  - Piscineiro(a)
+  - Cabeleireiro(a), manicure ou esteticista
+  - Motorista de aplicativo, motoboy ou taxista
+  - Vendedor(a) ambulante (água, castanha, doces etc.)
+  - Catador(a) de recicláveis
+  - Vendedor(a) de alimentos caseiros (lanches, salgados, bolos, biscoitos, quentinhas)
+  - Vendedor(a) de alimentos artesanais (queijo, mel, geleia etc.)
+  - Vendedor(a) de produtos agrícolas ou de animais
+  - Feirante
+  - Outros (especificar)
+  - NS/NR
+
+// INTERPRETAÇÃO: "diferente de Trabalhador(a) familiar auxiliar" vale só para quem respondeu a 49 (quem não trabalha não tem rendimento de trabalho).
+53. Qual é o rendimento mensal habitual de [NOME] no trabalho principal? [moeda nsnr]
+  ajuda: Técnico: registrar o rendimento bruto mensal habitual, em dinheiro e em produtos; para conta própria e empregador, registrar a retirada mensal (valor que fica para a pessoa após as despesas do negócio), e não o faturamento; se o rendimento variar, registrar a média mensal.
+  se: preenchido(q49) e q49 != "Trabalhador(a) familiar auxiliar (ajuda membro do domicílio, sem remuneração)"
+
+54. Além do trabalho principal, [NOME] tinha algum outro trabalho na semana passada? [unica]
+  se: q48 em ["Sim, trabalhou", "Não trabalhou, mas estava temporariamente afastado(a) de um trabalho"]
+  - Sim
+  - Não
+  - NS/NR
+
+55. Qual é o rendimento mensal habitual de [NOME] em todos os outros trabalhos (excluindo o principal)? [moeda nsnr]
+  ajuda: Técnico: somar o rendimento habitual de todos os trabalhos que não o principal, aplicando o mesmo critério da questão 53.
+  se: q54 == "Sim"
+
+56. Atualmente, [NOME] trabalha para a JMC ou para alguma terceirizada ou fornecedora da mina? [unica]
+  se: q48 em ["Sim, trabalhou", "Não trabalhou, mas estava temporariamente afastado(a) de um trabalho"]
+  - Sim, diretamente para a JMC
+  - Sim, em terceirizada que atua na mina
+  - Sim, em fornecedor externo que presta serviço para a mina
+  - Não
+  - NS/NR
+
+57. [NOME] já trabalhou anteriormente para a JMC ou para alguma terceirizada ou fornecedora da mina? [unica]
+  ajuda: Técnico: considerar vínculos encerrados, inclusive de quem se aposentou.
+  se: q48 != "Não está em idade de trabalhar (menos de 14 anos)"
+  - Sim, diretamente para a JMC
+  - Sim, em terceirizada que atuava na mina
+  - Sim, em fornecedor externo que prestava serviço para a mina
+  - Não
+  - NS/NR
+
+58. Quantos anos, no total, [NOME] trabalhou na mina (JMC, terceirizada ou fornecedor)? [inteiro nsnr]
+  se: q57 comeca "Sim"
+
+59. Em que ano [NOME] deixou de trabalhar na mina? [inteiro nsnr]
+  se: q57 comeca "Sim"
+
+60. Nos últimos 30 dias, [NOME] tomou alguma providência efetiva para conseguir trabalho? [unica]
+  ajuda: Técnico: considerar providências como entregar currículo, cadastrar-se em agência ou no SINE, procurar empregadores, fazer concurso ou buscar clientes/local para o próprio negócio (critério de desocupação da PNAD Contínua).
+  se: q48 == "Não"
+  - Sim
+  - Não
+  - NS/NR
+
+61. Se conseguisse um trabalho, [NOME] estaria disponível para começar a trabalhar? [unica]
+  se: q60 == "Sim"
+  - Sim
+  - Não
+  - NS/NR
+
+62. Qual é a principal razão de [NOME] não estar trabalhando nem procurando trabalho? [unica]
+  se: q48 == "Não" e q60 == "Não"
+  - Estudante
+  - Aposentado(a) ou pensionista
+  - Cuida dos afazeres domésticos ou de familiares, sem remuneração
+  - Deficiência ou problema de saúde que impede o trabalho
+  - Desistiu de procurar por achar que não há oportunidades
+  - Outro motivo (especificar)
+  - NS/NR
+
+63. [NOME] recebe aposentadoria ou pensão? [unica]
+  - Sim
+  - Não
+  - NS/NR
+
+64. Qual é o valor mensal da aposentadoria ou pensão de [NOME]? [moeda nsnr]
+  se: q63 == "Sim"
+
+65. [NOME] recebe algum benefício social do governo? [unica]
+  - Sim
+  - Não
+  - NS/NR
+
+66. Qual(is) benefício(s) social(is) [NOME] recebe? [multipla]
+  se: q65 == "Sim"
+  - Benefício de Prestação Continuada (BPC)
+  - Bolsa Família
+  - Auxílio Gás
+  - Aquisição de Alimentos (cesta básica)
+  - Auxílio Defeso (pesca)
+  - Pé-de-Meia (estudante)
+  - Outros programas (especificar)
+  - NS/NR
+
+67. Qual é o valor mensal do(s) benefício(s) social(is) de [NOME]? [moeda nsnr]
+  ajuda: Técnico: somar o valor de todos os benefícios recebidos.
+  se: q65 == "Sim"
+
+@domicilio Relações sociais, renda, imóvel e encerramento
+== BLOCO B - DADOS SOCIODEMOGRÁFICOS, TRABALHO, RENDA E RELAÇÕES SOCIAIS
+-- B.5 Relações sociais
+
+68. Há quanto tempo você reside nessa comunidade? [inteiro]
+  ajuda: Em anos.
+
+69. Em que município e estado você nasceu? [texto]
+  ajuda: Município/UF.
+
+70. Onde você morava antes de vir para esta comunidade? [unica]
+  - Sempre morou nesta comunidade
+  - Em outra comunidade do mesmo município
+  - Em outro município da Bahia
+  - Em outro estado
+  - NS/NR
+
+71. Qual foi o principal motivo da mudança para esta comunidade? [unica]
+  se: q70 em ["Em outra comunidade do mesmo município", "Em outro município da Bahia", "Em outro estado"]
+  - Trabalho na mineração (JMC, terceirizada ou fornecedor)
+  - Outro trabalho ou atividade econômica
+  - Casamento ou para ficar perto da família
+  - Acesso a terra ou moradia
+  - Outro motivo. Qual:
+  - NS/NR
+
+72. Nos últimos cinco anos, algum membro da família deixou de morar no domicílio para viver em outro lugar? [unica]
+  - Sim, por motivo de trabalho
+  - Sim, por motivo de estudo
+  - Sim, por outro motivo
+  - Não
+  - NS/NR
+
+73. Participa de associação comunitária? [unica]
+  - Sim
+  - Não
+  - NS/NR
+
+74. Participa de algum outro grupo comunitário? [unica]
+  - Sim
+  - Não
+  - NS/NR
+
+75. Qual grupo social/comunitário participa? [multipla]
+  se: q74 == "Sim"
+  - Grupo de jovens
+  - Melhor idade/idosos (CRAS)
+  - Grupo religioso (igreja católica, evangélica, etc.)
+  - Produtores rurais (agricultura familiar)
+  - Apicultores (abelha/mel)
+  - Quebradeiras de coco (babaçu)
+  - Garimpeiros
+  - Pescadores
+  - Produtores artesanais (queijo, geleia etc.)
+  - Outro (especificar)
+  - NS/NR
+
+76. Participa de atividades religiosas? [unica]
+  - Sim
+  - Não
+  - NS/NR
+
+77. Qual tipo de atividade religiosa? [multipla]
+  se: q76 == "Sim"
+  - Missas (católico)
+  - Cultos (evangélico)
+  - Gira (candomblé/umbanda)
+  - Grupos de oração
+  - Catecismo
+  - Outro (especificar)
+  - NS/NR
+
+78. Com quem você pode contar dentro da comunidade em caso de necessidade? [multipla]
+  - Familiares
+  - Vizinhos
+  - Amigos
+  - Líderes comunitários
+  - Líderes religiosos
+  - Associações locais
+  - Ninguém
+  - Outro (especificar)
+  - NS/NR
+
+79. Você identifica alguma liderança comunitária na comunidade? [unica]
+  - Sim
+  - Não
+  - NS/NR
+
+80. Quais lideranças comunitárias você identifica? [texto]
+  se: q79 == "Sim"
+
+81. Sente-se seguro(a) na sua comunidade? [unica]
+  - Muito seguro(a)
+  - Seguro(a)
+  - Um pouco inseguro(a)
+  - Muito inseguro(a)
+  - Não sabe
+
+82. As mulheres e meninas adolescentes se sentem à vontade e seguras para caminhar sozinhas na região ou no período da noite? [unica]
+  - Sim
+  - Não
+
+83. Por quê? [texto]
+  se: q82 == "Não"
+
+84. Como a família tem acesso a notícias da comunidade? [multipla]
+  - Reuniões comunitárias
+  - Líderes locais
+  - Rádio
+  - TV
+  - Boca a boca
+  - Igreja
+  - Grupo de WhatsApp
+  - Redes sociais (Facebook, Instagram etc.)
+  - Material impresso (cartazes/jornal)
+  - Outro (especificar)
+  - NS/NR
+
+== BLOCO C - ATIVIDADES PRODUTIVAS, TRABALHO, RENDA E SEGURANÇA ALIMENTAR
+-- C.1 Atividades agropecuárias
+
+85. A família desenvolve atividades agrícolas ou de criação de animais? [unica]
+  ajuda: Técnico: considerar atividades no imóvel residencial ou em outros terrenos, inclusive hortas e criações de pequeno porte.
+  - Sim
+  - Não
+  - NS/NR
+
+86. Quais atividades a família desenvolve? [multipla]
+  se: q85 == "Sim"
+  - Horta (verduras, legumes e temperos)
+  - Lavoura (milho, feijão, mandioca etc.)
+  - Árvores frutíferas
+  - Criação de animais de grande porte (bovinos, equinos)
+  - Criação de animais de pequeno e médio porte (galinhas, porcos, caprinos)
+  - Apicultura (abelhas)
+  - Outra (especificar)
+
+87. Onde as atividades são desenvolvidas? [multipla]
+  se: q85 == "Sim"
+  - No próprio imóvel residencial
+  - Em outro terreno na comunidade
+  - Em terreno fora da comunidade (especificar)
+
+88. Qual é a finalidade da produção no imóvel residencial? [multipla]
+  se: q87 contem "No próprio imóvel residencial"
+  - Consumo da família
+  - Venda
+  - Troca por outros produtos
+  - Doação para familiares/vizinhos
+  - NS/NR
+
+89. Qual é a finalidade da produção em outros terrenos? [multipla]
+  se: q87 contem "Em outro terreno na comunidade" ou q87 contem "Em terreno fora da comunidade"
+  - Consumo da família
+  - Venda
+  - Troca por outros produtos
+  - Doação para familiares/vizinhos
+  - NS/NR
+
+90. Qual é a importância da produção agropecuária para a renda da família? [unica]
+  se: q85 == "Sim"
+  - Principal fonte de renda
+  - Complementa a renda
+  - Não gera renda (apenas consumo próprio)
+  - NS/NR
+
+-- C.2 Despesas, renda e situação financeira da família
+
+91. Qual é o gasto mensal da família com alimentos (mercado e feira)? [moeda nsnr]
+  ajuda: Técnico: considerar o gasto habitual em um mês; registrar 0 se a família não tiver essa despesa.
+
+92. Qual é o gasto mensal da família com habitação (aluguel ou financiamento do imóvel)? [moeda nsnr]
+  ajuda: Técnico: considerar o gasto habitual em um mês; registrar 0 se a família não tiver essa despesa.
+
+93. Qual é o gasto mensal da família com transporte (financiamento de veículo, passagens de ônibus)? [moeda nsnr]
+  ajuda: Técnico: considerar o gasto habitual em um mês; registrar 0 se a família não tiver essa despesa.
+
+94. Qual é o gasto mensal da família com educação (escola, faculdade, cursos)? [moeda nsnr]
+  ajuda: Técnico: considerar o gasto habitual em um mês; registrar 0 se a família não tiver essa despesa.
+
+95. Qual é o gasto mensal da família com serviços de saúde (consultas, exames, medicamentos, fisioterapia etc.)? [moeda nsnr]
+  ajuda: Técnico: considerar o gasto habitual em um mês; registrar 0 se a família não tiver essa despesa.
+
+96. Qual é o gasto mensal da família com serviços básicos (energia, água e gás)? [moeda nsnr]
+  ajuda: Técnico: considerar o gasto habitual em um mês; registrar 0 se a família não tiver essa despesa.
+
+97. Qual é o gasto mensal da família com combustível? [moeda nsnr]
+  ajuda: Técnico: considerar o gasto habitual em um mês; registrar 0 se a família não tiver essa despesa.
+
+98. Qual é o gasto mensal da família com lazer e recreação (viagens, festas, alimentação fora de casa)? [moeda nsnr]
+  ajuda: Técnico: considerar o gasto habitual em um mês; registrar 0 se a família não tiver essa despesa.
+
+99. Qual é o gasto mensal da família com roupas e calçados? [moeda nsnr]
+  ajuda: Técnico: considerar o gasto habitual em um mês; registrar 0 se a família não tiver essa despesa.
+
+100. A família tem outra despesa mensal relevante? Qual? [texto opcional]
+  ajuda: Técnico: registrar a principal despesa não listada nas questões 91 a 99; deixar em branco se não houver.
+
+101. Qual é o valor mensal dessa outra despesa? [moeda nsnr]
+  se: preenchido(q100)
+
+102. Qual é o valor mensal que a família recebe de ajuda em dinheiro de parentes ou amigos que moram na região? [moeda nsnr]
+  ajuda: Técnico: considerar a média mensal dos últimos 12 meses; registrar 0 se a família não tiver essa renda.
+
+103. Qual é o valor mensal que a família recebe de familiares que moram em outra cidade, estado ou país? [moeda nsnr]
+  ajuda: Técnico: considerar a média mensal dos últimos 12 meses; registrar 0 se a família não tiver essa renda.
+
+104. Qual é o valor mensal que a família recebe de aluguel ou arrendamento de imóveis, terras ou equipamentos? [moeda nsnr]
+  ajuda: Técnico: considerar a média mensal dos últimos 12 meses; registrar 0 se a família não tiver essa renda.
+
+105. Qual é o valor mensal que a família obtém com a venda da produção agropecuária? [moeda nsnr]
+  ajuda: Técnico: estimar a média mensal da receita bruta com vendas nos últimos 12 meses; registrar 0 se não houver venda. Questão descritiva, não entra no cálculo da questão 109, pois o rendimento de quem tem a agropecuária como trabalho é captado nas questões 53 e 55.
+  se: q85 == "Sim"
+
+106. A família tem outra fonte de renda não citada (ex.: pensão alimentícia, bolsa de estudo ou estágio)? [texto opcional nsnr]
+  ajuda: Fonte da renda; deixar em branco se não houver.
+
+107. Qual é o valor mensal dessa outra fonte de renda? [moeda nsnr]
+  se: tem_valor(q106)
+
+108. O garimpo contribui, direta ou indiretamente, para a renda da família? [unica]
+  ajuda: Técnico: ler a pergunta de forma neutra, sem juízo sobre a atividade; respeitar a opção de não responder.
+  - Sim, diretamente (algum membro da família pratica a atividade)
+  - Sim, indiretamente (comércio, serviços, fornecimento ou outras atividades ligadas ao garimpo)
+  - Não
+  - Prefere não responder
+
+109. Renda familiar total mensal: [calculado formato=moeda]
+  ajuda: Calculado automaticamente (não perguntar ao entrevistado): soma, para os membros da unidade familiar (exceto pensionistas, empregados domésticos e parentes de empregados domésticos, conforme a PNAD Contínua), das questões 53, 55, 64 e 67, mais as questões 102, 103, 104 e 107. Valores 0 são válidos; se algum componente aplicável for NS/NR, o resultado é sinalizado como "renda incompleta".
+  formula: soma_moradores(q53 + q55 + q64 + q67, q19 fora_de ["Pensionista", "Empregado(a) doméstico(a)", "Parente do(a) empregado(a) doméstico(a)"]) + q102 + q103 + q104 + q107
+
+// INTERPRETAÇÃO: o número de membros vem da lista de moradores (questão 17), não da questão 15; a divergência entre as duas gera alerta.
+110. Renda familiar per capita mensal: [calculado formato=moeda]
+  ajuda: Calculado automaticamente: questão 109 dividida pelo número de membros considerados no cálculo (exceto pensionistas, empregados domésticos e parentes de empregados domésticos); mantém a sinalização "renda incompleta", quando houver.
+  formula: div(q109, contar_moradores(q19 fora_de ["Pensionista", "Empregado(a) doméstico(a)", "Parente do(a) empregado(a) doméstico(a)"]))
+
+111. A família está inscrita no Cadastro Único para Programas Sociais (CadÚnico)? [unica]
+  - Sim
+  - Não
+  - NS/NR
+
+112. A família possui dívidas atualmente? [unica]
+  - Sim
+  - Não
+  - NS/NR
+
+-- C.3 Segurança alimentar
+
+113. Nos últimos 12 meses, você se preocupou com a falta de alimentos ou com a dificuldade de obter comida suficiente por falta de dinheiro ou outros recursos? [unica]
+  ajuda: Técnico: as questões 113 a 115 são adaptadas da Escala de Experiência de Insegurança Alimentar (FIES/FAO), com período de referência de 12 meses; ler cada pergunta na íntegra.
+  - Sim
+  - Não
+  - NS/NR
+
+114. Nos últimos 12 meses, você ou sua família precisaram reduzir a quantidade ou qualidade dos alimentos consumidos por falta de dinheiro ou outros recursos? [unica]
+  - Sim
+  - Não
+  - NS/NR
+
+115. Nos últimos 12 meses, você passou por períodos em que ficou sem alimentos suficientes ou teve que passar um dia inteiro sem comer devido à falta de dinheiro ou outros recursos? [unica]
+  - Sim
+  - Não
+  - NS/NR
+
+116. Em quais meses houve falta ou redução de alimentos? [multipla]
+  se: q114 == "Sim" ou q115 == "Sim"
+  - Jan
+  - Fev
+  - Mar
+  - Abr
+  - Mai
+  - Jun
+  - Jul
+  - Ago
+  - Set
+  - Out
+  - Nov
+  - Dez
+  - Aleatório/sem padrão de sazonalidade
+
+117. Quais estratégias de enfrentamento foram adotadas diante da escassez de alimentos? [multipla]
+  se: q114 == "Sim" ou q115 == "Sim"
+  - Reduzir refeições
+  - Reduzir porções
+  - Pedir alimentos emprestados
+  - Comprar a crédito/fiado
+  - Vender bens/móveis
+  - Pedir ajuda a parentes
+  - Grupos comunitários/religiosos
+  - Migrar para trabalhar
+  - Outros (especificar)
+  - NS/NR
+
+118. Quais são as principais fontes de alimentos do seu domicílio? [multipla]
+  - Produção própria (agricultura, gado, horta)
+  - Mercado local (vendedores informais ou próximos)
+  - Supermercado ou mercearia
+  - Vizinhos, família ou trocas
+  - Programas de assistência governamental (Bolsa Família/cesta básica)
+  - Ajuda alimentar (ONGs, organizações humanitárias)
+  - NS/NR
+
+== BLOCO D - OCUPAÇÃO DO IMÓVEL, SERVIÇOS BÁSICOS E TERRITÓRIO
+-- D.1 Ocupação e características do imóvel
+
+119. Qual é a situação de ocupação do imóvel? [unica]
+  - Moradia primária
+  - Uso ocasional/periódico
+  - Outro. Qual?
+
+120. Qual é a condição de ocupação do domicílio? [unica]
+  ajuda: Técnico: categorias conforme o Censo Demográfico 2022 (IBGE).
+  - Próprio de algum morador - já pago
+  - Próprio de algum morador - ainda pagando
+  - Alugado
+  - Cedido por empregador
+  - Cedido de outra forma
+  - Outra condição. Qual?
+
+121. Qual é a relação da unidade familiar com o imóvel? [unica]
+  ajuda: Técnico: registrar a relação de fato da unidade familiar com o imóvel, independentemente da categoria censitária da questão 120; a situação documental é registrada na questão 126.
+  - Proprietário(a)
+  - Herdeiro(a), com partilha ou inventário não concluído
+  - Posseiro(a) ou ocupante sem título
+  - Inquilino(a)
+  - Cessionário(a) ou comodatário(a) (uso cedido, sem pagamento)
+  - Arrendatário(a)
+  - Outra (especificar)
+  - NS/NR
+
+122. Há algum outro tipo de uso do imóvel além do residencial? [multipla]
+  - Apenas residencial
+  - Coletivo/comunitário (explicar)
+  - Outro (especificar)
+  - NS/NR
+
+123. Funciona neste imóvel algum comércio, serviço ou pequeno negócio, formal ou informal (ex.: mercearia, bar, salão de beleza, oficina, venda de alimentos ou de produtos feitos em casa)? [unica]
+  ajuda: Técnico: considerar também atividades realizadas dentro da casa ou em ponto anexo ao imóvel.
+  - Sim, de algum morador do domicílio
+  - Sim, de pessoa que não mora no domicílio
+  - Não
+  - NS/NR
+
+124. Quantos negócios ou atividades distintas funcionam no imóvel? [inteiro]
+  ajuda: Técnico: sinalizar o imóvel para aplicação do Formulário de Pesquisa de Pequenos Negócios, com uma entrevista por negócio, e registrar o ID da Unidade Familiar (questão 11) para vincular os formulários.
+  se: q123 comeca "Sim"
+  alerta: q123 comeca "Sim" | Imóvel com negócio: aplicar o Formulário de Pequenos Negócios (uma entrevista por negócio), informando o ID do imóvel (questão 7) e o ID da Unidade Familiar (questão 11).
+
+125. De que forma a família obteve o imóvel? [unica]
+  ajuda: Técnico: se a família construiu a casa, registrar a forma como obteve o terreno.
+  se: q121 em ["Proprietário(a)", "Herdeiro(a), com partilha ou inventário não concluído", "Posseiro(a) ou ocupante sem título"]
+  - Compra direta ou com financiamento bancário
+  - Compra por programa habitacional do governo (ex.: Minha Casa, Minha Vida)
+  - Entrega gratuita pelo poder público (ex.: habitação social, reassentamento)
+  - Herança
+  - Doação de familiares ou terceiros
+  - Ocupação/posse, sem compra ou título
+  - Outra forma (especificar)
+  - NS/NR
+
+126. Qual é a situação documental do imóvel? [unica]
+  - Escritura no Registro de Imóveis
+  - Contrato de compra e venda
+  - Contrato de cessão de uso/doação
+  - Contrato de aluguel
+  - Certificado CCIR/CAR
+  - Sem documento formal (posseiro)
+  - Outro (especificar)
+  - NS/NR
+
+127. Há quanto tempo possui o imóvel? [unica]
+  se: q121 em ["Proprietário(a)", "Herdeiro(a), com partilha ou inventário não concluído", "Posseiro(a) ou ocupante sem título"]
+  - Menos de 1 ano
+  - Entre 1 e 3 anos
+  - Entre 3 e 5 anos
+  - Entre 5 e 10 anos
+  - Acima de 10 anos
+  - Acima de 20 anos
+  - NS/NR
+
+128. Quantos cômodos o domicílio possui? [inteiro]
+  ajuda: Técnico: contar todos os compartimentos cobertos e separados por paredes, inclusive cozinha e banheiro, conforme o Censo (IBGE).
+
+// ADIÇÃO: alerta de consistência (não bloqueia).
+129. Quantos desses cômodos servem permanentemente de dormitório? [inteiro]
+  alerta: q129 > q128 | O número de dormitórios (questão 129) é maior que o de cômodos (questão 128).
+
+130. O domicílio possui banheiro de uso exclusivo dos moradores, com chuveiro ou banheira e vaso sanitário? [unica]
+  - Sim, dentro de casa
+  - Sim, fora de casa (no terreno)
+  - Não, utiliza banheiro compartilhado com outro domicílio
+  - Não possui banheiro
+
+131. Qual é a sua percepção sobre as condições do imóvel? [unica]
+  - Muito ruim
+  - Ruim
+  - Regular
+  - Boa
+  - Muito boa
+  - NS/NR
+
+132. Possui outro imóvel? [unica]
+  - Não
+  - Sim. Onde? __________________ Qual o uso? _____________________
+  - NS/NR
+
+-- D.2 Bens do domicílio
+
+133. O domicílio possui geladeira? [unica]
+  ajuda: Técnico: considerar apenas bens em condições de uso.
+  - Sim. Quantas:
+  - Não
+
+134. O domicílio possui fogão (a gás, elétrico ou a lenha)? [unica]
+  - Sim. Quantos:
+  - Não
+
+135. O domicílio possui máquina de lavar roupa? [unica]
+  - Sim. Quantas:
+  - Não
+
+136. O domicílio possui televisão? [unica]
+  - Sim. Quantas:
+  - Não
+
+137. O domicílio possui computador ou notebook? [unica]
+  - Sim. Quantos:
+  - Não
+
+138. O domicílio possui motocicleta? [unica]
+  - Sim. Quantas:
+  - Não
+
+139. O domicílio possui carro ou caminhonete? [unica]
+  - Sim. Quantos:
+  - Não
+
+140. O domicílio possui implementos ou equipamentos agrícolas (ex.: trator, carroça, bomba d'água, roçadeira, forrageira)? [unica]
+  - Sim. Quantos:
+  - Não
+
+-- D.3 Infraestrutura e serviços básicos
+
+141. O imóvel possui fornecimento de energia elétrica? [multipla]
+  - Rede elétrica (COELBA)
+  - Painéis solares
+  - Gerador de energia
+  - Bateria
+  - Outros (especificar)
+  - Não
+  - NS/NR
+
+142. Qual a forma utilizada para cozinhar no imóvel? [multipla]
+  - Fogão a gás
+  - Fogão/forno a lenha
+  - Micro-ondas
+  - Forno elétrico
+  - Carvão
+  - Querosene
+  - Não cozinha {exclusiva}
+  - Outros (especificar)
+  - NS/NR
+
+143. O imóvel possui fornecimento de água? [multipla]
+  - Rede de abastecimento (EMBASA)
+  - Poço artesiano individual
+  - Poço artesiano coletivo
+  - Cisterna
+  - Rio/córrego
+  - Represa/açude
+  - Nascente/mina d'água
+  - Captação de água de chuva
+  - Caminhão-pipa
+  - Garrafão de água
+  - Outros (especificar)
+  - Não
+  - NS/NR
+
+// INTERPRETAÇÃO: NS/NR fica sempre disponível na 144; se a 143 for "Não", só resta NS/NR.
+144. Qual fonte de água é utilizada principalmente para beber e cozinhar? [unica]
+  ajuda: Aparecem apenas as opções marcadas na questão 143.
+  opcoes_de: q143
+  - Rede de abastecimento (EMBASA)
+  - Poço artesiano individual
+  - Poço artesiano coletivo
+  - Cisterna
+  - Rio/córrego
+  - Represa/açude
+  - Nascente/mina d'água
+  - Captação de água de chuva
+  - Caminhão-pipa
+  - Garrafão de água
+  - Outros (especificar)
+  - NS/NR
+
+145. Há interrupções ou falta de água na estiagem? [unica]
+  - Sim
+  - Não
+  - NS/NR
+
+146. O imóvel possui esgotamento sanitário? [unica]
+  - Rede com tratamento de esgoto
+  - Fossa séptica
+  - Fossa rudimentar
+  - Efluentes lançados em vala (céu aberto)
+  - Lançamento direto no rio/córrego
+  - Privada sem esgotamento/buraco
+  - Outros (especificar)
+  - Não
+  - NS/NR
+
+147. Qual é o destino do lixo do domicílio? [multipla]
+  - Coleta de lixo regular
+  - Descarte em caçamba
+  - Descarte em terreno baldio
+  - Descarte no rio
+  - Queima do lixo
+  - Enterrado no solo
+  - Outros (especificar)
+  - NS/NR
+
+148. Há serviço de telecomunicações/internet? [multipla]
+  - Internet móvel no celular (3G, 4G ou 5G)
+  - Internet fixa residencial (fibra óptica, cabo coaxial ou via rádio)
+  - Internet via satélite (starlink)
+  - Telefone fixo
+  - Outros (especificar)
+  - Não possui telefone nem internet
+  - NS/NR
+
+149. Há transporte coletivo ou por aplicativo disponível na comunidade? [multipla]
+  - Ônibus regular (interurbano/rural)
+  - Van/micro-ônibus sob demanda
+  - Taxi
+  - Aplicativo de transporte
+  - Carona comunitária/compartilhada
+  - Outros (especificar)
+  - Não há
+  - NS/NR
+
+150. Qual é o meio de locomoção mais utilizado pela família? [unica]
+  - A pé
+  - Bicicleta
+  - Cavalo/carroça
+  - Moto própria
+  - Carro próprio
+  - Transporte coletivo (ônibus/van)
+  - Aplicativo/táxi
+  - Outros (especificar)
+  - NS/NR
+
+151. Quais tipos de estrada/via de acesso são utilizados para chegar ao imóvel? [multipla]
+  ajuda: Técnico: marcar todos os tipos de via presentes no trajeto até o imóvel.
+  - Pavimentada
+  - Paralelepípedo
+  - Estrada de terra
+  - Cascalhada/brita
+  - Outros (especificar)
+  - NS/NR
+
+152. Qual serviço de saúde a família utiliza com mais frequência? [unica]
+  - Posto de saúde (UBS) na própria comunidade
+  - Posto de saúde (UBS) em outra comunidade ou na sede do município
+  - Hospital ou UPA
+  - Clínica ou consultório particular
+  - Não utiliza serviços de saúde
+  - Outro (especificar)
+  - NS/NR
+
+153. Quanto tempo a família leva para chegar a esse serviço de saúde? [unica]
+  ajuda: Técnico: considerar o meio de transporte habitualmente utilizado.
+  se: q152 fora_de ["Não utiliza serviços de saúde", "NS/NR"]
+  - Até 15 minutos
+  - De 16 a 30 minutos
+  - De 31 minutos a 1 hora
+  - Mais de 1 hora
+  - NS/NR
+
+-- D.4 Territorialidade
+
+154. Quais são os principais pontos positivos de viver nesta comunidade? [multipla]
+  - Relacionamento com vizinhos/união da comunidade
+  - Proximidade de parentes e amigos
+  - Segurança
+  - Paz e tranquilidade
+  - Identificação com o local/sentimento de pertencimento
+  - Localização e acesso
+  - Proximidade do local de trabalho
+  - Proximidade com a mina da JMC
+  - Acesso a serviços básicos (escola, posto de saúde)
+  - Infraestrutura
+  - Natureza e acesso a recursos naturais
+  - Lazer
+  - Outro (especificar)
+  - NS/NR
+
+155. Quais são os principais desafios enfrentados pela comunidade? [multipla]
+  - Violência/insegurança
+  - Desemprego
+  - Alcoolismo
+  - Drogas
+  - Atendimento de saúde
+  - Acesso à educação
+  - Transporte público
+  - Acesso à energia elétrica
+  - Abastecimento de água
+  - Sinal de telefone e internet
+  - Saneamento básico
+  - Condição das estradas
+  - Exposição a impactos ambientais (ex.: inundações, poeira, ruído)
+  - Falta de opções de lazer
+  - Outros (especificar)
+  - NS/NR
+
+156. Entre os desafios citados na questão anterior, qual deveria ser resolvido primeiro para melhorar a qualidade de vida na comunidade? [texto nsnr]
+  ajuda: Problema prioritário.
+  se: preenchido(q155)
+
+== BLOCO E - ASPECTOS CULTURAIS E SERVIÇOS ECOSSISTÊMICOS
+-- E.1 Saberes e modos de vida tradicionais
+
+157. Alguém da família participa de festejos ou celebrações religiosas tradicionais (ex.: procissões, rezas, novenas, folia de reis, festa de padroeiro)? [unica]
+  - Sim. Qual(is):
+  - Não
+  - NS/NR
+
+158. Alguém da família participa de danças, cantos ou manifestações com música tradicional (ex.: samba de roda, sussa, umbigada, reisado, terno de reis, capoeira, maculelê, batuque, marujada, quadrilha, zabumba, cantos de trabalho e de farinhada, aboios, cantos e rezas vissungos ou de matriz africana)? [unica]
+  - Sim. Qual(is):
+  - Não
+  - NS/NR
+
+159. Alguém da família prepara alimentos da culinária tradicional da região (ex.: doces caseiros de umbu, leite, goiaba ou mamão, cocada, rapadura, beiju, farinha, requeijão, licores)? [unica]
+  - Sim. Qual(is):
+  - Não
+  - NS/NR
+
+160. Alguém da família produz artesanato tradicional (ex.: bordado, crochê, tecelagem, cestaria, cerâmica, trabalhos em couro, palha ou madeira)? [unica]
+  - Sim. Qual(is):
+  - Não
+  - NS/NR
+
+161. Alguém da família utiliza plantas medicinais, chás, garrafadas, rezas ou benzimentos para cuidar da saúde, ou atua como rezadeira, benzedeira ou parteira? [unica]
+  - Sim. Qual(is):
+  - Não
+  - NS/NR
+
+162. Alguém da família participa de religiões de matriz africana (ex.: candomblé, umbanda)? [unica]
+  - Sim. Qual(is):
+  - Não
+  - NS/NR
+
+163. Alguém da família cria animais soltos em áreas de uso comum, compartilhadas com outras famílias (ex.: áreas de fundo ou fecho de pasto, soltas)? [unica]
+  - Sim. Qual(is):
+  - Não
+  - NS/NR
+
+164. Alguém da família coleta frutos ou produtos nativos da região (ex.: umbu, licuri, maracujá do mato, mel de abelhas nativas, quebra de coco)? [unica]
+  - Sim. Qual(is):
+  - Não
+  - NS/NR
+
+165. Alguém da família pratica pesca artesanal em rios, riachos, lagoas ou açudes? [unica]
+  - Sim. Qual(is):
+  - Não
+  - NS/NR
+
+166. Alguém da família participa de mutirões ou trabalho coletivo entre vizinhos (ex.: adjunto, batalhão, mutirão de plantio, colheita, farinhada ou construção)? [unica]
+  - Sim. Qual(is):
+  - Não
+  - NS/NR
+
+167. Alguém da família utiliza práticas tradicionais de plantio ou de beneficiamento (ex.: sementes crioulas guardadas pela família, casa de farinha, roça de pousio)? [unica]
+  - Sim. Qual(is):
+  - Não
+  - NS/NR
+
+168. A família mantém algum outro saber, prática ou costume tradicional não citado? Qual? [texto opcional]
+  ajuda: Técnico: deixar em branco se não houver.
+
+169. Esses saberes e práticas são ensinados aos mais jovens da família? [unica]
+  se: q157 == "Sim" ou q158 == "Sim" ou q159 == "Sim" ou q160 == "Sim" ou q161 == "Sim" ou q162 == "Sim" ou q163 == "Sim" ou q164 == "Sim" ou q165 == "Sim" ou q166 == "Sim" ou q167 == "Sim" ou preenchido(q168)
+  - Sim, regularmente
+  - Sim, às vezes
+  - Não
+  - NS/NR
+
+170. Com quem a família aprendeu esses saberes e práticas? [multipla]
+  se: q157 == "Sim" ou q158 == "Sim" ou q159 == "Sim" ou q160 == "Sim" ou q161 == "Sim" ou q162 == "Sim" ou q163 == "Sim" ou q164 == "Sim" ou q165 == "Sim" ou q166 == "Sim" ou q167 == "Sim" ou preenchido(q168)
+  - Pais, avós ou outros parentes
+  - Vizinhos ou pessoas mais velhas da comunidade
+  - Grupos religiosos ou associações locais
+  - Cursos ou projetos externos
+  - Outro (especificar)
+  - NS/NR
+
+-- E.2 Serviços ecossistêmicos
+
+171. Você considera algum recurso natural essencial para a fonte de renda ou subsistência da família? [unica]
+  - Sim
+  - Não
+  - NS/NR
+
+172. Qual(is) recurso(s) natural(is)? [multipla]
+  se: q171 == "Sim"
+  - Água de rios/lagoas
+  - Madeira e lenha
+  - Caça de animais
+  - Pesca
+  - Frutas e vegetais silvestres
+  - Plantas medicinais
+  - Palha, pasto
+  - Recursos minerais (pedra, cascalho, argila, artesanato com pedras)
+  - Garimpo artesanal
+  - Outros (especificar)
+  - NS/NR
+
+173. Em que locais a família coleta ou utiliza esses recursos naturais? [multipla]
+  ajuda: Técnico: registrar o nome dos principais locais citados (ex.: nome do rio, serra, mata ou área comum).
+  se: q171 == "Sim"
+  complemento: Locais citados (opcional)
+  - No próprio imóvel
+  - Em áreas de uso comum da comunidade
+  - Em rios, riachos, lagoas ou açudes
+  - Em matas, serras ou áreas de caatinga
+  - Em propriedades de terceiros
+  - Outro (especificar)
+  - NS/NR
+
+174. Quem na família costuma realizar a coleta ou o uso desses recursos? [multipla]
+  se: q171 == "Sim"
+  - Homens adultos
+  - Mulheres adultas
+  - Jovens
+  - Crianças
+  - Idosos
+  - Toda a família
+  - NS/NR
+
+175. Em que época do ano esses recursos são mais utilizados pela família? [unica]
+  se: q171 == "Sim"
+  - Ano inteiro
+  - Principalmente na época seca
+  - Principalmente na época chuvosa
+  - Em meses específicos (especificar)
+  - NS/NR
+
+176. Qual é a principal finalidade do uso desses recursos? [unica]
+  se: q171 == "Sim"
+  - Consumo próprio
+  - Venda
+  - Consumo próprio e venda
+  - Troca ou doação
+  - NS/NR
+
+177. O que você e sua família fazem nas horas de lazer? [multipla]
+  ajuda: Técnico: identificar os lugares citados pelo entrevistado.
+  complemento: Nomes dos lugares citados (opcional)
+  - Cachoeira
+  - Rios/represas
+  - Trilhas ecológicas em florestas/matas
+  - Expedição a cavernas/grutas
+  - Pescaria/caça
+  - Práticas esportivas (caminhada, ciclismo, rafting)
+  - Outros (especificar)
+  - NS/NR
+
+== BLOCO F - PERCEPÇÃO SOBRE O EMPREENDIMENTO MINERÁRIO
+
+178. A família percebe efeitos da atividade de mineração da JMC no dia a dia? [unica]
+  - Sim
+  - Não
+  - NS/NR
+
+179. Quais efeitos positivos a família percebe? [multipla]
+  se: q178 == "Sim"
+  - Geração de empregos
+  - Aumento do comércio e da renda local
+  - Melhoria de estradas ou de infraestrutura
+  - Projetos sociais ou apoio da empresa à comunidade
+  - Nenhum efeito positivo
+  - Outro (especificar)
+
+180. Quais efeitos negativos a família percebe? [multipla]
+  se: q178 == "Sim"
+  - Poeira
+  - Ruído
+  - Vibrações ou detonações
+  - Alteração na quantidade ou na qualidade da água
+  - Aumento do tráfego de veículos
+  - Aumento do custo de vida
+  - Chegada de pessoas de fora ou aumento da insegurança
+  - Nenhum efeito negativo
+  - Outro (especificar)
+
+181. Como a família avalia a relação da JMC com a comunidade? [unica]
+  - Muito boa
+  - Boa
+  - Regular
+  - Ruim
+  - Muito ruim
+  - NS/NR
+
+== BLOCO G - CONTROLE DE QUALIDADE E CORRESPONDÊNCIA CADASTRAL
+-- G.1 Avaliação da entrevista pelo entrevistador
+
+182. Houve interrupções significativas durante a entrevista? [unica]
+  - Sim. Descreva quais:
+  - Não
+
+183. Havia outras pessoas presentes que possam ter influenciado as respostas? [unica]
+  - Sim. Quem/como: ________________________________
+  - Não
+
+184. Qual foi o nível de cooperação do(a) entrevistado(a)? [unica]
+  - Muito cooperativo
+  - Cooperativo
+  - Neutro
+  - Pouco cooperativo
+  - Não cooperativo
+
+185. Qual é a avaliação da confiabilidade das informações? [unica]
+  - Muito confiável
+  - Bastante confiável
+  - Pouco confiável
+  - Não confiável
+
+186. Justificativa da avaliação de confiabilidade: [texto_longo]
+  se: q185 != "Muito confiável"
+
+187. Quais perguntas/seções apresentaram dificuldades de compreensão? [texto_longo opcional]
+
+188. Observações do pesquisador relevantes para a interpretação dos dados: [texto_longo opcional]
+
+-- G.2 Problemas técnicos
+
+189. Houve problemas técnicos? [multipla]
+  - Nenhum
+  - Problemas com o GPS
+  - Problemas com o dispositivo móvel
+  - Problemas com o app SXData
+  - Problemas com as fotos
+
+190. Qual solução propõe para o problema? [texto_longo]
+  se: q189 != "Nenhum"
+
+-- G.3 Correspondência com cadastros anteriores
+
+191. ID histórico da estrutura: [texto]
+  ajuda: Técnico: identificar com apoio dos arquivos KMZ do cadastro anterior; registrar "Sem ID" se a estrutura não constar.
+
+192. ID histórico da família: [texto opcional]
+  ajuda: Técnico: registrar quando houver correspondência com cadastro anterior da família; deixar em branco se não houver.
+
+193. Qual é o grau de correspondência com os IDs históricos? [unica]
+  - Confirmada em campo
+  - Provável, a confirmar
+  - Sem correspondência
+
+== BLOCO H - GEORREFERENCIAMENTO, REGISTRO FOTOGRÁFICO E ENCERRAMENTO
+-- H.1 Conclusão da pesquisa
+
+194. Hora de término: [hora auto=hora_fim]
+  ajuda: Técnico: preenchimento automático.
+
+195. Duração total: [calculado formato=duracao]
+  formula: duracao(q6, q194)
+
+-- H.2 Georreferenciamento e registro fotográfico
+
+196. Coordenadas geográficas do imóvel: [coordenadas destino=coordenadas]
+  ajuda: Captura automática pelo SXData.
+
+197. Foto da fachada da residência: [foto destino=foto]
+  ajuda: Técnico: fotografar a fachada de frente, enquadrando o imóvel inteiro, com boa iluminação e sem pessoas identificáveis. Entrevistador(a): ao final, agradeça ao(à) entrevistado(a) e aos membros da família.

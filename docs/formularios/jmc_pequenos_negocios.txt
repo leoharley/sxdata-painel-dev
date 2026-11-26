@@ -1,0 +1,915 @@
+# titulo: JMC - Pesquisa dos Pequenos Negócios
+# descricao: Linha de base socioeconômica - Itapicuru e Jaboticaba. Projeto Jacobina Mineração - Pan American Silver. Fonte: JMC_Pesquisa_Socioeconomica_Formulario_Pequenos_Negocios_Desenvolvedor_25112026.pdf
+// Formato: docs/FORMULARIOS_ESTRUTURADOS.md. Um formulário por negócio; vínculo com o Formulário Geral pelas questões 4 (ID do imóvel) e 25 (ID da Unidade Familiar).
+
+@domicilio Pequeno negócio
+== BLOCO A - IDENTIFICAÇÃO, RESULTADO DA VISITA E AUTORIZAÇÃO
+-- A.1 Metadados e resultado da visita
+
+1. Povoado: [unica]
+  - Itapicuru
+  - Jaboticaba
+
+2. Data da entrevista: [data auto=data]
+  ajuda: Técnico: preenchimento automático.
+
+3. Hora de início: [hora auto=hora]
+  ajuda: Técnico: preenchimento automático.
+
+4. ID do imóvel: [texto]
+  ajuda: Técnico: usar o mesmo código do imóvel registrado no Formulário Geral, quando houver.
+
+5. ID do negócio: [texto]
+  ajuda: Técnico: aplicar um formulário para cada negócio; atividades diferentes no mesmo imóvel, com caixa ou administração próprios, recebem códigos separados. Negócios feitos em casa, em banca, em feira ou de forma ambulante também devem ser entrevistados.
+
+6. Qual é o resultado da visita? [unica]
+  ajuda: Técnico: se a resposta for diferente de "Negócio localizado, com pessoa disponível para a entrevista", não aplicar as perguntas e seguir para a questão 121 (situação final da entrevista).
+  pula: q6 != "Negócio localizado, com pessoa disponível para a entrevista" -> 121
+  - Negócio localizado, com pessoa disponível para a entrevista
+  - Dono(a) ou responsável ausente
+  - Negócio fechado ou parado
+  - Negócio não localizado
+
+-- A.2 Termo de autorização de pesquisa (consentimento)
+
+7. O Termo de Autorização de Pesquisa foi lido para o(a) entrevistado(a)? [unica]
+  ajuda: Técnico: realizar a leitura conforme o Plano de Comunicação.
+  - Sim
+  - Não
+
+8. O(a) entrevistado(a) aceita participar da pesquisa? [unica]
+  ajuda: Técnico: se a resposta for "Não", registrar a recusa e seguir para a questão 121 (situação final da entrevista), sem aplicar as demais perguntas.
+  pula: q8 == "Não" -> 121
+  - Sim
+  - Não
+
+9. O(a) entrevistado(a) autoriza tirar fotos da fachada ou do local do negócio? [unica]
+  ajuda: Técnico: a recusa não impede a entrevista.
+  - Sim
+  - Não
+
+-- A.3 Identificação do(a) respondente e do(a) dono(a) do negócio
+
+10. Qual é o nome completo do(a) respondente? [texto]
+
+11. Qual é a sua função no negócio? [unica]
+  - Dono(a)
+  - Sócio(a)
+  - Gerente ou administrador(a)
+  - Familiar que trabalha no negócio
+  - Funcionário(a) que conhece o negócio
+  - Outra (especificar)
+
+12. Qual é o nome completo do(a) dono(a) do negócio? [texto]
+  se: q11 != "Dono(a)"
+
+13. Você conhece as vendas, as despesas e o funcionamento do negócio? [unica]
+  ajuda: Técnico: se a resposta for "Não", procurar o(a) dono(a) ou outra pessoa que conheça o negócio.
+  se: q11 != "Dono(a)"
+  - Sim
+  - Em parte
+  - Não
+
+14. Qual é o gênero do(a) dono(a) do negócio? [unica]
+  ajuda: Técnico: registrar conforme a autodeclaração.
+  - Mulher
+  - Homem
+  - Outro
+  - Prefere não responder
+
+// INTERPRETAÇÃO: CPF aceita NS/NR para não travar a entrevista quando não for informado.
+15. Qual é o CPF do(a) dono(a) do negócio? [cpf nsnr]
+
+16. Qual é o telefone/WhatsApp do(a) dono(a) do negócio? [telefone nsnr]
+
+17. Qual é o telefone/WhatsApp do(a) respondente? [telefone nsnr]
+  se: q11 != "Dono(a)"
+
+-- A.4 Identificação do negócio
+
+18. Qual é o nome do negócio? [texto]
+  ajuda: Técnico: se o negócio não tiver nome, registrar como é conhecido na comunidade.
+
+19. Qual é o endereço do negócio? [texto]
+  ajuda: Técnico: se for ambulante, registrar o local onde costuma trabalhar.
+
+20. O negócio é formalizado? [unica]
+  - Sim, como MEI
+  - Sim, empresa com CNPJ (exceto MEI)
+  - Sim, cooperativa ou associação
+  - Não, é informal (sem CNPJ)
+  - NS/NR
+
+21. Qual é o número do CNPJ? [cnpj nsnr]
+  se: q20 comeca "Sim"
+
+22. O negócio tem alvará ou licença de funcionamento? [unica]
+  - Sim
+  - Não
+  - Não precisa
+  - NS/NR
+
+== BLOCO B - PERFIL DO(A) DONO(A) DO NEGÓCIO
+-- B.1 Vínculo com o Formulário Geral e dados pessoais
+
+23. O(a) dono(a) do negócio mora em Itapicuru ou Jaboticaba? [unica]
+  - Sim
+  - Não
+
+24. A família do(a) dono(a) já respondeu ao Formulário Geral da pesquisa socioeconômica? [unica]
+  se: q23 == "Sim"
+  - Sim
+  - Não
+  - NS/NR
+
+25. Qual é o ID da Unidade Familiar do(a) dono(a) no Formulário Geral? [texto]
+  ajuda: Técnico: copiar o código da Unidade Familiar registrado na questão 11 do Formulário Geral, para vincular os dois formulários.
+  se: q24 == "Sim"
+
+26. Qual o endereço do dono(a) do negócio? [texto]
+  ajuda: Técnico: registrar o endereço ou a localidade.
+  se: q24 != "Sim"
+
+27. Qual é a data de nascimento do(a) dono(a)? [data]
+  se: q24 != "Sim"
+
+28. Qual é o estado civil do(a) dono(a)? [unica]
+  se: q24 != "Sim"
+  - Solteiro(a)
+  - Casado(a)
+  - União estável ou consensual
+  - Separado(a) judicialmente/desquitado(a)
+  - Divorciado(a)
+  - Viúvo(a)
+
+29. Quantas pessoas, contando com o(a) dono(a), moram na casa dele(a)? [inteiro]
+  se: q24 != "Sim"
+
+30. Até que série o(a) dono(a) estudou? [unica]
+  ajuda: Técnico: registrar o nível de escolaridade mais alto; categorias iguais às do Formulário Geral.
+  se: q24 != "Sim"
+  - Nunca frequentou escola
+  - Ensino fundamental incompleto
+  - Ensino fundamental completo
+  - Ensino médio incompleto
+  - Ensino médio completo
+  - Curso técnico incompleto
+  - Curso técnico completo
+  - Ensino superior incompleto
+  - Ensino superior completo
+  - Especialização incompleta
+  - Especialização completa
+  - Mestrado
+  - Doutorado
+
+31. O(a) dono(a) estuda atualmente? [unica]
+  se: q24 != "Sim"
+  - Sim
+  - Não
+
+32. Em qual tipo de instituição de ensino o(a) dono(a) estuda? [unica]
+  se: q31 == "Sim"
+  - Pública
+  - Privada
+  - Bolsista (privada)
+
+33. Qual meio de transporte o(a) dono(a) usa para ir à escola? [unica]
+  se: q31 == "Sim"
+  - A pé
+  - Bicicleta
+  - Motocicleta
+  - Carro próprio
+  - Transporte público
+  - Tração animal
+
+34. Onde fica a escola do(a) dono(a)? [unica]
+  se: q31 == "Sim"
+  - Itapicuru
+  - Jaboticaba
+  - Jacobina
+  - Outros. Qual?
+
+35. O(a) dono(a) já fez algum curso profissionalizante ou de capacitação? Qual? [multipla]
+  se: q24 != "Sim"
+  - Técnico agrícola
+  - Técnico em pecuária
+  - Técnicas de pesca
+  - Artesanato
+  - Culinária/padeiro/confeiteiro
+  - Corte e costura
+  - Área de beleza (manicure, cabeleireira, designer de sobrancelha, esteticista, maquiadora)
+  - Técnico de informática (computador, notebook, impressoras etc.)
+  - Técnico eletrônico (celulares, aparelhos eletrodomésticos etc.)
+  - Motorista profissional/transporte de passageiros/transporte de produtos perigosos
+  - Segurança patrimonial
+  - Empreendedorismo para novos negócios
+  - Cursos profissionalizantes na área industrial e mineração
+  - Nenhum
+  - Outros. Qual?
+
+36. Em qual curso profissionalizante ou de capacitação o(a) dono(a) tem interesse? [multipla]
+  se: q24 != "Sim"
+  - Técnico agrícola
+  - Técnico em pecuária
+  - Técnicas de pesca
+  - Artesanato
+  - Culinária/padeiro/confeiteiro
+  - Corte e costura
+  - Área de beleza (manicure, cabeleireira, designer de sobrancelha, esteticista, maquiadora)
+  - Técnico de informática (computador, notebook, impressoras etc.)
+  - Técnico eletrônico (celulares, aparelhos eletrodomésticos etc.)
+  - Motorista profissional/transporte de passageiros/transporte de produtos perigosos
+  - Segurança patrimonial
+  - Empreendedorismo para novos negócios
+  - Cursos profissionalizantes na área industrial e mineração
+  - Nenhum
+  - Outros. Qual?
+
+-- B.2 Saúde do(a) dono(a) e o negócio
+
+37. O(a) dono(a) tem algum problema de saúde ou deficiência que hoje atrapalhe tocar o negócio? [unica]
+  - Sim
+  - Não
+  - Prefere não responder
+
+38. Qual parte do trabalho fica prejudicada? [multipla]
+  ajuda: Técnico: perguntar apenas se a pessoa quiser responder.
+  se: q37 == "Sim"
+  - Deslocamento
+  - Atendimento aos clientes
+  - Produção ou realização do serviço
+  - Controle das contas e organização do negócio
+  - Outra (especificar)
+
+39. O(a) dono(a) precisa de alguma adaptação ou apoio para continuar no negócio? [unica]
+  se: q37 == "Sim"
+  - Sim. Qual?
+  - Não
+  - Prefere não responder
+
+-- B.3 Participação social e fontes de renda
+
+40. O(a) dono(a) participa de associação de comerciantes, produtores ou feirantes, cooperativa ou outro grupo de trabalho? [unica]
+  - Sim
+  - Não
+  - NS/NR
+
+41. De qual associação, cooperativa ou grupo o(a) dono(a) participa? [texto]
+  se: q40 == "Sim"
+
+42. Qual é a importância deste negócio para a renda do(a) dono(a)? [unica]
+  - É a única fonte de renda
+  - É a principal fonte, mas há outras
+  - Complementa outras fontes de renda
+  - Prefere não responder
+
+43. Quais outras fontes de renda o(a) dono(a) tem? [multipla]
+  se: q42 em ["É a principal fonte, mas há outras", "Complementa outras fontes de renda"]
+  - Emprego (com ou sem carteira assinada)
+  - Produção agropecuária
+  - Aposentadoria ou pensão
+  - Benefício social do governo
+  - Outro negócio
+  - Outra (especificar)
+  - Prefere não responder
+
+44. Que tipo de negócio é esse outro e onde ele funciona? [texto]
+  ajuda: Tipo e local.
+  se: q43 contem "Outro negócio"
+
+== BLOCO C - CARACTERIZAÇÃO DO NEGÓCIO
+-- C.1 Funcionamento do negócio
+
+45. Há quanto tempo o negócio existe? [composto]
+  campos: anos:inteiro:anos, meses:inteiro:meses
+
+46. Há quanto tempo o negócio funciona neste local? [composto]
+  ajuda: Técnico: se for ambulante, considerar o local onde costuma trabalhar.
+  campos: anos:inteiro:anos, meses:inteiro:meses
+
+47. Qual é a atividade principal do negócio? [unica]
+  - Mercearia, mercadinho ou venda de produtos em geral
+  - Bar, lanchonete ou restaurante
+  - Produção e venda de alimentos feitos em casa
+  - Venda de produtos da roça ou da criação
+  - Salão de beleza ou outros serviços pessoais
+  - Oficina ou conserto (mecânica, eletrônicos, costura)
+  - Transporte ou frete
+  - Artesanato
+  - Serviços na roça (ex.: roçagem, aração, cercas)
+  - Venda ambulante ou em feiras
+  - Outra (especificar)
+
+48. Quais são os principais produtos ou serviços do negócio? [lista itens=3]
+  ajuda: Técnico: registrar até três, do mais importante para o menos importante.
+
+49. Onde o negócio funciona? [unica]
+  - Em ponto comercial separado da casa
+  - Dentro da própria casa
+  - Em construção anexa, no mesmo terreno da casa
+  - Em banca, feira ou ponto temporário
+  - Ambulante (vende andando ou de lugar em lugar)
+  - Na casa ou no local do cliente
+  - Outro (especificar)
+
+50. Em quais lugares ou rotas o negócio costuma atender? [texto]
+  se: q49 em ["Em banca, feira ou ponto temporário", "Ambulante (vende andando ou de lugar em lugar)", "Na casa ou no local do cliente"]
+
+51. O negócio funciona o ano todo? [unica]
+  - Sim, o ano todo
+  - Não, só em alguns meses
+
+52. Em quais meses o negócio funciona? [multipla]
+  se: q51 == "Não, só em alguns meses"
+  - Jan
+  - Fev
+  - Mar
+  - Abr
+  - Mai
+  - Jun
+  - Jul
+  - Ago
+  - Set
+  - Out
+  - Nov
+  - Dez
+
+53. Quantos dias por semana o negócio costuma funcionar? [inteiro]
+  alerta: q53 > 7 | A semana tem 7 dias: confira a questão 53.
+
+54. Em quais períodos do dia o negócio costuma funcionar? [multipla]
+  - Manhã
+  - Tarde
+  - Noite
+  - Madrugada
+
+55. O negócio costuma parar de funcionar com frequência? [unica]
+  - Sim
+  - Não
+
+56. Por que o negócio para de funcionar? [multipla]
+  se: q55 == "Sim"
+  - Falta de energia
+  - Falta de água
+  - Falta de mercadoria ou de insumos
+  - Problema de saúde do(a) dono(a)
+  - Pouco movimento
+  - Chuva ou estrada ruim
+  - Outro (especificar)
+
+57. Quantas pessoas trabalham no negócio, além do(a) dono(a)? [inteiro]
+  ajuda: Técnico: incluir familiares, com ou sem pagamento; registrar 0 se o(a) dono(a) trabalhar sozinho(a).
+
+58. Quantas dessas pessoas são da família do(a) dono(a)? [inteiro]
+  se: q57 > 0
+  alerta: q58 > q57 | A questão 58 não pode ser maior que a 57.
+
+59. Quantas pessoas costumam trabalhar no negócio o ano todo? [inteiro]
+  se: q57 > 0
+  alerta: q59 > q57 | A questão 59 não pode ser maior que a 57.
+
+60. Quantas são mulheres? [inteiro]
+  se: q57 > 0
+  alerta: q60 > q57 | A questão 60 não pode ser maior que a 57.
+
+61. Quantas moram em Itapicuru ou Jaboticaba? [inteiro]
+  se: q57 > 0
+  alerta: q61 > q57 | A questão 61 não pode ser maior que a 57.
+
+62. Quantas têm menos de 18 anos? [inteiro]
+  se: q57 > 0
+  alerta: q62 > q57 | A questão 62 não pode ser maior que a 57.
+
+63. O negócio tem conta bancária própria, separada da conta pessoal do(a) dono(a)? [unica]
+  - Sim
+  - Não
+  - NS/NR
+
+64. O negócio depende de equipamentos, ferramentas, veículos, instalações ou estoque para funcionar? [unica]
+  - Sim
+  - Não
+
+65. Quais equipamentos, instalações ou bens o negócio usa? [multipla]
+  ajuda: Técnico: não avaliar o valor dos bens.
+  se: q64 == "Sim"
+  - Freezer, geladeira ou balcão refrigerado
+  - Fogão, forno ou outros equipamentos de cozinha
+  - Máquinas ou ferramentas de trabalho
+  - Veículo (moto, carro, carroça)
+  - Instalações (galpão, balcão, prateleiras)
+  - Estoque de mercadorias
+  - Outro (especificar)
+
+66. O negócio anota as vendas e as despesas (caderno, notas, recibos, aplicativo ou sistema)? [unica]
+  ajuda: Técnico: não pedir cópia nem foto das anotações.
+  - Sim
+  - Em parte
+  - Não
+
+-- C.2 Vendas e clientes
+
+67. Como o negócio vende seus produtos ou serviços? [multipla]
+  - No ponto comercial
+  - Em feira
+  - Na própria casa
+  - Por encomenda ou WhatsApp
+  - Com entrega
+  - Na casa do cliente
+  - Outro (especificar)
+
+68. Em um mês normal de funcionamento, quanto entra com as vendas, antes de pagar as despesas? [moeda nsnr]
+  ajuda: Técnico: registrar o valor aproximado.
+
+69. Como esse valor foi informado? [unica]
+  se: tem_valor(q68)
+  - Com base em anotações
+  - Estimativa do(a) entrevistado(a)
+
+70. Tem meses em que o negócio vende mais ou vende menos? [unica]
+  - Sim
+  - Não
+
+71. Em quais meses o negócio vende mais? [multipla]
+  se: q70 == "Sim"
+  - Jan
+  - Fev
+  - Mar
+  - Abr
+  - Mai
+  - Jun
+  - Jul
+  - Ago
+  - Set
+  - Out
+  - Nov
+  - Dez
+
+72. Em um mês de mais vendas, quanto entra, aproximadamente? [moeda nsnr]
+  se: q70 == "Sim"
+
+73. Em quais meses o negócio vende menos? [multipla]
+  se: q70 == "Sim"
+  - Jan
+  - Fev
+  - Mar
+  - Abr
+  - Mai
+  - Jun
+  - Jul
+  - Ago
+  - Set
+  - Out
+  - Nov
+  - Dez
+
+74. Em um mês de menos vendas, quanto entra, aproximadamente? [moeda nsnr]
+  se: q70 == "Sim"
+
+75. O que faz o movimento do negócio mudar ao longo do ano? [multipla]
+  se: q70 == "Sim"
+  - Safra ou colheita
+  - Feiras e festas
+  - Férias escolares
+  - Movimento da mineração (JMC)
+  - Chuva ou seca
+  - Datas comemorativas
+  - Outro (especificar)
+
+76. De onde vêm os principais clientes do negócio? [multipla]
+  - Itapicuru
+  - Jaboticaba
+  - Sede de Jacobina ou outras localidades
+  - Trabalhadores da JMC
+  - Empresas terceirizadas ou fornecedoras da JMC
+  - Visitantes ou feirantes
+  - Outro (especificar)
+
+77. De onde vêm as mercadorias ou os insumos usados no negócio? [multipla]
+  - Das comunidades
+  - De Jacobina
+  - De outros municípios
+  - Produção própria
+  - Outro (especificar)
+  - Não compra mercadorias ou insumos
+
+-- C.3 Despesas do negócio
+
+78. Em um mês normal, quanto o negócio gasta com compra de mercadorias ou insumos? [moeda nsnr]
+  ajuda: Técnico: considerar apenas despesas do negócio, não da casa; registrar 0 se não houver essa despesa.
+
+79. Em um mês normal, quanto o negócio gasta com transporte (combustível, passagens, frete ou aluguel de veículo)? [moeda nsnr]
+  ajuda: Técnico: considerar apenas despesas do negócio, não da casa; registrar 0 se não houver essa despesa.
+
+80. Em um mês normal, quanto o negócio gasta com aluguel do ponto ou do espaço de trabalho? [moeda nsnr]
+  ajuda: Técnico: considerar apenas despesas do negócio, não da casa; registrar 0 se não houver essa despesa.
+
+81. Quais outras despesas importantes o negócio tem? [multipla]
+  ajuda: Técnico: apenas listar as despesas, sem registrar valores.
+  - Energia, água, internet ou outros serviços
+  - Pagamento de funcionários ou ajudantes
+  - Manutenção de ferramentas, máquinas ou veículos
+  - Propaganda ou divulgação
+  - Impostos, taxas ou contribuições
+  - Outra (especificar)
+  - Nenhuma
+
+82. Em um mês normal, quanto sobra para o(a) dono(a) depois de pagar todas as despesas do negócio? [moeda nsnr]
+  ajuda: Técnico: registrar o valor que fica para o(a) dono(a) (retirada), e não o faturamento; mesmo conceito da questão 53 do Formulário Geral. Se o negócio tiver prejuízo, registrar 0 e anotar em observações.
+
+83. Aproximadamente, que parte do que entra com as vendas é gasta com as despesas do negócio? [unica]
+  se: nsnr(q82)
+  - Até um quarto (até 25%)
+  - Entre um quarto e a metade (26% a 50%)
+  - Entre a metade e três quartos (51% a 75%)
+  - Mais de três quartos (acima de 75%)
+  - NS/NR
+
+-- C.4 Crédito
+
+84. O negócio tem algum empréstimo, financiamento ou compra a prazo em aberto? [unica]
+  - Sim
+  - Não
+  - Prefere não responder
+
+85. De onde veio esse crédito? [multipla]
+  se: q84 == "Sim"
+  - Banco
+  - Cooperativa de crédito
+  - Fornecedor (compra a prazo ou fiado)
+  - Família ou amigos
+  - Outro (especificar)
+
+86. Para que o crédito foi usado? [multipla]
+  se: q84 == "Sim"
+  - Comprar mercadorias ou estoque
+  - Comprar equipamentos
+  - Pagar despesas do dia a dia do negócio
+  - Reformar ou ampliar o negócio
+  - Outro (especificar)
+
+87. Quando o negócio precisa de crédito, tem dificuldade para conseguir? [unica]
+  - Sim
+  - Não
+  - Nunca precisou
+
+-- C.5 Relação com a mineração
+
+88. Quanto o movimento do negócio depende da JMC, das empresas contratadas ou dos trabalhadores da mina? [unica]
+  - Não depende
+  - Depende pouco
+  - Depende mais ou menos
+  - Depende muito
+  - NS/NR
+
+89. O negócio vende ou presta serviço diretamente para a JMC ou para empresas contratadas por ela? [unica]
+  - Sim
+  - Não
+
+90. O que o negócio vende ou qual serviço presta, e com que frequência? [texto]
+  ajuda: Técnico: registrar apenas vendas e serviços contratados pelas empresas; compras feitas pelos trabalhadores já são registradas na questão 76.
+  se: q89 == "Sim"
+
+== BLOCO D - LOCAL DO NEGÓCIO, SERVIÇOS BÁSICOS E TERRITÓRIO
+-- D.1 Local do negócio
+// "Já no Formulário Geral" = negócio na casa ou em anexo e a família já respondeu ao Formulário Geral (q24 == Sim).
+
+91. Além do negócio, para que mais o local é usado? [multipla]
+  se: nao (q49 em ["Dentro da própria casa", "Em construção anexa, no mesmo terreno da casa"] e q24 == "Sim")
+  - Moradia
+  - Produção agropecuária ou armazenamento
+  - Outro negócio
+  - Uso comunitário
+  - Outro (especificar)
+  - Apenas para o negócio
+
+92. Qual é a situação do local onde o negócio funciona? [unica]
+  se: nao (q49 em ["Dentro da própria casa", "Em construção anexa, no mesmo terreno da casa"] e q24 == "Sim")
+  - Próprio do(a) dono(a) do negócio
+  - Posse, sem título
+  - Alugado
+  - Arrendado
+  - Cedido ou emprestado
+  - Uso autorizado, sem contrato
+  - Uso sem autorização
+  - Feirante ou ambulante, sem ponto fixo
+  - Outra (especificar)
+
+93. Qual é o nome do(a) proprietário(a) do local? [texto nsnr]
+  ajuda: Técnico: registrar se a informação estiver disponível.
+  se: q92 em ["Alugado", "Arrendado", "Cedido ou emprestado", "Uso autorizado, sem contrato", "Uso sem autorização"] e nao (q49 em ["Dentro da própria casa", "Em construção anexa, no mesmo terreno da casa"] e q24 == "Sim")
+
+94. Onde o(a) proprietário(a) do local mora? [texto nsnr]
+  se: q92 em ["Alugado", "Arrendado", "Cedido ou emprestado", "Uso autorizado, sem contrato", "Uso sem autorização"] e nao (q49 em ["Dentro da própria casa", "Em construção anexa, no mesmo terreno da casa"] e q24 == "Sim")
+
+95. Qual é a relação do(a) proprietário(a) do local com o(a) dono(a) do negócio? [unica]
+  se: q92 em ["Alugado", "Arrendado", "Cedido ou emprestado", "Uso autorizado, sem contrato", "Uso sem autorização"] e nao (q49 em ["Dentro da própria casa", "Em construção anexa, no mesmo terreno da casa"] e q24 == "Sim")
+  - Cônjuge ou companheiro(a)
+  - Filho(a)
+  - Outro parente
+  - Sem parentesco
+
+96. De que forma o(a) dono(a) do negócio obteve o imóvel? [unica]
+  se: q92 == "Próprio do(a) dono(a) do negócio" e nao (q49 em ["Dentro da própria casa", "Em construção anexa, no mesmo terreno da casa"] e q24 == "Sim")
+  - Compra direta ou com financiamento bancário
+  - Compra por programa habitacional do governo (ex.: Minha Casa, Minha Vida)
+  - Entrega gratuita pelo poder público (ex.: habitação social, reassentamento)
+  - Herança
+  - Doação de familiares ou terceiros
+  - Ocupação/posse, sem compra ou título
+  - Outra forma (especificar)
+  - NS/NR
+
+97. Quais documentos existem sobre o uso do local? [multipla]
+  ajuda: Técnico: o CAR ou o CCIR não comprovam propriedade.
+  se: q92 != "Feirante ou ambulante, sem ponto fixo" e nao (q49 em ["Dentro da própria casa", "Em construção anexa, no mesmo terreno da casa"] e q24 == "Sim")
+  - Escritura ou matrícula no Registro de Imóveis
+  - Contrato de compra e venda
+  - Contrato de aluguel ou arrendamento
+  - Autorização ou cessão de uso
+  - Licença de feira ou de uso de espaço público
+  - Certificado CAR/CCIR
+  - Sem documento {exclusiva}
+  - Outro (especificar)
+
+98. Há quanto tempo o(a) dono(a) do negócio possui o imóvel? [unica]
+  se: q92 == "Próprio do(a) dono(a) do negócio" e nao (q49 em ["Dentro da própria casa", "Em construção anexa, no mesmo terreno da casa"] e q24 == "Sim")
+  - Menos de 1 ano
+  - Entre 1 e 3 anos
+  - Entre 3 e 5 anos
+  - Entre 5 e 10 anos
+  - Acima de 10 anos
+  - Acima de 20 anos
+  - NS/NR
+
+99. Como o(a) entrevistado(a) avalia as condições do local do negócio? [unica]
+  se: q92 != "Feirante ou ambulante, sem ponto fixo" e nao (q49 em ["Dentro da própria casa", "Em construção anexa, no mesmo terreno da casa"] e q24 == "Sim")
+  - Muito ruim
+  - Ruim
+  - Regular
+  - Boa
+  - Muito boa
+  - NS/NR
+
+100. O negócio usa outro ponto de venda, oficina, depósito ou local de produção em Itapicuru ou Jaboticaba? [unica]
+  se: nao (q49 em ["Dentro da própria casa", "Em construção anexa, no mesmo terreno da casa"] e q24 == "Sim")
+  - Sim
+  - Não
+
+101. Onde fica esse outro local e para que é usado? [texto]
+  ajuda: Local, uso e ID do imóvel, se houver.
+  se: q100 == "Sim" e nao (q49 em ["Dentro da própria casa", "Em construção anexa, no mesmo terreno da casa"] e q24 == "Sim")
+
+-- D.2 Infraestrutura e serviços básicos
+
+102. O local do negócio possui fornecimento de energia elétrica? [multipla]
+  se: q49 == "Em ponto comercial separado da casa" ou (q49 em ["Dentro da própria casa", "Em construção anexa, no mesmo terreno da casa"] e q24 != "Sim")
+  - Rede elétrica (COELBA)
+  - Painéis solares
+  - Gerador de energia
+  - Bateria
+  - Outros (especificar)
+  - Não
+  - NS/NR
+
+103. O local do negócio possui fornecimento de água? [multipla]
+  se: q49 == "Em ponto comercial separado da casa" ou (q49 em ["Dentro da própria casa", "Em construção anexa, no mesmo terreno da casa"] e q24 != "Sim")
+  - Rede de abastecimento (EMBASA)
+  - Poço artesiano individual
+  - Poço artesiano coletivo
+  - Cisterna
+  - Rio/córrego
+  - Represa/açude
+  - Nascente/mina d'água
+  - Captação de água de chuva
+  - Caminhão-pipa
+  - Garrafão de água
+  - Outros (especificar)
+  - Não
+  - NS/NR
+
+104. O local do negócio possui esgotamento sanitário? [unica]
+  se: q49 == "Em ponto comercial separado da casa" ou (q49 em ["Dentro da própria casa", "Em construção anexa, no mesmo terreno da casa"] e q24 != "Sim")
+  - Rede com tratamento de esgoto
+  - Fossa séptica
+  - Fossa rudimentar
+  - Efluentes lançados em vala (céu aberto)
+  - Lançamento direto no rio/córrego
+  - Privada sem esgotamento/buraco
+  - Outros (especificar)
+  - Não
+  - NS/NR
+
+105. Qual é o destino do lixo do negócio? [multipla]
+  se: q49 == "Em ponto comercial separado da casa" ou (q49 em ["Dentro da própria casa", "Em construção anexa, no mesmo terreno da casa"] e q24 != "Sim")
+  - Coleta de lixo regular
+  - Descarte em caçamba
+  - Descarte em terreno baldio
+  - Descarte no rio
+  - Queima do lixo
+  - Enterrado no solo
+  - Outros (especificar)
+  - NS/NR
+
+106. O local do negócio possui telefone ou internet? [multipla]
+  se: q49 == "Em ponto comercial separado da casa" ou (q49 em ["Dentro da própria casa", "Em construção anexa, no mesmo terreno da casa"] e q24 != "Sim")
+  - Internet móvel no celular (3G, 4G ou 5G)
+  - Internet fixa residencial (fibra óptica, cabo coaxial ou via rádio)
+  - Internet via satélite (starlink)
+  - Telefone fixo
+  - Outros (especificar)
+  - Não possui telefone nem internet
+  - NS/NR
+
+107. Qual é o principal meio de transporte usado pelo negócio para buscar mercadorias, entregar produtos ou atender clientes? [unica]
+  - A pé
+  - Bicicleta
+  - Moto
+  - Carro ou caminhonete
+  - Transporte coletivo
+  - Frete de terceiros
+  - Cavalo, jegue ou carroça
+  - Outro (especificar)
+  - Não usa transporte
+
+108. Falta algum serviço ou infraestrutura que atrapalhe diretamente o funcionamento do negócio? [multipla]
+  - Água
+  - Energia elétrica
+  - Acesso para os clientes
+  - Transporte de mercadorias
+  - Sinal de telefone ou internet
+  - Estradas em boas condições
+  - Outro (especificar)
+  - Nada falta
+
+109. De que forma essa falta atrapalha o negócio? [texto]
+  se: q108 != "Nada falta"
+
+-- D.3 Territorialidade
+
+110. Quais são os principais pontos positivos de o negócio estar nesta comunidade? [multipla]
+  - Relação com os vizinhos e clientes conhecidos
+  - Segurança
+  - Tranquilidade
+  - Proximidade da família
+  - Proximidade com a mineração
+  - Identificação com o lugar
+  - Boa localização e movimento
+  - Infraestrutura
+  - Facilidade de acesso
+  - Outro (especificar)
+
+111. Quais são os principais desafios enfrentados pelo negócio? [multipla]
+  ajuda: Técnico: a falta de serviços e infraestrutura já é registrada na questão 108.
+  - Violência ou insegurança
+  - Falta de trabalhadores
+  - Dificuldade para conseguir crédito
+  - Falta de capacitação ou de conhecimento
+  - Pouco movimento ou poucos clientes
+  - Concorrência
+  - Poeira, barulho ou outros impactos ambientais
+  - Outro (especificar)
+  - Nenhum
+
+112. Na sua opinião, o que poderia melhorar o negócio nesta localidade? [texto]
+
+== BLOCO E - ASPECTOS CULTURAIS E USO DE RECURSOS NATURAIS
+-- E.1 Aspectos culturais
+
+113. O movimento do negócio depende de feiras, festas tradicionais, eventos da comunidade ou outros encontros? [unica]
+  - Sim
+  - Não
+
+114. Quais são esses eventos e em que época do ano acontecem? [texto]
+  se: q113 == "Sim"
+
+-- E.2 Uso de recursos naturais
+
+115. O negócio usa diretamente recursos naturais da região? [unica]
+  - Sim
+  - Não
+  - NS/NR
+
+116. Quais recursos naturais o negócio usa? [multipla]
+  se: q115 == "Sim"
+  - Água de rio, açude, poço ou nascente
+  - Madeira ou lenha
+  - Animais da mata ou do campo
+  - Peixes ou outros produtos da pesca
+  - Frutos, plantas ou sementes coletados
+  - Plantas medicinais ou de cheiro
+  - Palha, fibras, capim ou pasto
+  - Pedra, cascalho, areia ou argila
+  - Outro (especificar)
+
+117. Para que esses recursos são usados no negócio? [multipla]
+  se: q115 == "Sim"
+  - Matéria-prima ou insumo
+  - Revenda
+  - Produção de energia (lenha, carvão)
+  - Transporte
+  - Prestação de serviço
+  - Outro (especificar)
+
+118. Em que lugares o negócio obtém esses recursos? [texto]
+  ajuda: Técnico: registrar o nome da área ou o caminho de acesso.
+  se: q115 == "Sim"
+
+119. Com que frequência o negócio usa esses recursos? [unica]
+  se: q115 == "Sim"
+  - Todo dia
+  - Toda semana
+  - Só em algumas épocas do ano (especificar meses)
+  - De vez em quando
+
+120. Se o negócio perder o acesso a esses recursos, existe outra forma de consegui-los? [unica]
+  se: q115 == "Sim"
+  - Sim
+  - Não
+  - NS/NR
+
+== BLOCO F - CONTROLE DE QUALIDADE E CORRESPONDÊNCIA CADASTRAL
+-- F.1 Avaliação da entrevista pelo entrevistador
+
+121. Qual é a situação final da entrevista? [unica]
+  ajuda: Técnico: marcar "Não realizada" quando o resultado da visita (questão 6) impedir a entrevista ou quando houver recusa (questão 8).
+  alerta: (q6 != "Negócio localizado, com pessoa disponível para a entrevista" ou q8 == "Não") e q121 != "Não realizada" | A visita não resultou em entrevista (questões 6 ou 8): marque "Não realizada".
+  - Concluída
+  - Parcial
+  - Não realizada
+
+122. É necessário voltar para completar a entrevista? [unica]
+  se: q121 != "Concluída"
+  - Sim
+  - Não
+
+123. Houve interrupções significativas durante a entrevista? [unica]
+  - Sim. Descreva quais:
+  - Não
+
+124. Havia outras pessoas presentes que possam ter influenciado as respostas? [unica]
+  - Sim. Quem/como: ________________________________
+  - Não
+
+125. Qual foi o nível de cooperação do(a) entrevistado(a)? [unica]
+  - Muito cooperativo
+  - Cooperativo
+  - Neutro
+  - Pouco cooperativo
+  - Não cooperativo
+
+126. Qual é a avaliação da confiabilidade das informações? [unica]
+  - Muito confiável
+  - Bastante confiável
+  - Pouco confiável
+  - Não confiável
+
+127. Justificativa da avaliação de confiabilidade: [texto_longo]
+  se: q126 != "Muito confiável"
+
+128. Quais perguntas ou seções foram difíceis de entender? [texto_longo opcional]
+
+129. Observações do pesquisador relevantes para a interpretação dos dados: [texto_longo opcional]
+
+-- F.2 Problemas técnicos
+
+130. Houve problemas técnicos? [multipla]
+  - Nenhum
+  - Problemas com o GPS
+  - Problemas com o dispositivo móvel
+  - Problemas com o app SXData
+  - Problemas com as fotos
+  - Problemas com os saltos do formulário
+  - Problemas com os códigos de identificação
+  - Outro (especificar)
+
+131. Qual solução propõe para o problema? [texto_longo]
+  se: q130 != "Nenhum"
+
+-- F.3 Correspondência com cadastros anteriores
+
+132. ID histórico da estrutura: [texto]
+  ajuda: Técnico: identificar com apoio dos arquivos KMZ do cadastro anterior; registrar "Sem ID" se a estrutura não constar e "Não se aplica" para negócios sem estrutura fixa (banca, feira ou ambulante).
+
+133. Qual é o grau de correspondência com o ID histórico da estrutura? [unica]
+  - Confirmada em campo
+  - Provável, a confirmar
+  - Sem correspondência
+  - Não se aplica (negócio sem estrutura fixa)
+
+== BLOCO G - GEORREFERENCIAMENTO, REGISTRO FOTOGRÁFICO E ENCERRAMENTO
+-- G.1 Conclusão da pesquisa
+
+134. Hora de término: [hora auto=hora_fim]
+  ajuda: Técnico: preenchimento automático.
+
+135. Duração total: [calculado formato=duracao]
+  formula: duracao(q3, q134)
+
+-- G.2 Georreferenciamento e registro fotográfico
+
+136. Coordenadas geográficas do negócio: [coordenadas destino=coordenadas]
+  ajuda: Técnico: registrar em frente ao negócio; se for ambulante, no local onde costuma trabalhar.
+
+137. Foto da fachada ou do local do negócio: [foto destino=foto]
+  ajuda: Técnico: enquadrar o local inteiro, com boa iluminação e sem pessoas identificáveis. Entrevistador(a): ao final, agradeça ao(à) entrevistado(a).
+  se: q9 == "Sim"

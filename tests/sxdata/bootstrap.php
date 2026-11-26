@@ -7,3 +7,6 @@ define('APPPATH', __DIR__ . '/../../application/');
 require_once APPPATH . 'libraries/Geo_municipio.php';
 require_once APPPATH . 'libraries/Ponto_campo.php';
 require_once APPPATH . 'libraries/Mapa_temas.php';
+require_once APPPATH . 'libraries/Expressao.php';
+require_once APPPATH . 'libraries/Estrutura_motor.php';
+require_once APPPATH . 'libraries/Estrutura_compilador.php';
