@@ -538,7 +538,7 @@ class Pea_model extends CI_Model {
             throw new InvalidArgumentException('Essa pessoa já está na lista de presença.');
         }
         $this->db->insert('pea_presencas', ['acao_id' => (int) $acao_id, 'colaborador_id' => $col ? (int) $col->id : NULL, 'nome' => mb_substr($d['nome'], 0, 200),
-            'cpf' => $col ? $col->cpf : ($cpf ?: NULL), 'matricula' => $col ? $col->matricula : ($d['matricula'] ?? NULL) ?: NULL,
+            'cpf' => $col ? $col->cpf : ($cpf ?: NULL), 'matricula' => $col ? $col->matricula : (($d['matricula'] ?? NULL) ?: NULL),
             'empresa' => $d['empresa'] ?? NULL, 'origem' => $col ? 'bancodoc' : 'manual']);
         return $col !== NULL;
     }
