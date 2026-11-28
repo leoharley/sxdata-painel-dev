@@ -130,7 +130,9 @@ class Estrutura_motor {
             $this->checar_grupo($g, count($lista), $dom, $r);
         }
 
-        if ($this->etapa_moradores !== NULL) {
+        // A lista de moradores pode ter "se" (ex.: recusa na abordagem): fechada, não cobra moradores nem regras.
+        if ($this->etapa_moradores !== NULL
+            && (empty($this->etapa_moradores['se']) || $dom->condicao($this->etapa_moradores['se']))) {
             $em = $this->etapa_moradores;
             if (count($escopos) === 0) {
                 $r['erros'][] = ['codigo' => NULL, 'morador' => NULL, 'mensagem' => 'Cadastre ao menos um morador.'];
@@ -291,6 +293,9 @@ class Estrutura_motor {
             case 'multipla':
                 $ok = array_column($esc->opcoes_permitidas($p['codigo']), 'valor');
                 if (!is_array($v) || count($v) === 0) { $erros[] = "Questão $n: marque ao menos uma opção."; break; }
+                if (!empty($p['max_opcoes']) && count($v) > (int) $p['max_opcoes']) {
+                    $erros[] = "Questão $n: marque no máximo " . (int) $p['max_opcoes'] . ' opções.';
+                }
                 foreach ($v as $x) {
                     if (!in_array($x, $ok, TRUE)) { $erros[] = "Questão $n: opção inválida ($x)."; }
                 }

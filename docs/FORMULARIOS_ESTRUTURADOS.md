@@ -47,6 +47,7 @@ O editor de questionários comum não muda: os estruturados têm tela própria e
 
 @moradores 17. Qual é o nome de cada pessoa que mora no domicílio?
   ajuda: ...
+  se: q5 != "Recusa"                  opcional: fechada, não pede moradores nem cobra as regras
   respondente: q12                    o 1º morador é o respondente (nome da q12)
   declarado: q15                      alerta se a lista tiver outro tamanho
   regra: contar_moradores(q19 == "Chefe") == 0 | Mensagem | bloqueia
@@ -88,6 +89,7 @@ O editor de questionários comum não muda: os estruturados têm tela própria e
 | `auto=hora_fim` | Preenche a hora ao finalizar |
 | `formato=moeda`, `formato=duracao`, ... | Formato do calculado (duração em minutos) |
 | `destino=foto`, `destino=coordenadas` | Copia a resposta para o cabeçalho da entrevista |
+| `max=5` | Só em `multipla`: marca no máximo 5 opções (no app, as outras travam ao chegar no limite) |
 
 **Opções:**
 - **Código:** cada linha `- Texto` vira uma opção. O código é o texto sem acentos, por exemplo "Cônjuge/companheiro(a)" vira `conjuge_companheiro_a`.
@@ -172,6 +174,8 @@ Pergunta P (os campos ausentes têm valor padrão):
 - **Obrigatória:** quando visível, `obrigatoria` diferente de false, e o tipo não é `calculado` nem `mensagem`, nem a questão é `oculta`.
 - **Complemento de opção:** é obrigatório quando a opção está marcada, salvo `"obrigatorio": false`.
 - **Opção exclusiva:** marcá-la desmarca as outras, e marcar outra desmarca a exclusiva.
+- **Máximo de opções:** com `"max_opcoes": N`, marcar mais de N é erro ("marque no máximo N opções").
+- **Lista de moradores com `"se"`:** quando a condição é falsa, a lista não aparece e não há erro por falta de moradores, por regras ou pelo número declarado. As etapas `@morador` devem ter a mesma condição.
 - **Calculado:** é recalculado a cada mudança.
   - `formato` `moeda` e `decimal`: arredonda a 2 casas.
   - `formato` `inteiro` e `duracao`: arredonda para inteiro.

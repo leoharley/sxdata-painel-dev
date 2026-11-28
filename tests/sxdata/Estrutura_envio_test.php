@@ -40,30 +40,30 @@ class Estrutura_envio_test extends TestCase {
     public function test_conferir_descarta_oculta_e_aponta_divergencia() {
         list($d) = Estrutura_envio::normalizar([
             'client_id' => 'x', 'questionnaire_id' => 1,
-            'respostas' => ['q100' => ['valor' => ''], 'q101' => ['valor' => 50], 'q102' => ['valor' => 300],
-                'q196' => ['valor' => ['lat' => -11.2, 'lng' => -40.5]], 'q197' => ['valor' => 'fachada_1.jpg']],
+            'respostas' => ['q101' => ['valor' => ''], 'q102' => ['valor' => 50], 'q103' => ['valor' => 300],
+                'q193' => ['valor' => ['lat' => -11.2, 'lng' => -40.5]], 'q194' => ['valor' => 'fachada_1.jpg']],
             'moradores' => [['client_id' => 'a', 'nome' => 'Ana', 'respostas' => [
-                'q19' => ['valor' => 'chefe'], 'q63' => ['valor' => 'sim'], 'q64' => ['valor' => 1000]]]],
-            'calculados' => ['domicilio' => ['q109' => ['valor' => 999, 'incompleto' => FALSE]]],
+                'q20' => ['valor' => 'chefe'], 'q64' => ['valor' => 'sim'], 'q65' => ['valor' => 1000]]]],
+            'calculados' => ['domicilio' => ['q110' => ['valor' => 999, 'incompleto' => FALSE]]],
         ]);
         $c = Estrutura_envio::conferir(self::def(), $d);
-        $this->assertArrayNotHasKey('q101', $c['respostas_domicilio'], 'q101 oculta (q100 vazia) não é gravada');
-        $this->assertSame(1300.0, $c['calculados']['domicilio']['q109']['valor']);
+        $this->assertArrayNotHasKey('q102', $c['respostas_domicilio'], 'q102 oculta (q101 vazia) não é gravada');
+        $this->assertSame(1300.0, $c['calculados']['domicilio']['q110']['valor']);
         $this->assertSame('pendente', $c['revisao']);
-        $this->assertSame('q109', $c['divergencias'][0]['codigo']);
+        $this->assertSame('q110', $c['divergencias'][0]['codigo']);
         $this->assertSame('fachada_1.jpg', $c['foto']);
         $this->assertSame([-11.2, -40.5], $c['coordenadas']);
-        $this->assertArrayHasKey('q64', $c['respostas_moradores']['a']);
+        $this->assertArrayHasKey('q65', $c['respostas_moradores']['a']);
     }
 
     public function test_rotulo_resposta() {
         $def = self::def();
         $m = new Estrutura_motor($def);
-        $this->assertSame('Sim: 2', Estrutura_motor::rotulo_resposta($m->pergunta('q133'), ['valor' => 'sim', 'complementos' => ['sim' => '2']]));
-        $this->assertSame('NS/NR', Estrutura_motor::rotulo_resposta($m->pergunta('q53'), ['nsnr' => TRUE]));
-        $this->assertSame('R$ 1.234,50', Estrutura_motor::rotulo_resposta($m->pergunta('q109'), ['valor' => 1234.5]));
-        $this->assertSame(1234.5, Estrutura_motor::rotulo_resposta($m->pergunta('q109'), ['valor' => 1234.5], TRUE));
-        $this->assertSame('1 h 15 min', Estrutura_motor::rotulo_resposta($m->pergunta('q195'), ['valor' => 75]));
-        $this->assertSame('25/11/2026', Estrutura_motor::rotulo_resposta($m->pergunta('q5'), ['valor' => '2026-11-25']));
+        $this->assertSame('Sim: 2', Estrutura_motor::rotulo_resposta($m->pergunta('q134'), ['valor' => 'sim', 'complementos' => ['sim' => '2']]));
+        $this->assertSame('NS/NR', Estrutura_motor::rotulo_resposta($m->pergunta('q54'), ['nsnr' => TRUE]));
+        $this->assertSame('R$ 1.234,50', Estrutura_motor::rotulo_resposta($m->pergunta('q110'), ['valor' => 1234.5]));
+        $this->assertSame(1234.5, Estrutura_motor::rotulo_resposta($m->pergunta('q110'), ['valor' => 1234.5], TRUE));
+        $this->assertSame('1 h 15 min', Estrutura_motor::rotulo_resposta($m->pergunta('q192'), ['valor' => 75]));
+        $this->assertSame('25/11/2026', Estrutura_motor::rotulo_resposta($m->pergunta('q2'), ['valor' => '2026-11-25']));
     }
 }

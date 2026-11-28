@@ -123,7 +123,7 @@
   - NS/NR
 
 25. Qual é o ID da Unidade Familiar do(a) dono(a) no Formulário Geral? [texto]
-  ajuda: Técnico: copiar o código da Unidade Familiar registrado na questão 11 do Formulário Geral, para vincular os dois formulários.
+  ajuda: Técnico: copiar o código da Unidade Familiar registrado na questão 12 do Formulário Geral, para vincular os dois formulários.
   se: q24 == "Sim"
 
 26. Qual o endereço do dono(a) do negócio? [texto]
@@ -514,7 +514,7 @@
   - Nenhuma
 
 82. Em um mês normal, quanto sobra para o(a) dono(a) depois de pagar todas as despesas do negócio? [moeda nsnr]
-  ajuda: Técnico: registrar o valor que fica para o(a) dono(a) (retirada), e não o faturamento; mesmo conceito da questão 53 do Formulário Geral. Se o negócio tiver prejuízo, registrar 0 e anotar em observações.
+  ajuda: Técnico: registrar o valor que fica para o(a) dono(a) (retirada), e não o faturamento; mesmo conceito da questão 54 do Formulário Geral. Se o negócio tiver prejuízo, registrar 0 e anotar em observações.
 
 83. Aproximadamente, que parte do que entra com as vendas é gasta com as despesas do negócio? [unica]
   se: nsnr(q82)

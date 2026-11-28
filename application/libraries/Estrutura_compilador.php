@@ -219,6 +219,7 @@ class Estrutura_compilador {
             if (preg_match('/^formato=(moeda|decimal|inteiro|duracao)$/', $tk, $m)) { $q['formato'] = $m[1]; continue; }
             if (preg_match('/^itens=(\d+)$/', $tk, $m)) { $q['itens'] = (int) $m[1]; continue; }
             if (preg_match('/^destino=(foto|foto2|coordenadas)$/', $tk, $m)) { $q['destino'] = $m[1]; continue; }
+            if (preg_match('/^max=(\d+)$/', $tk, $m)) { $q['max_opcoes'] = (int) $m[1]; continue; }
             $this->erro($ln, "Marca desconhecida \"$tk\" entre colchetes.");
         }
         if (in_array($q['tipo'], ['calculado', 'mensagem'], TRUE)) { $q['obrigatoria'] = FALSE; }
@@ -409,6 +410,7 @@ class Estrutura_compilador {
         $valor = trim($valor);
         switch ($chave) {
             case 'ajuda': $e['ajuda'] = $valor; break;
+            case 'se': $e['se'] = $valor; $e['_l_se'] = $ln; break;
             case 'respondente': $e['respondente'] = self::ref($valor); break;
             case 'declarado': $e['declarado'] = self::ref($valor); break;
             case 'rotulo': $e['rotulo'] = $valor; break;
@@ -566,6 +568,7 @@ class Estrutura_compilador {
                 }
             }
             foreach ($e['regras'] ?? [] as $r) { $this->validar_expr($r['se'], 'domicilio', $r['_linha']); }
+            if (!empty($e['se'])) { $this->validar_expr($e['se'], 'domicilio', $e['_l_se'] ?? $e['_linha']); }
         }
         // Remove marcas internas de linha
         foreach ($def['etapas'] as &$e) {
@@ -602,6 +605,10 @@ class Estrutura_compilador {
         if ($p['tipo'] === 'calculado' && empty($p['formula'])) { $this->erro($ln, "$n é calculada e precisa de formula:."); }
         if ($p['tipo'] === 'composto' && empty($p['campos'])) { $this->erro($ln, "$n é composta e precisa de campos:."); }
         if ($p['tipo'] === 'lista' && empty($p['itens'])) { $this->erro($ln, "$n é uma lista e precisa de [itens=N]."); }
+        if (isset($p['max_opcoes'])) {
+            if ($p['tipo'] !== 'multipla') { $this->erro($ln, "$n: max=N só vale para [multipla]."); }
+            elseif ($p['max_opcoes'] < 1) { $this->erro($ln, "$n: max=N precisa ser 1 ou mais."); }
+        }
         if (!empty($p['nsnr']) && !in_array($p['tipo'], ['inteiro', 'decimal', 'moeda', 'texto', 'texto_longo', 'data', 'hora', 'cpf', 'cnpj', 'telefone'], TRUE)) {
             $this->erro($ln, "$n: NS/NR como marca só vale para campos de digitar (número, texto, data, hora, CPF, telefone); em escolha, use uma opção NS/NR.");
         }

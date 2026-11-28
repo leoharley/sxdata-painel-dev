@@ -41,37 +41,37 @@ class Estrutura_motor_test extends TestCase {
     public function test_formularios_da_jmc_compilam() {
         $geral = self::def('jmc_formulario_geral');
         $negocios = self::def('jmc_pequenos_negocios');
-        $this->assertCount(4, $geral['etapas']);
-        $this->assertSame('moradores', $geral['etapas'][1]['tipo']);
-        $this->assertSame('q12', $geral['etapas'][1]['respondente']);
-        $this->assertSame('q15', $geral['etapas'][1]['declarado']);
-        $this->assertSame('morador', $geral['etapas'][2]['nivel']);
+        $this->assertCount(5, $geral['etapas']);
+        $this->assertSame('moradores', $geral['etapas'][2]['tipo']);
+        $this->assertSame('q13', $geral['etapas'][2]['respondente']);
+        $this->assertSame('q16', $geral['etapas'][2]['declarado']);
+        $this->assertSame('morador', $geral['etapas'][3]['nivel']);
         $total = 0;
         foreach ($geral['etapas'] as $e) { $total += count($e['perguntas'] ?? []); }
-        $this->assertSame(197 - 1 + 1, $total, 'Geral: 196 questões (a 17 é a lista de moradores) + a variável idade');
+        $this->assertSame(201 - 1 + 1, $total, 'Geral: 200 questões (a 18 é a lista de moradores) + a variável idade');
         $this->assertCount(137, $negocios['etapas'][0]['perguntas']);
     }
 
     public function test_textos_das_opcoes_viram_codigos_nas_condicoes() {
         $def = self::def('jmc_formulario_geral');
-        $this->assertSame('(q27 == "nao")', self::pergunta($def, 'q28')['exibir_se']);
-        $this->assertSame('(q19 em ["chefe", "conjuge_companheiro_a"])', self::pergunta($def, 'q20')['exibir_se']);
-        $this->assertSame('(q57 comeca "sim")', self::pergunta($def, 'q58')['exibir_se']);
+        $this->assertSame('(q28 == "nao")', self::pergunta($def, 'q29')['exibir_se']);
+        $this->assertSame('(q20 em ["chefe", "conjuge_companheiro_a"])', self::pergunta($def, 'q21')['exibir_se']);
+        $this->assertSame('(q58 comeca "sim")', self::pergunta($def, 'q59')['exibir_se']);
         $this->assertStringContainsString('fora_de ["pensionista", "empregado_a_domestico_a", "parente_do_a_empregado_a_domestico_a"]',
-            self::pergunta($def, 'q109')['formula']);
+            self::pergunta($def, 'q110')['formula']);
     }
 
     public function test_complementos_e_exclusivas_detectados() {
         $def = self::def('jmc_formulario_geral');
-        $o = self::pergunta($def, 'q133')['opcoes'][0];
+        $o = self::pergunta($def, 'q134')['opcoes'][0];
         $this->assertSame('sim', $o['valor']);
         $this->assertSame(['tipo' => 'inteiro', 'rotulo' => 'Quantas'], $o['complemento']);
-        $outros = self::pergunta($def, 'q23')['opcoes'][4];
+        $outros = self::pergunta($def, 'q24')['opcoes'][4];
         $this->assertSame('outra', $outros['valor']);
         $this->assertSame('texto', $outros['complemento']['tipo']);
-        $nenhum = array_values(array_filter(self::pergunta($def, 'q33')['opcoes'], function ($o) { return $o['valor'] === 'nenhum'; }))[0];
+        $nenhum = array_values(array_filter(self::pergunta($def, 'q34')['opcoes'], function ($o) { return $o['valor'] === 'nenhum'; }))[0];
         $this->assertTrue($nenhum['exclusiva']);
-        $this->assertSame('q143', self::pergunta($def, 'q144')['opcoes_de']);
+        $this->assertSame('q144', self::pergunta($def, 'q145')['opcoes_de']);
     }
 
     public function test_erros_de_compilacao_apontam_a_linha() {
@@ -99,23 +99,23 @@ class Estrutura_motor_test extends TestCase {
     private function cenario_renda($nsnr_aposentadoria) {
         $morador = function ($cid, $ordem, $nome, $posicao, $nasc, array $extra) {
             return ['client_id' => $cid, 'ordem' => $ordem, 'nome' => $nome, 'respostas' => array_merge([
-                'q18' => self::r('mulher'), 'q19' => self::r($posicao), 'q21' => self::r($nasc),
-                'q48' => self::r('nao'), 'q60' => self::r('nao'), 'q63' => self::r('nao'), 'q65' => self::r('nao'),
+                'q19' => self::r('mulher'), 'q20' => self::r($posicao), 'q22' => self::r($nasc),
+                'q49' => self::r('nao'), 'q61' => self::r('nao'), 'q64' => self::r('nao'), 'q66' => self::r('nao'),
             ], $extra)];
         };
         $moradores = [
             $morador('m1', 1, 'Ana', 'chefe', '1980-03-10', [
-                'q48' => self::r('sim_trabalhou'),
-                'q49' => self::r('militar_ou_servidor_a_publico_a_estatutario_a'),
-                'q53' => self::r(2000), 'q54' => self::r('sim'), 'q55' => self::r(500)]),
+                'q49' => self::r('sim_trabalhou'),
+                'q50' => self::r(['militar_ou_servidor_a_publico_a_estatutario_a']),
+                'q54' => self::r(2000), 'q55' => self::r('sim'), 'q56' => self::r(500)]),
             $morador('m2', 2, 'Bia', 'conjuge_companheiro_a', '1950-01-01', [
-                'q63' => self::r('sim'), 'q64' => $nsnr_aposentadoria ? self::nsnr() : self::r(1500)]),
+                'q64' => self::r('sim'), 'q65' => $nsnr_aposentadoria ? self::nsnr() : self::r(1500)]),
             $morador('m3', 3, 'Caio', 'pensionista', '1990-07-07', [
-                'q48' => self::r('sim_trabalhou'), 'q49' => self::r('conta_propria_trabalha_no_proprio_negocio_sem_empregados'),
-                'q53' => self::r(3000)]),
+                'q49' => self::r('sim_trabalhou'), 'q50' => self::r(['conta_propria_trabalha_no_proprio_negocio_sem_empregados']),
+                'q54' => self::r(3000)]),
         ];
-        $dom = ['q5' => self::r('2026-11-25'), 'q15' => self::r(3), 'q102' => self::r(100), 'q103' => self::r(0),
-            'q104' => self::r(0), 'q106' => self::r('')];
+        $dom = ['q2' => self::r('2026-11-25'), 'q16' => self::r(3), 'q103' => self::r(100), 'q104' => self::r(0),
+            'q105' => self::r(0), 'q107' => self::r('')];
         $m = new Estrutura_motor(self::def('jmc_formulario_geral'));
         return $m->avaliar($dom, $moradores);
     }
@@ -123,55 +123,55 @@ class Estrutura_motor_test extends TestCase {
     public function test_renda_total_e_per_capita_excluem_pensionista() {
         $r = $this->cenario_renda(FALSE);
         // Ana 2000 + 500, Bia 1500, Caio (pensionista) fora, + ajuda 100
-        $this->assertSame(['valor' => 4100.0, 'incompleto' => FALSE], $r['calculados']['domicilio']['q109']);
-        $this->assertSame(['valor' => 2050.0, 'incompleto' => FALSE], $r['calculados']['domicilio']['q110']);
+        $this->assertSame(['valor' => 4100.0, 'incompleto' => FALSE], $r['calculados']['domicilio']['q110']);
+        $this->assertSame(['valor' => 2050.0, 'incompleto' => FALSE], $r['calculados']['domicilio']['q111']);
     }
 
     public function test_nsnr_marca_renda_incompleta_sem_virar_zero_silencioso() {
         $r = $this->cenario_renda(TRUE);
-        $this->assertTrue($r['calculados']['domicilio']['q109']['incompleto']);
-        $this->assertTrue($r['calculados']['domicilio']['q110']['incompleto'], 'a per capita herda a sinalização');
-        $this->assertSame(2600.0, $r['calculados']['domicilio']['q109']['valor']);
+        $this->assertTrue($r['calculados']['domicilio']['q110']['incompleto']);
+        $this->assertTrue($r['calculados']['domicilio']['q111']['incompleto'], 'a per capita herda a sinalização');
+        $this->assertSame(2600.0, $r['calculados']['domicilio']['q110']['valor']);
     }
 
     public function test_visibilidade_por_morador() {
         $r = $this->cenario_renda(FALSE);
         $v = $r['visiveis']['moradores'];
-        $this->assertTrue($v['m1']['q20'], 'CPF do chefe');
-        $this->assertTrue($v['m2']['q20'], 'CPF do cônjuge');
-        $this->assertFalse($v['m3']['q20'], 'sem CPF para pensionista');
-        $this->assertFalse($v['m2']['q53'], 'quem não trabalha não tem rendimento do trabalho');
-        $this->assertTrue($v['m1']['q55']);
-        $this->assertTrue($v['m1']['q25'], '46 anos: sabe ler e escrever');
+        $this->assertTrue($v['m1']['q21'], 'CPF do chefe');
+        $this->assertTrue($v['m2']['q21'], 'CPF do cônjuge');
+        $this->assertFalse($v['m3']['q21'], 'sem CPF para pensionista');
+        $this->assertFalse($v['m2']['q54'], 'quem não trabalha não tem rendimento do trabalho');
+        $this->assertTrue($v['m1']['q56']);
+        $this->assertTrue($v['m1']['q26'], '46 anos: sabe ler e escrever');
     }
 
     public function test_idade_calculada_controla_pergunta() {
         $m = new Estrutura_motor(self::def('jmc_formulario_geral'));
-        $r = $m->avaliar(['q5' => self::r('2026-11-25')], [
-            ['client_id' => 'c', 'ordem' => 1, 'nome' => 'Davi', 'respostas' => ['q19' => self::r('chefe'), 'q21' => self::r('2022-01-01'),
-                'q48' => self::r('sim_trabalhou')]],
+        $r = $m->avaliar(['q2' => self::r('2026-11-25')], [
+            ['client_id' => 'c', 'ordem' => 1, 'nome' => 'Davi', 'respostas' => ['q20' => self::r('chefe'), 'q22' => self::r('2022-01-01'),
+                'q49' => self::r('sim_trabalhou')]],
         ]);
-        $this->assertFalse($r['visiveis']['moradores']['c']['q25'], '4 anos: não pergunta leitura');
+        $this->assertFalse($r['visiveis']['moradores']['c']['q26'], '4 anos: não pergunta leitura');
         $this->assertSame(4, $r['calculados']['moradores']['c']['idade']['valor']);
         $msgs = array_column($r['alertas'], 'mensagem');
-        $this->assertContains('Morador com menos de 14 anos: confira a resposta da questão 48.', $msgs);
+        $this->assertContains('Morador com menos de 14 anos: confira a resposta da questão 49.', $msgs);
     }
 
     public function test_regras_da_lista_de_moradores() {
         $m = new Estrutura_motor(self::def('jmc_formulario_geral'));
-        $sem_chefe = $m->avaliar(['q15' => self::r(2)], [
-            ['client_id' => 'a', 'ordem' => 1, 'nome' => 'A', 'respostas' => ['q19' => self::r('filho_a')]],
+        $sem_chefe = $m->avaliar(['q16' => self::r(2)], [
+            ['client_id' => 'a', 'ordem' => 1, 'nome' => 'A', 'respostas' => ['q20' => self::r('filho_a')]],
         ]);
         $msgs = array_column($sem_chefe['erros'], 'mensagem');
-        $this->assertContains('Um dos moradores deve ser identificado como Chefe (questão 19).', $msgs);
+        $this->assertContains('Um dos moradores deve ser identificado como Chefe (questão 20).', $msgs);
         $alertas = array_column($sem_chefe['alertas'], 'mensagem');
-        $this->assertContains('Foram informadas 2 pessoas na questão 15, mas a lista tem 1 morador(es).', $alertas);
+        $this->assertContains('Foram informadas 2 pessoas na questão 16, mas a lista tem 1 morador(es).', $alertas);
 
         $dois = $m->avaliar([], [
-            ['client_id' => 'a', 'ordem' => 1, 'nome' => 'A', 'respostas' => ['q19' => self::r('chefe')]],
-            ['client_id' => 'b', 'ordem' => 2, 'nome' => 'B', 'respostas' => ['q19' => self::r('chefe')]],
+            ['client_id' => 'a', 'ordem' => 1, 'nome' => 'A', 'respostas' => ['q20' => self::r('chefe')]],
+            ['client_id' => 'b', 'ordem' => 2, 'nome' => 'B', 'respostas' => ['q20' => self::r('chefe')]],
         ]);
-        $this->assertContains('Mais de um morador foi identificado como Chefe (questão 19).', array_column($dois['erros'], 'mensagem'));
+        $this->assertContains('Mais de um morador foi identificado como Chefe (questão 20).', array_column($dois['erros'], 'mensagem'));
 
         $vazio = $m->avaliar([], []);
         $this->assertContains('Cadastre ao menos um morador.', array_column($vazio['erros'], 'mensagem'));
@@ -179,37 +179,101 @@ class Estrutura_motor_test extends TestCase {
 
     public function test_opcoes_filtradas_e_exclusivas() {
         $m = new Estrutura_motor(self::def('jmc_formulario_geral'));
-        $r = $m->avaliar(['q143' => self::r(['cisterna', 'rio_corrego']), 'q144' => self::r('rede_de_abastecimento_embasa'),
-            'q33' => self::r(['nenhum', 'artesanato'])], []);
-        $ok = array_column($r['opcoes']['domicilio']['q144'], 'valor');
+        $r = $m->avaliar(['q144' => self::r(['cisterna', 'rio_corrego']), 'q145' => self::r('rede_de_abastecimento_embasa'),
+            'q34' => self::r(['nenhum', 'artesanato'])], []);
+        $ok = array_column($r['opcoes']['domicilio']['q145'], 'valor');
         $this->assertSame(['cisterna', 'rio_corrego', 'ns_nr'], $ok);
-        $erros = array_column(array_filter($r['erros'], function ($e) { return $e['codigo'] === 'q144'; }), 'mensagem');
-        $this->assertSame(['Questão 144: opção inválida.'], $erros);
+        $erros = array_column(array_filter($r['erros'], function ($e) { return $e['codigo'] === 'q145'; }), 'mensagem');
+        $this->assertSame(['Questão 145: opção inválida.'], $erros);
     }
 
     public function test_complemento_obrigatorio_e_obrigatoriedade() {
         $m = new Estrutura_motor(self::def('jmc_formulario_geral'));
-        $r = $m->avaliar(['q133' => self::r('sim'), 'q134' => ['valor' => 'sim', 'complementos' => ['sim' => '2']]], []);
+        $r = $m->avaliar(['q134' => self::r('sim'), 'q135' => ['valor' => 'sim', 'complementos' => ['sim' => '2']]], []);
         $por = [];
         foreach ($r['erros'] as $e) { $por[$e['codigo']][] = $e['mensagem']; }
-        $this->assertSame(['Questão 133: preencha "Quantas" da opção "Sim. Quantas:".'], $por['q133']);
-        $this->assertArrayNotHasKey('q134', $por);
-        $this->assertSame(['Questão 1 é obrigatória.'], $por['q1']);
-        $this->assertArrayNotHasKey('q100', $por, 'questão opcional');
-        $this->assertArrayNotHasKey('q101', $por, 'oculta: 100 em branco');
+        $this->assertSame(['Questão 134: preencha "Quantas" da opção "Sim. Quantas:".'], $por['q134']);
+        $this->assertArrayNotHasKey('q135', $por);
+        $this->assertSame(['Questão 6 é obrigatória.'], $por['q6']);
+        $this->assertArrayNotHasKey('q101', $por, 'questão opcional');
+        $this->assertArrayNotHasKey('q102', $por, 'oculta: 101 em branco');
     }
 
     public function test_alerta_de_pequeno_negocio() {
         $m = new Estrutura_motor(self::def('jmc_formulario_geral'));
-        $r = $m->avaliar(['q123' => self::r('sim_de_algum_morador_do_domicilio')], []);
-        $this->assertTrue($r['visiveis']['domicilio']['q124']);
+        $r = $m->avaliar(['q124' => self::r('sim_de_algum_morador_do_domicilio')], []);
+        $this->assertTrue($r['visiveis']['domicilio']['q125']);
         $this->assertStringStartsWith('Imóvel com negócio', array_column($r['alertas'], 'mensagem')[0] ?? '');
     }
 
     public function test_duracao_calculada() {
         $m = new Estrutura_motor(self::def('jmc_formulario_geral'));
-        $r = $m->avaliar(['q6' => self::r('08:50'), 'q194' => self::r('10:05')], []);
-        $this->assertSame(['valor' => 75, 'incompleto' => FALSE], $r['calculados']['domicilio']['q195']);
+        $r = $m->avaliar(['q3' => self::r('08:50'), 'q191' => self::r('10:05')], []);
+        $this->assertSame(['valor' => 75, 'incompleto' => FALSE], $r['calculados']['domicilio']['q192']);
+    }
+
+    /** Ajustes de 27/11/2026: recusa na abertura, 50 em múltipla escolha e até 5 fatores na 182. */
+    public function test_recusa_na_abertura_fecha_o_resto_e_permite_finalizar() {
+        $m = new Estrutura_motor(self::def('jmc_formulario_geral'));
+        $abordagem = ['q1' => self::r('itapicuru'), 'q2' => self::r('2026-11-28'), 'q3' => self::r('09:00'), 'q4' => self::r('IMV-01')];
+        $r = $m->avaliar($abordagem + ['q5' => self::r('recusa')], []);
+        $this->assertSame(['q1', 'q2', 'q3', 'q4', 'q5'], array_keys(array_filter($r['visiveis']['domicilio'])));
+        $this->assertSame([], $r['erros'], 'sem moradores e sem as demais questões');
+        $aceita = $m->avaliar($abordagem + ['q5' => self::r('morador_a_disponivel_para_a_entrevista')], []);
+        $this->assertTrue($aceita['visiveis']['domicilio']['q6']);
+        $this->assertContains('Cadastre ao menos um morador.', array_column($aceita['erros'], 'mensagem'));
+    }
+
+    public function test_posicao_na_ocupacao_em_multipla_escolha() {
+        $m = new Estrutura_motor(self::def('jmc_formulario_geral'));
+        $aux = 'trabalhador_a_familiar_auxiliar_ajuda_membro_do_domicilio_se';
+        $cp = 'conta_propria_trabalha_no_proprio_negocio_sem_empregados';
+        $vis = function (array $q50) use ($m) {
+            $r = $m->avaliar(['q2' => self::r('2026-11-28')], [['client_id' => 'a', 'ordem' => 1, 'nome' => 'A',
+                'respostas' => ['q20' => self::r('chefe'), 'q49' => self::r('sim_trabalhou'), 'q50' => self::r($q50)]]]);
+            return [$r['visiveis']['moradores']['a']['q51'], $r['visiveis']['moradores']['a']['q54'],
+                array_column(array_filter($r['erros'], function ($e) { return $e['codigo'] === 'q50'; }), 'mensagem')];
+        };
+        $this->assertSame([FALSE, FALSE, []], $vis([$aux]), 'só familiar auxiliar: sem CNPJ e sem rendimento');
+        $this->assertSame([TRUE, TRUE, []], $vis([$aux, $cp]));
+        $this->assertSame([TRUE, TRUE, []], $vis(['empregado_a_do_setor_privado_sem_carteira_de_trabalho_assina', $cp]));
+        $this->assertSame(['Questão 50: "NS/NR" não pode ser marcada junto com outras opções.'], $vis(['ns_nr', $cp])[2]);
+    }
+
+    public function test_bloco_de_perspectivas_futuras() {
+        $m = new Estrutura_motor(self::def('jmc_formulario_geral'));
+        $base = ['q5' => self::r('morador_a_disponivel_para_a_entrevista')];
+        $d = function (array $resp) use ($m, $base) { return $m->avaliar($base + $resp, [])['visiveis']['domicilio']; };
+        $this->assertFalse($d(['q179' => self::r('nunca_pensei_sobre_isso')])['q180']);
+        $this->assertFalse($d(['q179' => self::r('na_nao_reside_na_comunidade')])['q180']);
+        $this->assertTrue($d(['q179' => self::r('tenho_algumas_preocupacoes_com_essa_proximidade')])['q180']);
+        $sim = $d(['q181' => self::r('sim_e_ja_consideramos_outros_locais'), 'q184' => self::r('sim')]);
+        $this->assertTrue($sim['q182'] && $sim['q183'] && $sim['q184'] && $sim['q185']);
+        $talvez = $d(['q181' => self::r('nao_mas_considerariamos_essa_possibilidade')]);
+        $this->assertTrue($talvez['q182'] && $talvez['q183']);
+        $this->assertFalse($talvez['q184']);
+        $fica = $d(['q181' => self::r('nao_preferimos_permanecer_onde_vivemos_atualmente')]);
+        $this->assertFalse($fica['q182'] || $fica['q183'] || $fica['q184']);
+
+        $ops = array_column($m->pergunta('q182')['opcoes'], 'valor');
+        $erros = function (array $marcadas) use ($m, $base) {
+            $r = $m->avaliar($base + ['q181' => self::r('sim_e_ja_consideramos_outros_locais'), 'q182' => self::r($marcadas)], []);
+            return array_column(array_filter($r['erros'], function ($e) { return $e['codigo'] === 'q182'; }), 'mensagem');
+        };
+        $this->assertSame([], $erros(array_slice($ops, 0, 5)));
+        $this->assertSame(['Questão 182: marque no máximo 5 opções.'], $erros(array_slice($ops, 0, 6)));
+    }
+
+    public function test_lista_de_moradores_com_se_e_max_so_na_multipla() {
+        $texto = "@domicilio A\n1. Aceita? [unica]\n  - Sim\n  - Não\n@moradores 2. Moradores\n  se: q1 == \"Sim\"\n@morador B\n  se: q1 == \"Sim\"\n3. Idade [inteiro]\n";
+        list($def, $erros) = Estrutura_compilador::compilar($texto);
+        $this->assertSame([], $erros);
+        $this->assertSame('(q1 == "sim")', $def['etapas'][1]['se']);
+        $m = new Estrutura_motor($def);
+        $this->assertSame([], $m->avaliar(['q1' => self::r('nao')], [])['erros']);
+        $this->assertContains('Cadastre ao menos um morador.', array_column($m->avaliar(['q1' => self::r('sim')], [])['erros'], 'mensagem'));
+        list(, $erros) = Estrutura_compilador::compilar("@domicilio A\n1. X [unica max=2]\n  - Sim\n  - Não\n");
+        $this->assertStringContainsString('max=N só vale para [multipla]', $erros[0]['mensagem']);
     }
 
     // ------------------------------------------------------------------
